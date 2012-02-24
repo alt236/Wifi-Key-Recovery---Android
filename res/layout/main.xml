@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/white" >
+
+    <TableLayout
+        android:id="@+id/top_bar"
+        style="@style/DefaultTableLayoutStyle"
+        android:layout_alignParentTop="true"
+        android:background="@color/green" >
+
+        <TableRow style="@style/TopDataRow" >
+
+            <TextView
+                style="@style/TitleTextView"
+                android:text="@string/label_device" />
+
+            <TextView
+                android:id="@+id/tvDevice"
+                style="@style/DataTextView"
+                android:layout_span="2" />
+        </TableRow>
+
+        <TableRow style="@style/TopDataRow" >
+
+            <TextView
+                style="@style/TitleTextView"
+                android:text="@string/label_time" />
+
+            <TextView
+                android:id="@+id/tvTime"
+                style="@style/DataTextView"
+                android:layout_span="2" />
+        </TableRow>
+    </TableLayout>
+
+    <RelativeLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:background="@color/green" >
+
+        <TextView
+            android:id="@+id/tvResultsTitle"
+            style="@style/TitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/protected_networks"/>
+
+        <TextView
+            android:id="@+id/tvResults"
+           	android:layout_toRightOf="@id/tvResultsTitle"
+            style="@style/DataTextView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+        <ListView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/top_bar"
+        android:layout_above="@id/bottom_bar"
+        android:cacheColorHint="#00000000" />
+        
+</RelativeLayout>

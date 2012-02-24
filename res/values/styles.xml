@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TitleTextView" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/default_text_color_light</item>
+    </style>
+    
+    <style name="DataTextView" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:layout_marginLeft">10dip</item>
+        <item name="android:textColor">@color/default_text_color_light</item>
+    </style>
+    
+    <style name="TopDataRow" parent="@android:style/TextAppearance.Medium">
+    	<item name="android:gravity">center_vertical</item>
+    </style>
+    
+    <style name="DefaultTableLayoutStyle">
+    	<item name="android:layout_width">fill_parent</item>
+    	<item name="android:layout_height">wrap_content</item>
+    	<item name="android:shrinkColumns">1</item>
+    </style>
+    
+    <style name="TerminalTextView" parent="@android:style/TextAppearance.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/default_text_color_dark</item>
+    </style>
+    
+</resources>

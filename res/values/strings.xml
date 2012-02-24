@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">WiFi Key Recovery</string>
+    <string name="app_acknowledgements">
+        Acknowledgements:\n
+		•Original icons from the Open Clip Art gallery:\n
+		http://www.openclipart.org/detail/76159\n
+		http://www.openclipart.org/detail/74359\n</string>
+    <string name="app_copyright">Copyright A. Schillings, 2011</string>
+    <string name="app_changelog">
+        Changelog:\n
+		•v0.0.1 First public release.\n
+		•v0.0.2 Bugfixes, added support for WEP keys.\n
+		•v0.0.3 Added support for 802.1x networks.\n
+		•v0.0.4 Added more key file locations.\n
+		•v0.0.5 Stability fixes, speed increase, UI refresh.\n
+		•v0.0.6 Removed the QRCode Encode option. Sorry, it slipped in from my development tree. I will re-add it (fully working) in the next version.\n
+		•v0.0.7 Code cleanup, added QRCode display.</string>
+    <string name="app_notes">
+        Tested by me on:\n
+		•HTC Desire Z\n
+		•Samsung Galaxy Tab\n
+		•ASUS Transformer TF101\n\n
+		According to feedback it also works on:\n
+		•HTC Desire HD\n
+		•HTC Evo\n
+		•LG Optimus 2X\n
+		•Motorola Defy\n
+		•Samsung Captivate\n
+		•Viewsonic gTablet\n
+		•Xperia X10 Mini\n</string>
+    <string name="label_menu_refresh">Refresh</string>
+    <string name="label_menu_about">About</string>
+    <string name="label_menu_export">Export</string>
+    <string name="label_device">Device:</string>
+    <string name="label_time">Time:</string>
+    <string name="label_wifi_passwords">___WiFi_Passwords________</string>
+    <string name="root_needed">This application needs root.\nHave a look around http://forum.xda-developers.com to find out how to root your device.</string>
+    <string name="label_share_dialogue_title">Share with others</string>
+    <string name="label_edit_before_export">Edit text before exporting:</string>
+    <string name="label_export_to_sd">To SD</string>
+    <string name="label_export_close">Close</string>
+    <string name="label_export_share">Share</string>
+    <string name="dialogue_text_please_wait">Please wait…</string>
+    <string name="text_wifi_password_recovery">wifi_password_recovery</string>
+    <string name="text_unable_to_continue">Unable to proceed.</string>
+    <string name="text_copied">copied.</string>
+    <string name="text_error">Error</string>
+    <string name="text_could_not_go_to_market">Could not open market page.\nPlease make sure your device has the market application installed.</string>
+    <string name="could_not_find_password_files">Could not find password files.</string>
+    <string name="component_missing">Component Missing</string>
+    <string name="you_need_the_barcode_scanner_application">You need the Barcode Scanner application to do this.</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="zxing_market_url">market://details?id=com.google.zxing.client.android</string>
+    <string name="qr_code">QR Code</string>
+    <string name="protected_networks">Protected Networks:</string>
+
+</resources>
