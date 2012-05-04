@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package aws.apps.wifiKeyRecovery;
+package aws.apps.wifiKeyRecovery.activities;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,9 +21,13 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import net.londatiga.android.ActionItem;
+import net.londatiga.android.QuickAction;
+import net.londatiga.android.QuickAction.OnActionItemClickListener;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -31,28 +35,41 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.ClipboardManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.util.Linkify;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+import aws.apps.wifiKeyRecovery.R;
+import aws.apps.wifiKeyRecovery.adapters.NetworkInfoAdapter;
 import aws.apps.wifiKeyRecovery.containers.NetInfo;
 import aws.apps.wifiKeyRecovery.containers.SavedData;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal;
 import aws.apps.wifiKeyRecovery.util.ExecuteThread;
-import aws.apps.wifiKeyRecovery.util.UiUtils;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
 
-import com.commonsware.cwac.merge.MergeAdapter;
 
-public class MainActivity extends Activity {
+
+public class MainActivity extends Activity implements OnItemClickListener, OnActionItemClickListener{
+	private static final int ID_COPY_PASSWORD	= 0;
+	private static final int ID_COPY_ALL   		= 1;
+	private static final int ID_SHOW_QRCODE   	= 2;
+
 	private static final int DIALOG_GET_PASSWORDS = 1;
 	final String TAG =  this.getClass().getName();
 
-	private MergeAdapter adapter;
+	private NetworkInfoAdapter niAdapter;
 	private String TimeDate="";
 	private UsefulBits uB;
 	private TextView lblTimeDate;
@@ -62,7 +79,26 @@ public class MainActivity extends Activity {
 	private Bundle threadBundle;
 	private TextView tvResultCount;
 	private ListView list;
-	private UiUtils gui;
+	private QuickAction quickAction;
+	private EditText editFilter;
+	
+	private TextWatcher filterTextWatcher = new TextWatcher() {
+
+		public void afterTextChanged(Editable s) {
+		}
+
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+		}
+
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+			if(niAdapter != null){
+				niAdapter.getFilter().filter(s);
+			} else {
+				Log.w(TAG, "^ TextWatcher: Adapter is null!");
+			}
+		}
+	};
 	
 	final Handler handler = new Handler() {
 		@SuppressWarnings("unchecked")
@@ -74,13 +110,13 @@ public class MainActivity extends Activity {
 				Log.d(TAG, "^ Worker Thread: WORK_COMPLETED");
 
 				l = (ArrayList<NetInfo>) msg.getData().getSerializable("passwords");
-				
+
 				if (l != null){
 					Collections.sort(l, new NetInfoComperator());
-					listToList(l, adapter);
+					populateList(l);
 					list.setTag(l);
 				}
-				
+
 				executeThread.setState(ExecuteThread.STATE_DONE);
 				removeDialog(DIALOG_GET_PASSWORDS);
 				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
@@ -94,37 +130,28 @@ public class MainActivity extends Activity {
 
 		}
 	};
-
+	
 	/** Clears the table and field contents */
 	public void clearInfo() {
 		lblTimeDate.setText("");
 	}
 
-	private View createView(NetInfo ni, int count){
-		View v = getLayoutInflater().inflate(R.layout.list_item, null);
-		TextView tv;
-		ImageButton ib;
-		
-		tv = (TextView) v.findViewById(R.id.text);
-		tv.setText(ni.toString()); 
-		tv.setOnClickListener(gui.txtCopyOnClickListener);
-		
-		if(ni.getWifiQrCodeString().length()>0){
-			ib = (ImageButton) v.findViewById(R.id.buttonQr);
-			ib.setVisibility(View.VISIBLE);
-			ib.setTag(ni.getWifiQrCodeString());
-			ib.setOnClickListener(gui.btnQrCodeOnClickListener);
-		}
-		
-		if(count % 2 == 0){
-			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.rowbg));
-		}else{
-			v.setBackgroundDrawable(getResources().getDrawable(R.drawable.rowbg_alt));
-		}
-		
-		return v;
-	}
+	private void copyStringToClipboard(String text){
+		if (text.length() > 0) {
+			String msgtext = "";
+			if (text.length()>150) {
+				msgtext = text.substring(0, 150) + "...";
+			} else {
+				msgtext = text;
+			}
+			String message = "'" + msgtext + "' " + getString(R.string.text_copied);
+			uB.showToast(message, Toast.LENGTH_SHORT, Gravity.TOP,0,0);
 
+			ClipboardManager ClipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+			ClipMan.setText(text);
+		}
+	}
+	
 	private void getPasswords(){	
 		LockScreenRotation();
 		ExecTerminal et = new ExecTerminal();
@@ -135,32 +162,14 @@ public class MainActivity extends Activity {
 			TextView tv = new TextView(this);
 			tv.setText(getString(R.string.root_needed));
 			Linkify.addLinks(tv, Linkify.ALL);
-			adapter.addView(tv);
+
 			uB.ShowAlert(
 					getString(R.string.text_unable_to_continue), 
 					getString(R.string.root_needed), 
 					getString(android.R.string.ok));
 		}
 	}
-
-	private void listToList(List<NetInfo> l, MergeAdapter adapter){
-		adapter = new MergeAdapter();
-		
-		if (l.size() == 0){
-			return;
-		}
-		int count = 0;
-
-		for (int i=0; i < l.size();i++){
-			NetInfo ni = l.get(i);
-			adapter.addView(createView(ni, count));			
-			count+=1;
-		}
-		
-		tvResultCount.setText(String.valueOf(count));
-		list.setAdapter(adapter);
-	}
-
+	
 	// Sets screen rotation as fixed to current rotation setting
 	private void LockScreenRotation(){
 		// Stop the screen orientation changing during an event
@@ -175,21 +184,41 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	public void onClearSearchClick(View v){
+		editFilter.setText("");
+	}
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "^ Intent Started");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
 		uB = new UsefulBits(this);
-		gui = new UiUtils(this);
 		
 		//setup GUI
 		list = (ListView) findViewById(R.id.list);
 		lblTimeDate = (TextView) findViewById(R.id.tvTime);
 		lblDevice = (TextView) findViewById(R.id.tvDevice);
 		tvResultCount = (TextView) findViewById(R.id.tvResults);
+		editFilter = (EditText) findViewById(R.id.edit_search);
+		
+		list.setFastScrollEnabled(true);
+		list.setOnItemClickListener(this);
+		list.setDivider( null ); 
+		list.setDividerHeight(uB.dipToPixels(1)); 
+		
+		quickAction = new QuickAction(this, QuickAction.VERTICAL);
+
+		ActionItem actionCopyPassword = new ActionItem(ID_COPY_PASSWORD, getString(R.string.label_copy_password), getResources().getDrawable(R.drawable.ic_qrcode));
+		ActionItem actionCopyAll 	  = new ActionItem(ID_COPY_ALL, getString(R.string.label_copy_all), getResources().getDrawable(R.drawable.ic_qrcode));
+		ActionItem actionShowQr 	  = new ActionItem(ID_SHOW_QRCODE, getString(R.string.label_show_qr_code), getResources().getDrawable(R.drawable.ic_qrcode));
+		
+		quickAction.addActionItem(actionCopyPassword);
+		quickAction.addActionItem(actionCopyAll);
+		quickAction.addActionItem(actionShowQr);
+
+		quickAction.setOnActionItemClickListener(this);
 
 		populateInfo();
 	}
@@ -210,25 +239,62 @@ public class MainActivity extends Activity {
 
 	/** Creates the menu items */
 	public boolean onCreateOptionsMenu(Menu menu) {
-		menu.add(0, MENU_BUTTONS.REFRESH.ordinal(), 0,
-				getString(R.string.label_menu_refresh)).setIcon(android.R.drawable.ic_menu_rotate);
-		menu.add(0, MENU_BUTTONS.EXPORT.ordinal(), 0,
-				getString(R.string.label_menu_export)).setIcon(android.R.drawable.ic_menu_upload);
-		menu.add(0, MENU_BUTTONS.ABOUT.ordinal(), 0,
-				getString(R.string.label_menu_about)).setIcon(android.R.drawable.ic_menu_info_details);
+		new MenuInflater(this).inflate(R.menu.home, menu);
 		return true;
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		editFilter.removeTextChangedListener(filterTextWatcher);
+	}
+
+	public void onItemClick(AdapterView<?> l, View v, int position, long id){
+		quickAction.show(v); 
+	}
+
+	public void onItemClick(QuickAction source, int pos, int actionId) {
+		View view = quickAction.getLastAnchorView();
+		String text;
+		
+		NetInfo ni = (NetInfo) view.getTag();
+		
+		switch (actionId) {
+		case ID_COPY_ALL:
+			copyStringToClipboard(ni.toString());
+			break;
+		case ID_COPY_PASSWORD:
+			copyStringToClipboard(ni.getPassword());
+			break;
+		case ID_SHOW_QRCODE:
+			text = ni.getQrcodeString();				
+
+			if (text.length() > 0) {
+				if (uB.isIntentAvailable(this, "com.google.zxing.client.android.ENCODE")){		
+					Intent i = new Intent();
+					i.setAction("com.google.zxing.client.android.ENCODE");
+					i.putExtra ("ENCODE_TYPE", "TEXT_TYPE");
+					i.putExtra ("ENCODE_DATA", text);
+					startActivity(i); 
+				} else {
+					uB.showApplicationMissingAlert(
+							getString(R.string.component_missing), 
+							getString(R.string.you_need_the_barcode_scanner_application), 
+							getString(R.string.dismiss), 
+							getString(R.string.zxing_market_url));
+				}
+			}
+			break;
+		}
 	}
 
 	/** Handles item selections */
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (MENU_BUTTONS.lookUpByOrdinal(item.getItemId())) {
-		case ABOUT:
+		if(R.id.menu_about == item.getItemId()){
 			uB.showAboutDialogue();
 			return true;
-		case REFRESH:
-			refreshInfo();
-			return true;
-		case EXPORT:
+		}
+		else if(R.id.menu_export == item.getItemId()){
 			Intent myIntent = new Intent();
 			String export_text = "";
 
@@ -242,8 +308,27 @@ public class MainActivity extends Activity {
 			startActivity(myIntent);
 			return true;
 		}
+		else if(R.id.menu_refresh == item.getItemId()){
+			refreshInfo();
+			return true;
+		}
 		return false;
 	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		editFilter.removeTextChangedListener(filterTextWatcher);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if(editFilter != null){
+			editFilter.addTextChangedListener(filterTextWatcher);
+		}
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -255,6 +340,7 @@ public class MainActivity extends Activity {
 		if(list.getTag() != null){
 			saved.setWiFiPasswordList((List<NetInfo>) list.getTag());
 		}
+
 		saved.setDateTime(TimeDate);
 		return saved;
 	}
@@ -262,7 +348,7 @@ public class MainActivity extends Activity {
 	/** Retrieves and displays info */
 	private void populateInfo(){
 		final Object data = getLastNonConfigurationInstance();
-		
+
 		if (data == null) { // We need to do everything from scratch!
 			TimeDate = uB.formatDateTime("yyyy-MM-dd-HHmmssZ", new Date());
 			lblTimeDate.setText(TimeDate);
@@ -272,31 +358,35 @@ public class MainActivity extends Activity {
 			TimeDate = saved.getDateTime();
 
 			lblTimeDate.setText(TimeDate);
-			listToList(saved.getWifiPasswordList(), adapter);
+			populateList(saved.getWifiPasswordList());
 			list.setTag(saved.getWifiPasswordList());
 		}
 		lblDevice.setText(Build.PRODUCT + " " + Build.DEVICE);
 	}
 
-	
+	private void populateList(List<NetInfo> l){
+		if(l.size() > 0 ){
+			findViewById(R.id.filter_segment).setVisibility(View.VISIBLE);
+			niAdapter = new NetworkInfoAdapter(this, l);
+			tvResultCount.setText(String.valueOf(l.size()));
+			list.setAdapter(niAdapter);
+			editFilter.addTextChangedListener(filterTextWatcher);
+		} else {
+			tvResultCount.setText("0");
+			findViewById(R.id.filter_segment).setVisibility(View.GONE);
+		}
+	}
+
 	/** Convenience function combining clearInfo and getInfo */
 	public void refreshInfo() {
 		clearInfo();
 		populateInfo();
 	}
-
+	
 	public class NetInfoComperator implements Comparator<NetInfo> {
-	    @Override
-	    public int compare(NetInfo o1, NetInfo o2) {
-	        return o1.toString().compareToIgnoreCase(o2.toString());
-	    }
-	}
-}
-
-enum MENU_BUTTONS {
-	REFRESH, ABOUT, EXPORT;
-
-	public static MENU_BUTTONS lookUpByOrdinal(int i) {
-		return MENU_BUTTONS.values()[i];
+		@Override
+		public int compare(NetInfo o1, NetInfo o2) {
+			return o1.toString().compareToIgnoreCase(o2.toString());
+		}
 	}
 }

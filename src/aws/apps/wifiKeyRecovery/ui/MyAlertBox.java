@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package aws.apps.wifiKeyRecovery.util;
+package aws.apps.wifiKeyRecovery.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;

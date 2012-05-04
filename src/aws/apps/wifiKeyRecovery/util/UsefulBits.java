@@ -35,9 +35,11 @@ import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.Toast;
 import aws.apps.wifiKeyRecovery.R;
+import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 
 public class UsefulBits {
 	final String TAG =  this.getClass().getName();
@@ -242,5 +244,17 @@ public class UsefulBits {
 		}
 
 		return sb.toString();
+	}
+	
+	public int dipToPixels(int dip) {
+		int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 
+				(float) dip, c.getResources().getDisplayMetrics());
+		return value;
+	}
+
+	public float dipToPixels(float dip) {
+		float value = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 
+				dip, c.getResources().getDisplayMetrics());
+		return value;
 	}
 }

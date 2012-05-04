@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package aws.apps.wifiKeyRecovery;
+package aws.apps.wifiKeyRecovery.activities;
 
 import java.io.File;
 
@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
 
 public class ExportActivity extends Activity {

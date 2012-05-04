@@ -55,5 +55,8 @@
     <string name="zxing_market_url">market://details?id=com.google.zxing.client.android</string>
     <string name="qr_code">QR Code</string>
     <string name="protected_networks">Protected Networks:</string>
+    <string name="label_copy_password">Copy password</string>
+    <string name="label_copy_all">Copy all</string>
+    <string name="label_show_qr_code">Show QR Code</string>
 
 </resources>

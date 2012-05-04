@@ -50,22 +50,54 @@
             style="@style/TitleTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/protected_networks"/>
+            android:text="@string/protected_networks" />
 
         <TextView
             android:id="@+id/tvResults"
-           	android:layout_toRightOf="@id/tvResultsTitle"
             style="@style/DataTextView"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tvResultsTitle" />
     </RelativeLayout>
 
-        <ListView
+        <RelativeLayout
+        android:id="@+id/filter_segment"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/top_bar"
+        android:visibility="gone" >
+
+        <ImageButton
+            android:id="@+id/btn_search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:onClick="onClearSearchClick"
+            android:src="@drawable/ic_delete" />
+
+        <EditText
+            android:id="@+id/edit_search"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/btn_search" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/btn_search"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@color/green" />
+    </RelativeLayout>
+    
+    <ListView
         android:id="@+id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/top_bar"
         android:layout_above="@id/bottom_bar"
+        android:layout_below="@id/filter_segment"
         android:cacheColorHint="#00000000" />
-        
+
 </RelativeLayout>

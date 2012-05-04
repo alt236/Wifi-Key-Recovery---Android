@@ -134,7 +134,6 @@ public class ExecuteThread extends Thread {
 				l = parseWifiPasswords(l, result);
 				return l;
 			}
-
 		}
 		
 		l.add(new NetInfo(c.getString(R.string.could_not_find_password_files)));
