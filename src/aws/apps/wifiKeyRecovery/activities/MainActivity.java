@@ -25,9 +25,12 @@ import net.londatiga.android.ActionItem;
 import net.londatiga.android.QuickAction;
 import net.londatiga.android.QuickAction.OnActionItemClickListener;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -38,7 +41,6 @@ import android.os.Message;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -52,14 +54,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.adapters.NetworkInfoAdapter;
+import aws.apps.wifiKeyRecovery.adapters.NetInfoAdapter;
 import aws.apps.wifiKeyRecovery.containers.NetInfo;
 import aws.apps.wifiKeyRecovery.containers.SavedData;
+import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal;
 import aws.apps.wifiKeyRecovery.util.ExecuteThread;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
-
-
 
 public class MainActivity extends Activity implements OnItemClickListener, OnActionItemClickListener{
 	private static final int ID_COPY_PASSWORD	= 0;
@@ -69,7 +70,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	private static final int DIALOG_GET_PASSWORDS = 1;
 	final String TAG =  this.getClass().getName();
 
-	private NetworkInfoAdapter niAdapter;
+	private NetInfoAdapter niAdapter;
 	private String TimeDate="";
 	private UsefulBits uB;
 	private TextView lblTimeDate;
@@ -81,7 +82,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	private ListView list;
 	private QuickAction quickAction;
 	private EditText editFilter;
-	
+
 	private TextWatcher filterTextWatcher = new TextWatcher() {
 
 		public void afterTextChanged(Editable s) {
@@ -99,7 +100,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 			}
 		}
 	};
-	
+
 	final Handler handler = new Handler() {
 		@SuppressWarnings("unchecked")
 		public void handleMessage(Message msg) {
@@ -130,7 +131,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 
 		}
 	};
-	
+
 	/** Clears the table and field contents */
 	public void clearInfo() {
 		lblTimeDate.setText("");
@@ -151,7 +152,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 			ClipMan.setText(text);
 		}
 	}
-	
+
 	private void getPasswords(){	
 		LockScreenRotation();
 		ExecTerminal et = new ExecTerminal();
@@ -159,17 +160,21 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 		if(et.checkSu()){
 			showDialog(DIALOG_GET_PASSWORDS);	
 		}else{
-			TextView tv = new TextView(this);
-			tv.setText(getString(R.string.root_needed));
-			Linkify.addLinks(tv, Linkify.ALL);
 
-			uB.ShowAlert(
-					getString(R.string.text_unable_to_continue), 
-					getString(R.string.root_needed), 
-					getString(android.R.string.ok));
+			AlertDialog dlg = MyAlertBox.create(this, getString(R.string.root_needed), getString(R.string.app_name), getString(android.R.string.ok));
+
+			dlg.setOnDismissListener(new OnDismissListener() {
+
+				@Override
+				public void onDismiss(DialogInterface dialog) {
+					MainActivity.this.finish();
+				}
+			});
+
+			dlg.show();
 		}
 	}
-	
+
 	// Sets screen rotation as fixed to current rotation setting
 	private void LockScreenRotation(){
 		// Stop the screen orientation changing during an event
@@ -195,25 +200,25 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 		setContentView(R.layout.main);
 
 		uB = new UsefulBits(this);
-		
+
 		//setup GUI
 		list = (ListView) findViewById(R.id.list);
 		lblTimeDate = (TextView) findViewById(R.id.tvTime);
 		lblDevice = (TextView) findViewById(R.id.tvDevice);
 		tvResultCount = (TextView) findViewById(R.id.tvResults);
 		editFilter = (EditText) findViewById(R.id.edit_search);
-		
+
 		list.setFastScrollEnabled(true);
 		list.setOnItemClickListener(this);
 		list.setDivider( null ); 
 		list.setDividerHeight(uB.dipToPixels(1)); 
-		
-		quickAction = new QuickAction(this, QuickAction.VERTICAL);
 
-		ActionItem actionCopyPassword = new ActionItem(ID_COPY_PASSWORD, getString(R.string.label_copy_password), getResources().getDrawable(R.drawable.ic_qrcode));
-		ActionItem actionCopyAll 	  = new ActionItem(ID_COPY_ALL, getString(R.string.label_copy_all), getResources().getDrawable(R.drawable.ic_qrcode));
-		ActionItem actionShowQr 	  = new ActionItem(ID_SHOW_QRCODE, getString(R.string.label_show_qr_code), getResources().getDrawable(R.drawable.ic_qrcode));
-		
+		quickAction = new QuickAction(this, QuickAction.ORIENTATION_VERTICAL, QuickAction.COLOUR_LIGHT);
+
+		ActionItem actionCopyPassword = new ActionItem(ID_COPY_PASSWORD, getString(R.string.label_copy_password), getResources().getDrawable(R.drawable.ic_list_copy));
+		ActionItem actionCopyAll 	  = new ActionItem(ID_COPY_ALL, getString(R.string.label_copy_all), getResources().getDrawable(R.drawable.ic_list_copy2));
+		ActionItem actionShowQr 	  = new ActionItem(ID_SHOW_QRCODE, getString(R.string.label_show_qr_code), getResources().getDrawable(R.drawable.ic_list_barcode));
+
 		quickAction.addActionItem(actionCopyPassword);
 		quickAction.addActionItem(actionCopyAll);
 		quickAction.addActionItem(actionShowQr);
@@ -256,9 +261,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	public void onItemClick(QuickAction source, int pos, int actionId) {
 		View view = quickAction.getLastAnchorView();
 		String text;
-		
+
 		NetInfo ni = (NetInfo) view.getTag();
-		
+
 		switch (actionId) {
 		case ID_COPY_ALL:
 			copyStringToClipboard(ni.toString());
@@ -304,7 +309,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 
 			myIntent.putExtra("info", export_text);
 			myIntent.putExtra("time", TimeDate);
-			myIntent.setClassName(getPackageName(),getPackageName() + ".ExportActivity");
+			myIntent.setClass(this, ExportActivity.class);
 			startActivity(myIntent);
 			return true;
 		}
@@ -367,7 +372,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	private void populateList(List<NetInfo> l){
 		if(l.size() > 0 ){
 			findViewById(R.id.filter_segment).setVisibility(View.VISIBLE);
-			niAdapter = new NetworkInfoAdapter(this, l);
+			niAdapter = new NetInfoAdapter(this, l);
 			tvResultCount.setText(String.valueOf(l.size()));
 			list.setAdapter(niAdapter);
 			editFilter.addTextChangedListener(filterTextWatcher);
@@ -382,7 +387,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 		clearInfo();
 		populateInfo();
 	}
-	
+
 	public class NetInfoComperator implements Comparator<NetInfo> {
 		@Override
 		public int compare(NetInfo o1, NetInfo o2) {
