@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_refresh"
+        android:icon="@drawable/ic_menu_reload"
+        android:title="@string/label_menu_refresh"/>
+    <item
+        android:id="@+id/menu_export"
+        android:icon="@drawable/ic_menu_export"
+        android:title="@string/label_menu_export"/>
+    <item
+        android:id="@+id/menu_about"
+        android:icon="@drawable/ic_menu_info"
+        android:title="@string/label_menu_about"/>
+
+</menu>

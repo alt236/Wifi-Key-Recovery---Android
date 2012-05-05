@@ -16,7 +16,8 @@
 		•v0.0.4 Added more key file locations.\n
 		•v0.0.5 Stability fixes, speed increase, UI refresh.\n
 		•v0.0.6 Removed the QRCode Encode option. Sorry, it slipped in from my development tree. I will re-add it (fully working) in the next version.\n
-		•v0.0.7 Code cleanup, added QRCode display.</string>
+		•v0.0.7 Code cleanup, added QRCode display.\n
+		•v0.0.8 UI Update, rewrote some of the internals.</string>
     <string name="app_notes">
         Tested by me on:\n
 		•HTC Desire Z\n
@@ -36,7 +37,7 @@
     <string name="label_device">Device:</string>
     <string name="label_time">Time:</string>
     <string name="label_wifi_passwords">___WiFi_Passwords________</string>
-    <string name="root_needed">This application needs root.\nHave a look around http://forum.xda-developers.com to find out how to root your device.</string>
+    <string formatted="false" name="root_needed">This application needs root.\n\n•If you do not know what root is, see here: http://en.wikipedia.org/wiki/Rooting_%28Android_OS%29 \n\n•To find out how to root your device, have a look around here: http://forum.xda-developers.com.\n\n•Apologies, but I cannot help you root your device.</string>
     <string name="label_share_dialogue_title">Share with others</string>
     <string name="label_edit_before_export">Edit text before exporting:</string>
     <string name="label_export_to_sd">To SD</string>
@@ -44,7 +45,6 @@
     <string name="label_export_share">Share</string>
     <string name="dialogue_text_please_wait">Please wait…</string>
     <string name="text_wifi_password_recovery">wifi_password_recovery</string>
-    <string name="text_unable_to_continue">Unable to proceed.</string>
     <string name="text_copied">copied.</string>
     <string name="text_error">Error</string>
     <string name="text_could_not_go_to_market">Could not open market page.\nPlease make sure your device has the market application installed.</string>
@@ -56,7 +56,7 @@
     <string name="qr_code">QR Code</string>
     <string name="protected_networks">Protected Networks:</string>
     <string name="label_copy_password">Copy password</string>
-    <string name="label_copy_all">Copy all</string>
+    <string name="label_copy_all">Copy All</string>
     <string name="label_show_qr_code">Show QR Code</string>
 
 </resources>
