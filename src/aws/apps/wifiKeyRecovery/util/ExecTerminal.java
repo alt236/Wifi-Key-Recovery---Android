@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 Alexandros Schillings
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,30 +25,30 @@ import android.util.Log;
 
 public class ExecTerminal {
 	final String TAG =  this.getClass().getName();
-	
+
 	public class ExecResult{
 		final String TAG =  this.getClass().getName();
-		
+
 		String stdOut = "";
 		String stdErr = "";
 		String stdIn = "";
-		
+
 		public ExecResult(String stdIn, String stdOut, String stdErr){
 			this.stdOut = stdOut;
 			this.stdErr = stdErr;
 			this.stdIn = stdIn;
 		}
-		
+
 		public ExecResult(){
 			clear();
 		}
-		
+
 		public void clear(){
 			stdOut = "";
 			stdErr = "";
 			stdIn = "";
 		}
-		
+
 		public String getStdOut() {
 			return stdOut;
 		}
@@ -61,18 +61,16 @@ public class ExecTerminal {
 			return stdIn;
 		}
 	};
-		
+
 	public boolean checkSu(){
-		ExecTerminal et = new ExecTerminal();
-		ExecResult res = new ExecResult();
-		
-		res = et.execSu("su && echo 1");
-	
+		final ExecTerminal et = new ExecTerminal();
+		ExecResult res = et.execSu("su && echo 1");
+
 		if (res.getStdOut().trim().equals("1")){
 			Log.i(TAG, "^ got root!");
 			return true;
 		}
-	
+
 		Log.w(TAG, "^ could not get root.");
 		return false;
 	}
@@ -81,24 +79,24 @@ public class ExecTerminal {
 		Log.d(TAG, "^ exec(): '" + cmd + "'");
 		String stdOut = "";
 		String stdErr = "";
-		
-		try {
-			Process process = Runtime.getRuntime().exec("sh");
 
-			DataInputStream is = new DataInputStream(process.getInputStream());
-			DataInputStream eis = new DataInputStream(process.getErrorStream());
-			DataOutputStream os = new DataOutputStream(process.getOutputStream());
+		try {
+			final Process process = Runtime.getRuntime().exec("sh");
+
+			final DataInputStream is = new DataInputStream(process.getInputStream());
+			final DataInputStream eis = new DataInputStream(process.getErrorStream());
+			final DataOutputStream os = new DataOutputStream(process.getOutputStream());
 
 			os.writeBytes(cmd + "\n");
 			os.writeBytes("exit\n");
 			os.flush();
 			os.close();
 
-			BufferedReader readerOut = new BufferedReader(	new InputStreamReader(is));
-			BufferedReader readerErr = new BufferedReader(new InputStreamReader(eis));
-			
+			final BufferedReader readerOut = new BufferedReader(	new InputStreamReader(is));
+			final BufferedReader readerErr = new BufferedReader(new InputStreamReader(eis));
+
 			process.waitFor();
-			
+
 			try {
 				String line = "";
 				while ((line = readerOut.readLine()) != null) {
@@ -109,7 +107,7 @@ public class ExecTerminal {
 				Log.e(TAG, "^ exec() - IOException in sdtdOut Loop: " + e.getMessage());
 			}
 
-			
+
 			try {
 				String line = "";
 				while ((line = readerErr.readLine()) != null) {
@@ -126,33 +124,33 @@ public class ExecTerminal {
 		} catch (InterruptedException e) {
 			Log.e(TAG, "^ exec() InterruptedException: " + e.getMessage());
 		}
-				
+
 		ExecResult res = new ExecResult(cmd, stdOut, stdErr);
-		
+
 		return res;
 	}
-	
+
 	public ExecResult execSu(String cmd) {
 		Log.d(TAG, "^ execSu(): '" + cmd + "'");
 		String stdOut = "";
 		String stdErr = "";
-		
+
 		try {
-			Process process = Runtime.getRuntime().exec("su");
-			DataInputStream is = new DataInputStream(process.getInputStream());
-			DataInputStream eis = new DataInputStream(process.getErrorStream());
-			DataOutputStream os = new DataOutputStream(process.getOutputStream());
-			
+			final Process process = Runtime.getRuntime().exec("su");
+			final DataInputStream is = new DataInputStream(process.getInputStream());
+			final DataInputStream eis = new DataInputStream(process.getErrorStream());
+			final DataOutputStream os = new DataOutputStream(process.getOutputStream());
+
 			os.writeBytes(cmd + "\n");
 			os.writeBytes("exit\n");
 			os.flush();
 			os.close();
 
-			BufferedReader readerOut = new BufferedReader(new InputStreamReader(is));
-			BufferedReader readerErr = new BufferedReader(new InputStreamReader(eis));
-			
+			final BufferedReader readerOut = new BufferedReader(new InputStreamReader(is));
+			final BufferedReader readerErr = new BufferedReader(new InputStreamReader(eis));
+
 			process.waitFor();
-			
+
 			try {
 				String line = "";
 				while ((line = readerOut.readLine()) != null) {
@@ -162,7 +160,7 @@ public class ExecTerminal {
 			} catch (IOException e) {
 				Log.e(TAG, "^ execSu() - IOException in sdtdOut Loop: " + e.getMessage());
 			}
-			
+
 			try {
 				String line = "";
 				while ((line = readerErr.readLine()) != null) {
@@ -172,13 +170,13 @@ public class ExecTerminal {
 			} catch (IOException e) {
 				Log.e(TAG, "^ execSu() - IOException in sdtdOut Loop: " + e.getMessage());
 			}
-			
+
 		} catch (IOException e) {
 			Log.e(TAG, "^ execSu() - IOException: " + e.getMessage());
 		} catch (InterruptedException e) {
 			Log.e(TAG, "^ execSu() - InterruptedException: " + e.getMessage());
 		}
-		
+
 		ExecResult res = new ExecResult(cmd, stdOut, stdErr);
 		return res;
 	}

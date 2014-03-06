@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 Alexandros Schillings
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,11 +43,11 @@ import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 
 public class UsefulBits {
 	final String TAG =  this.getClass().getName();
-	private Context c;
+	private Context mContext;
 
 	public UsefulBits(Context cntx) {
 		Log.d(TAG, "^ Object created");
-		c = cntx;
+		mContext = cntx;
 	}
 
 	public static boolean validateIPv4Address(String address) {
@@ -83,7 +83,7 @@ public class UsefulBits {
 	public String getAppVersion(){
 		PackageInfo pi;
 		try {
-			pi = c.getPackageManager().getPackageInfo(c.getPackageName(), 0);
+			pi = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
 			return pi.versionName;
 		} catch (NameNotFoundException e) {
 			return "";
@@ -92,7 +92,7 @@ public class UsefulBits {
 	}
 
 	public boolean isActivityAvailable(String packageName, String className) {
-		final PackageManager packageManager = c.getPackageManager();
+		final PackageManager packageManager = mContext.getPackageManager();
 		final Intent intent = new Intent();
 		intent.setClassName(packageName, className);
 
@@ -120,8 +120,8 @@ public class UsefulBits {
 	}
 
 	public boolean isOnline() {
-		try{ 
-			ConnectivityManager cm = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+		try{
+			ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 			if (cm != null) {
 				return cm.getActiveNetworkInfo().isConnected();
@@ -148,43 +148,43 @@ public class UsefulBits {
 					out.write(contents);
 					out.close();
 					Log.d(TAG, "^ Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'");
-					showToast("Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'", 
+					showToast("Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'",
 							Toast.LENGTH_SHORT, Gravity.TOP,0,0);
 				}
 
 			} catch (Exception e) {
-				showToast("Could not write file:\n+ e.getMessage()", 
+				showToast("Could not write file:\n+ e.getMessage()",
 						Toast.LENGTH_SHORT, Gravity.TOP,0,0);
 				Log.e(TAG, "^ Could not write file " + e.getMessage());
 			}
 
 		}else{
 			showToast("No SD card is mounted...", Toast.LENGTH_SHORT, Gravity.TOP,0,0);
-			Log.e(TAG, "^ No SD card is mounted.");		
+			Log.e(TAG, "^ No SD card is mounted.");
 		}
 	}
 
 	public void showAboutDialogue(){
-		String title = c.getString(R.string.app_name) + " v"+ getAppVersion();
+		String title = mContext.getString(R.string.app_name) + " v"+ getAppVersion();
 
 		StringBuffer sb = new StringBuffer();
 
-		sb.append(c.getString(R.string.app_changelog));
+		sb.append(mContext.getString(R.string.app_changelog));
 		sb.append("\n\n");
-		sb.append(c.getString(R.string.app_notes));
+		sb.append(mContext.getString(R.string.app_notes));
 		sb.append("\n\n");
-		sb.append(c.getString(R.string.app_acknowledgements));
-		sb.append("\n\n");		
-		sb.append(c.getString(R.string.app_copyright));
+		sb.append(mContext.getString(R.string.app_acknowledgements));
+		sb.append("\n\n");
+		sb.append(mContext.getString(R.string.app_copyright));
 
-		MyAlertBox.create(c, sb.toString(), title, c.getString(android.R.string.ok)).show();
+		MyAlertBox.create(mContext, sb.toString(), title, mContext.getString(android.R.string.ok)).show();
 	}
 
 	public void ShowAlert(String title, String text, String button){
-		if (button.equals("")){button = c.getString(android.R.string.ok);}
+		if (button.equals("")){button = mContext.getString(android.R.string.ok);}
 
 		try{
-			AlertDialog.Builder ad = new AlertDialog.Builder(c);
+			AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
 			ad.setTitle( title );
 			ad.setMessage(text);
 
@@ -192,15 +192,15 @@ public class UsefulBits {
 			ad.show();
 		}catch (Exception e){
 			Log.e(TAG, "^ ShowAlert()", e);
-		}	
+		}
 	}
 
 	public void showApplicationMissingAlert(String title, String message, String button1Text, final String marketUri){
-		if (button1Text.equals("")){button1Text = c.getString(android.R.string.ok);}
+		if (button1Text.equals("")){button1Text = mContext.getString(android.R.string.ok);}
 
 		try{
 			// Create the dialog box
-			AlertDialog.Builder alertbox = new AlertDialog.Builder(c);
+			AlertDialog.Builder alertbox = new AlertDialog.Builder(mContext);
 
 			alertbox.setTitle(title);
 			alertbox.setMessage(message);
@@ -211,10 +211,10 @@ public class UsefulBits {
 					try {
 						Intent intent = new Intent(Intent.ACTION_VIEW);
 						intent.setData(Uri.parse(marketUri));
-						c.startActivity(intent);
+						mContext.startActivity(intent);
 					} catch (Exception e){
 						Log.e(TAG, "^ Error opening Market Page : " + e.getMessage());
-						ShowAlert(c.getString(R.string.text_error), c.getString(R.string.text_could_not_go_to_market), c.getString(android.R.string.ok));
+						ShowAlert(mContext.getString(R.string.text_error), mContext.getString(R.string.text_could_not_go_to_market), mContext.getString(android.R.string.ok));
 					}
 				}
 			});
@@ -224,11 +224,11 @@ public class UsefulBits {
 		}catch (Exception e){
 			Log.e(TAG, "^ ShowAlertWithWirelessSettings()", e);
 
-		}	
+		}
 	}
 
 	public void showToast(String message, int duration, int location, int x_offset, int y_offset){
-		Toast toast = Toast.makeText(c.getApplicationContext(), message, duration);
+		Toast toast = Toast.makeText(mContext.getApplicationContext(), message, duration);
 		toast.setGravity(location,x_offset,y_offset);
 		toast.show();
 	}
@@ -245,16 +245,16 @@ public class UsefulBits {
 
 		return sb.toString();
 	}
-	
+
 	public int dipToPixels(int dip) {
-		int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 
-				(float) dip, c.getResources().getDisplayMetrics());
+		int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+				(float) dip, mContext.getResources().getDisplayMetrics());
 		return value;
 	}
 
 	public float dipToPixels(float dip) {
-		float value = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 
-				dip, c.getResources().getDisplayMetrics());
+		float value = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+				dip, mContext.getResources().getDisplayMetrics());
 		return value;
 	}
 }

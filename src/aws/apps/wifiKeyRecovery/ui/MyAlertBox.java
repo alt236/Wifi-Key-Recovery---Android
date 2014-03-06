@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 Alexandros Schillings
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,21 +36,21 @@ public class MyAlertBox {
 	   .create();
 	 }
 
-		public static ScrollView LinkifyText(Context context, String message) 
+		public static ScrollView LinkifyText(Context context, String message)
 		{
-		    ScrollView svMessage = new ScrollView(context); 
-		    TextView tvMessage = new TextView(context);
-		
-		    SpannableString spanText = new SpannableString(message);
-		
+			final ScrollView svMessage = new ScrollView(context);
+			final TextView tvMessage = new TextView(context);
+
+		    final SpannableString spanText = new SpannableString(message);
+
 		    Linkify.addLinks(spanText, Linkify.ALL);
 		    tvMessage.setText(spanText);
 		    tvMessage.setTextColor(context.getResources().getColor(R.color.default_text_color_light));
 		    tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
-		    
+
 		    svMessage.setPadding(14, 2, 10, 12);
 		    svMessage.addView(tvMessage);
-		
+
 		    return svMessage;
 		}
 

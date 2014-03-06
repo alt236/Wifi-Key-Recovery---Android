@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 Alexandros Schillings
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,31 +70,29 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	private static final int DIALOG_GET_PASSWORDS = 1;
 	final String TAG =  this.getClass().getName();
 
-	private NetInfoAdapter niAdapter;
-	private String TimeDate="";
-	private UsefulBits uB;
-	private TextView lblTimeDate;
-	private TextView lblDevice;	
-	private ExecuteThread executeThread;
-	private ProgressDialog executeDialog;
-	private Bundle threadBundle;
-	private TextView tvResultCount;
-	private ListView list;
-	private QuickAction quickAction;
-	private EditText editFilter;
+	private Bundle mThreadBundle;
+	private EditText mEditFilter;
+	private ExecuteThread mExecuteThread;
+	private ListView mList;
+	private NetInfoAdapter mNiAdapter;
+	private ProgressDialog mExecuteDialog;
+	private QuickAction mQuickAction;
+	private String mTimeDate="";
+	private TextView mLabelDevice;
+	private TextView mLabelTimeDate;
+	private TextView mTextViewResultCount;
+	private UsefulBits mUsefulBits;
 
 	private TextWatcher filterTextWatcher = new TextWatcher() {
 
-		public void afterTextChanged(Editable s) {
-		}
+		public void afterTextChanged(Editable s) {}
 
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 		}
 
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
-			if(niAdapter != null){
-				niAdapter.getFilter().filter(s);
+			if(mNiAdapter != null){
+				mNiAdapter.getFilter().filter(s);
 			} else {
 				Log.w(TAG, "^ TextWatcher: Adapter is null!");
 			}
@@ -104,26 +102,26 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	final Handler handler = new Handler() {
 		@SuppressWarnings("unchecked")
 		public void handleMessage(Message msg) {
-			ArrayList<NetInfo> l = new ArrayList<NetInfo>();
 			switch(msg.what){
 
 			case ExecuteThread.WORK_COMPLETED:
 				Log.d(TAG, "^ Worker Thread: WORK_COMPLETED");
+				List<NetInfo> l = new ArrayList<NetInfo>();
 
 				l = (ArrayList<NetInfo>) msg.getData().getSerializable("passwords");
 
 				if (l != null){
 					Collections.sort(l, new NetInfoComperator());
 					populateList(l);
-					list.setTag(l);
+					mList.setTag(l);
 				}
 
-				executeThread.setState(ExecuteThread.STATE_DONE);
+				mExecuteThread.setState(ExecuteThread.STATE_DONE);
 				removeDialog(DIALOG_GET_PASSWORDS);
 				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
 			case ExecuteThread.WORK_INTERUPTED:
-				executeThread.setState(ExecuteThread.STATE_DONE);
+				mExecuteThread.setState(ExecuteThread.STATE_DONE);
 				removeDialog(DIALOG_GET_PASSWORDS);
 				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 				break;
@@ -134,7 +132,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 
 	/** Clears the table and field contents */
 	public void clearInfo() {
-		lblTimeDate.setText("");
+		mLabelTimeDate.setText("");
 	}
 
 	private void copyStringToClipboard(String text){
@@ -146,19 +144,19 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 				msgtext = text;
 			}
 			String message = "'" + msgtext + "' " + getString(R.string.text_copied);
-			uB.showToast(message, Toast.LENGTH_SHORT, Gravity.TOP,0,0);
+			mUsefulBits.showToast(message, Toast.LENGTH_SHORT, Gravity.TOP,0,0);
 
 			ClipboardManager ClipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 			ClipMan.setText(text);
 		}
 	}
 
-	private void getPasswords(){	
+	private void getPasswords(){
 		LockScreenRotation();
 		ExecTerminal et = new ExecTerminal();
 
 		if(et.checkSu()){
-			showDialog(DIALOG_GET_PASSWORDS);	
+			showDialog(DIALOG_GET_PASSWORDS);
 		}else{
 
 			AlertDialog dlg = MyAlertBox.create(this, getString(R.string.root_needed), getString(R.string.app_name), getString(android.R.string.ok));
@@ -185,12 +183,12 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 			break;
 		case Configuration.ORIENTATION_LANDSCAPE:
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			break;    	
+			break;
 		}
 	}
 
 	public void onClearSearchClick(View v){
-		editFilter.setText("");
+		mEditFilter.setText("");
 	}
 
 	/** Called when the activity is first created. */
@@ -199,31 +197,42 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		uB = new UsefulBits(this);
+		mUsefulBits = new UsefulBits(this);
 
 		//setup GUI
-		list = (ListView) findViewById(R.id.list);
-		lblTimeDate = (TextView) findViewById(R.id.tvTime);
-		lblDevice = (TextView) findViewById(R.id.tvDevice);
-		tvResultCount = (TextView) findViewById(R.id.tvResults);
-		editFilter = (EditText) findViewById(R.id.edit_search);
+		mList = (ListView) findViewById(R.id.list);
+		mLabelTimeDate = (TextView) findViewById(R.id.tvTime);
+		mLabelDevice = (TextView) findViewById(R.id.tvDevice);
+		mTextViewResultCount = (TextView) findViewById(R.id.tvResults);
+		mEditFilter = (EditText) findViewById(R.id.edit_search);
 
-		list.setFastScrollEnabled(true);
-		list.setOnItemClickListener(this);
-		list.setDivider( null ); 
-		list.setDividerHeight(uB.dipToPixels(1)); 
+		mList.setFastScrollEnabled(true);
+		mList.setOnItemClickListener(this);
+		mList.setDivider( null );
+		mList.setDividerHeight(mUsefulBits.dipToPixels(1));
 
-		quickAction = new QuickAction(this, QuickAction.ORIENTATION_VERTICAL, QuickAction.COLOUR_LIGHT);
+		mQuickAction = new QuickAction(this, QuickAction.ORIENTATION_VERTICAL, QuickAction.COLOUR_LIGHT);
 
-		ActionItem actionCopyPassword = new ActionItem(ID_COPY_PASSWORD, getString(R.string.label_copy_password), getResources().getDrawable(R.drawable.ic_list_copy));
-		ActionItem actionCopyAll 	  = new ActionItem(ID_COPY_ALL, getString(R.string.label_copy_all), getResources().getDrawable(R.drawable.ic_list_copy2));
-		ActionItem actionShowQr 	  = new ActionItem(ID_SHOW_QRCODE, getString(R.string.label_show_qr_code), getResources().getDrawable(R.drawable.ic_list_barcode));
+		final ActionItem actionCopyPassword = new ActionItem(
+				ID_COPY_PASSWORD,
+				getString(R.string.label_copy_password),
+				getResources().getDrawable(R.drawable.ic_list_copy));
 
-		quickAction.addActionItem(actionCopyPassword);
-		quickAction.addActionItem(actionCopyAll);
-		quickAction.addActionItem(actionShowQr);
+		final ActionItem actionCopyAll = new ActionItem(
+				ID_COPY_ALL,
+				getString(R.string.label_copy_all),
+				getResources().getDrawable(R.drawable.ic_list_copy2));
 
-		quickAction.setOnActionItemClickListener(this);
+		final ActionItem actionShowQr = new ActionItem(
+				ID_SHOW_QRCODE,
+				getString(R.string.label_show_qr_code),
+				getResources().getDrawable(R.drawable.ic_list_barcode));
+
+		mQuickAction.addActionItem(actionCopyPassword);
+		mQuickAction.addActionItem(actionCopyAll);
+		mQuickAction.addActionItem(actionShowQr);
+
+		mQuickAction.setOnActionItemClickListener(this);
 
 		populateInfo();
 	}
@@ -231,12 +240,12 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case DIALOG_GET_PASSWORDS:
-			executeDialog = new ProgressDialog(this);
-			executeDialog.setMessage(getString(R.string.dialogue_text_please_wait));
+			mExecuteDialog = new ProgressDialog(this);
+			mExecuteDialog.setMessage(getString(R.string.dialogue_text_please_wait));
 
-			executeThread = new ExecuteThread(handler, this, threadBundle);
-			executeThread.start();
-			return executeDialog;
+			mExecuteThread = new ExecuteThread(handler, this, mThreadBundle);
+			mExecuteThread.start();
+			return mExecuteDialog;
 		default:
 			return null;
 		}
@@ -251,18 +260,18 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		editFilter.removeTextChangedListener(filterTextWatcher);
+		mEditFilter.removeTextChangedListener(filterTextWatcher);
 	}
 
 	public void onItemClick(AdapterView<?> l, View v, int position, long id){
-		quickAction.show(v); 
+		mQuickAction.show(v);
 	}
 
 	public void onItemClick(QuickAction source, int pos, int actionId) {
-		View view = quickAction.getLastAnchorView();
+		View view = mQuickAction.getLastAnchorView();
 		String text;
 
-		NetInfo ni = (NetInfo) view.getTag();
+		final NetInfo ni = (NetInfo) view.getTag();
 
 		switch (actionId) {
 		case ID_COPY_ALL:
@@ -272,20 +281,20 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 			copyStringToClipboard(ni.getPassword());
 			break;
 		case ID_SHOW_QRCODE:
-			text = ni.getQrcodeString();				
+			text = ni.getQrcodeString();
 
 			if (text.length() > 0) {
-				if (uB.isIntentAvailable(this, "com.google.zxing.client.android.ENCODE")){		
+				if (mUsefulBits.isIntentAvailable(this, "com.google.zxing.client.android.ENCODE")){
 					Intent i = new Intent();
 					i.setAction("com.google.zxing.client.android.ENCODE");
 					i.putExtra ("ENCODE_TYPE", "TEXT_TYPE");
 					i.putExtra ("ENCODE_DATA", text);
-					startActivity(i); 
+					startActivity(i);
 				} else {
-					uB.showApplicationMissingAlert(
-							getString(R.string.component_missing), 
-							getString(R.string.you_need_the_barcode_scanner_application), 
-							getString(R.string.dismiss), 
+					mUsefulBits.showApplicationMissingAlert(
+							getString(R.string.component_missing),
+							getString(R.string.you_need_the_barcode_scanner_application),
+							getString(R.string.dismiss),
 							getString(R.string.zxing_market_url));
 				}
 			}
@@ -296,7 +305,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	/** Handles item selections */
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if(R.id.menu_about == item.getItemId()){
-			uB.showAboutDialogue();
+			mUsefulBits.showAboutDialogue();
 			return true;
 		}
 		else if(R.id.menu_export == item.getItemId()){
@@ -304,11 +313,11 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 			String export_text = "";
 
 			export_text += getString(R.string.label_wifi_passwords) + "\n";
-			export_text += uB.listToString((List<?>) list.getTag()) + "\n\n";
-			export_text += tvResultCount.getText();
+			export_text += mUsefulBits.listToString((List<?>) mList.getTag()) + "\n\n";
+			export_text += mTextViewResultCount.getText();
 
 			myIntent.putExtra("info", export_text);
-			myIntent.putExtra("time", TimeDate);
+			myIntent.putExtra("time", mTimeDate);
 			myIntent.setClass(this, ExportActivity.class);
 			startActivity(myIntent);
 			return true;
@@ -323,14 +332,14 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	@Override
 	protected void onPause() {
 		super.onPause();
-		editFilter.removeTextChangedListener(filterTextWatcher);
+		mEditFilter.removeTextChangedListener(filterTextWatcher);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if(editFilter != null){
-			editFilter.addTextChangedListener(filterTextWatcher);
+		if(mEditFilter != null){
+			mEditFilter.addTextChangedListener(filterTextWatcher);
 		}
 	}
 
@@ -342,11 +351,11 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 
 		final SavedData saved = new SavedData();
 
-		if(list.getTag() != null){
-			saved.setWiFiPasswordList((List<NetInfo>) list.getTag());
+		if(mList.getTag() != null){
+			saved.setWiFiPasswordList((List<NetInfo>) mList.getTag());
 		}
 
-		saved.setDateTime(TimeDate);
+		saved.setDateTime(mTimeDate);
 		return saved;
 	}
 
@@ -355,29 +364,29 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 		final Object data = getLastNonConfigurationInstance();
 
 		if (data == null) { // We need to do everything from scratch!
-			TimeDate = uB.formatDateTime("yyyy-MM-dd-HHmmssZ", new Date());
-			lblTimeDate.setText(TimeDate);
+			mTimeDate = mUsefulBits.formatDateTime("yyyy-MM-dd-HHmmssZ", new Date());
+			mLabelTimeDate.setText(mTimeDate);
 			getPasswords();
 		} else {
 			final SavedData saved = (SavedData) data;
-			TimeDate = saved.getDateTime();
+			mTimeDate = saved.getDateTime();
 
-			lblTimeDate.setText(TimeDate);
+			mLabelTimeDate.setText(mTimeDate);
 			populateList(saved.getWifiPasswordList());
-			list.setTag(saved.getWifiPasswordList());
+			mList.setTag(saved.getWifiPasswordList());
 		}
-		lblDevice.setText(Build.PRODUCT + " " + Build.DEVICE);
+		mLabelDevice.setText(Build.PRODUCT + " " + Build.DEVICE);
 	}
 
 	private void populateList(List<NetInfo> l){
 		if(l.size() > 0 ){
 			findViewById(R.id.filter_segment).setVisibility(View.VISIBLE);
-			niAdapter = new NetInfoAdapter(this, l);
-			tvResultCount.setText(String.valueOf(l.size()));
-			list.setAdapter(niAdapter);
-			editFilter.addTextChangedListener(filterTextWatcher);
+			mNiAdapter = new NetInfoAdapter(this, l);
+			mTextViewResultCount.setText(String.valueOf(l.size()));
+			mList.setAdapter(mNiAdapter);
+			mEditFilter.addTextChangedListener(filterTextWatcher);
 		} else {
-			tvResultCount.setText("0");
+			mTextViewResultCount.setText("0");
 			findViewById(R.id.filter_segment).setVisibility(View.GONE);
 		}
 	}

@@ -1,4 +1,5 @@
-
+/bin
 /gen
-
-/raw
+local.properties
+.idea/
+lint.xml
