@@ -1,2 +1,2 @@
-include ':newQuickAction3D', ':library'
+include ':library'
 include ':app'
