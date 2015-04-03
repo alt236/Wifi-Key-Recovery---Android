@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="default_text_color_light">#FFFFFFFF</color>
+    <color name="default_text_color_dark">#FF000000</color>
+ 
+    <color name="result_row">#FFE5E6E7</color>
+    <color name="result_row_alt">#FFDDDEDF</color> 
+
+    <color name="green">#FF96AE3A</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>

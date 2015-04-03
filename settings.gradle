@@ -1,0 +1,2 @@
+include ':newQuickAction3D'
+include ':app'

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Wifi-Key-Recovery---Android.iml" filepath="$PROJECT_DIR$/Wifi-Key-Recovery---Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/newQuickAction3D/newQuickAction3D.iml" filepath="$PROJECT_DIR$/newQuickAction3D/newQuickAction3D.iml" />
+    </modules>
+  </component>
+</project>
+

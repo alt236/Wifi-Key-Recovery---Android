@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
-    <string-array name="shellCommands">
-		<item>cat /data/misc/wifi/wpa_supplicant.conf</item>		
-		<item>cat /data/wifi/bcm_supp.conf</item>
-		<item>cat /data/misc/wifi/wpa.conf</item>		
-    </string-array>
-</resources>
