@@ -35,7 +35,6 @@ public class MyAlertBox {
 
         Linkify.addLinks(spanText, Linkify.ALL);
         tvMessage.setText(spanText);
-        tvMessage.setTextColor(context.getResources().getColor(R.color.default_text_color_light));
         tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
 
         svMessage.setPadding(14, 2, 10, 12);
