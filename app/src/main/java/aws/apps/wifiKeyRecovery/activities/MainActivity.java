@@ -15,12 +15,6 @@
  ******************************************************************************/
 package aws.apps.wifiKeyRecovery.activities;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -49,10 +43,17 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.adapters.NetInfoAdapter;
-import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.containers.SavedData;
+import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.ui.IconFriendlyPopupMenu;
 import aws.apps.wifiKeyRecovery.ui.IconFriendlyPopupMenu.OnMenuItemClickListener;
 import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
@@ -63,329 +64,340 @@ import aws.apps.wifiKeyRecovery.util.UsefulBits;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends FragmentActivity implements OnItemClickListener, OnMenuItemClickListener {
-	private static final int DIALOG_GET_PASSWORDS = 1;
-	final String TAG = this.getClass().getName();
+    private static final int DIALOG_GET_PASSWORDS = 1;
+    final String TAG = this.getClass().getName();
+    final Handler handler = new Handler() {
+        @Override
+        @SuppressWarnings("unchecked")
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
 
-	private Bundle mThreadBundle;
-	private EditText mEditFilter;
-	private ExecuteThread mExecuteThread;
-	private IconFriendlyPopupMenu mPopup;
-	private ListView mList;
-	private WifiNetworkInfo mCurrentNetinfo;
-	private NetInfoAdapter mNiAdapter;
-	private ProgressDialog mExecuteDialog;
-	private String mTimeDate = "";
-	private TextView mTextViewResultCount;
-	private UsefulBits mUsefulBits;
+                case ExecuteThread.WORK_COMPLETED:
+                    Log.d(TAG, "^ Worker Thread: WORK_COMPLETED");
 
-	private TextWatcher filterTextWatcher = new TextWatcher() {
+                    final List<WifiNetworkInfo> list = (ArrayList<WifiNetworkInfo>) msg.getData().getSerializable("passwords");
 
-		@Override
-		public void afterTextChanged(Editable s) {}
+                    if (list != null) {
+                        Collections.sort(list, new NetInfoComperator());
+                        populateList(list);
+                        mList.setTag(list);
+                    }
 
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                    mExecuteThread.setState(ExecuteThread.STATE_DONE);
+                    removeDialog(DIALOG_GET_PASSWORDS);
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
-		@Override
-		public void onTextChanged(CharSequence s, int start, int before, int count) {
-			if (mNiAdapter != null) {
-				mNiAdapter.getFilter().filter(s);
-			} else {
-				Log.w(TAG, "^ TextWatcher: Adapter is null!");
-			}
-		}
-	};
+                case ExecuteThread.WORK_INTERUPTED:
+                    mExecuteThread.setState(ExecuteThread.STATE_DONE);
+                    removeDialog(DIALOG_GET_PASSWORDS);
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                    break;
+            }
 
-	final Handler handler = new Handler() {
-		@Override
-		@SuppressWarnings("unchecked")
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
+        }
+    };
+    private Bundle mThreadBundle;
+    private EditText mEditFilter;
+    private ExecuteThread mExecuteThread;
+    private IconFriendlyPopupMenu mPopup;
+    private ListView mList;
+    private WifiNetworkInfo mCurrentNetinfo;
+    private NetInfoAdapter mNiAdapter;
+    private TextWatcher filterTextWatcher = new TextWatcher() {
 
-			case ExecuteThread.WORK_COMPLETED:
-				Log.d(TAG, "^ Worker Thread: WORK_COMPLETED");
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
 
-				final List<WifiNetworkInfo> list = (ArrayList<WifiNetworkInfo>) msg.getData().getSerializable("passwords");
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
-				if (list != null) {
-					Collections.sort(list, new NetInfoComperator());
-					populateList(list);
-					mList.setTag(list);
-				}
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (mNiAdapter != null) {
+                mNiAdapter.getFilter().filter(s);
+            } else {
+                Log.w(TAG, "^ TextWatcher: Adapter is null!");
+            }
+        }
+    };
+    private ProgressDialog mExecuteDialog;
+    private String mTimeDate = "";
+    private TextView mTextViewResultCount;
+    private UsefulBits mUsefulBits;
 
-				mExecuteThread.setState(ExecuteThread.STATE_DONE);
-				removeDialog(DIALOG_GET_PASSWORDS);
-				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    // Sets screen rotation as fixed to current rotation setting
+    private void LockScreenRotation() {
+        // Stop the screen orientation changing during an event
+        switch (this.getResources().getConfiguration().orientation) {
+            case Configuration.ORIENTATION_PORTRAIT:
+                this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                break;
+            case Configuration.ORIENTATION_LANDSCAPE:
+                this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                break;
+        }
+    }
 
-			case ExecuteThread.WORK_INTERUPTED:
-				mExecuteThread.setState(ExecuteThread.STATE_DONE);
-				removeDialog(DIALOG_GET_PASSWORDS);
-				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-				break;
-			}
+    /**
+     * Clears the table and field contents
+     */
+    public void clearInfo() {
 
-		}
-	};
+    }
 
-	/** Clears the table and field contents */
-	public void clearInfo() {
+    private void copyStringToClipboard(String text) {
+        if (text.length() > 0) {
+            String msgtext = "";
+            if (text.length() > 150) {
+                msgtext = text.substring(0, 150) + "...";
+            } else {
+                msgtext = text;
+            }
 
-	}
+            final String message = "'" + msgtext + "' " + getString(R.string.text_copied);
+            mUsefulBits.showToast(message, Toast.LENGTH_SHORT, Gravity.TOP, 0, 0);
 
-	private void copyStringToClipboard(String text) {
-		if (text.length() > 0) {
-			String msgtext = "";
-			if (text.length() > 150) {
-				msgtext = text.substring(0, 150) + "...";
-			} else {
-				msgtext = text;
-			}
+            final ClipboardManager ClipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipMan.setText(text);
+        }
+    }
 
-			final String message = "'" + msgtext + "' " + getString(R.string.text_copied);
-			mUsefulBits.showToast(message, Toast.LENGTH_SHORT, Gravity.TOP, 0, 0);
+    private void getPasswords() {
+        LockScreenRotation();
+        final ExecTerminal et = new ExecTerminal();
 
-			final ClipboardManager ClipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-			ClipMan.setText(text);
-		}
-	}
+        if (et.checkSu()) {
+            showDialog(DIALOG_GET_PASSWORDS);
+        } else {
 
-	private void getPasswords() {
-		LockScreenRotation();
-		final ExecTerminal et = new ExecTerminal();
+            AlertDialog dlg = MyAlertBox.create(this, getString(R.string.root_needed), getString(R.string.app_name), getString(android.R.string.ok));
 
-		if (et.checkSu()) {
-			showDialog(DIALOG_GET_PASSWORDS);
-		} else {
+            dlg.setOnDismissListener(new OnDismissListener() {
 
-			AlertDialog dlg = MyAlertBox.create(this, getString(R.string.root_needed), getString(R.string.app_name), getString(android.R.string.ok));
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    MainActivity.this.finish();
+                }
+            });
 
-			dlg.setOnDismissListener(new OnDismissListener() {
+            dlg.show();
+        }
+    }
 
-				@Override
-				public void onDismiss(DialogInterface dialog) {
-					MainActivity.this.finish();
-				}
-			});
+    public void onClearSearchClick(View v) {
+        mEditFilter.setText("");
+    }
 
-			dlg.show();
-		}
-	}
+    /**
+     * Called when the activity is first created.
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-	// Sets screen rotation as fixed to current rotation setting
-	private void LockScreenRotation() {
-		// Stop the screen orientation changing during an event
-		switch (this.getResources().getConfiguration().orientation){
-		case Configuration.ORIENTATION_PORTRAIT:
-			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-			break;
-		case Configuration.ORIENTATION_LANDSCAPE:
-			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			break;
-		}
-	}
+        mUsefulBits = new UsefulBits(this);
 
-	public void onClearSearchClick(View v) {
-		mEditFilter.setText("");
-	}
+        // setup GUI
+        mEditFilter = (EditText) findViewById(R.id.edit_search);
+        mList = (ListView) findViewById(R.id.list);
+        mTextViewResultCount = (TextView) findViewById(R.id.tvResults);
 
-	/** Called when the activity is first created. */
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+        mList.setFastScrollEnabled(true);
+        mList.setOnItemClickListener(this);
+        mList.setDivider(null);
+        mList.setDividerHeight(mUsefulBits.dipToPixels(1));
+        mList.setFastScrollEnabled(true);
+        populateInfo();
+    }
 
-		mUsefulBits = new UsefulBits(this);
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DIALOG_GET_PASSWORDS:
+                mExecuteDialog = new ProgressDialog(this);
+                mExecuteDialog.setMessage(getString(R.string.dialogue_text_please_wait));
 
-		// setup GUI
-		mEditFilter = (EditText) findViewById(R.id.edit_search);
-		mList = (ListView) findViewById(R.id.list);
-		mTextViewResultCount = (TextView) findViewById(R.id.tvResults);
+                mExecuteThread = new ExecuteThread(handler, this, mThreadBundle);
+                mExecuteThread.start();
+                return mExecuteDialog;
+            default:
+                return null;
+        }
+    }
 
-		mList.setFastScrollEnabled(true);
-		mList.setOnItemClickListener(this);
-		mList.setDivider(null);
-		mList.setDividerHeight(mUsefulBits.dipToPixels(1));
-		mList.setFastScrollEnabled(true);
-		populateInfo();
-	}
+    /**
+     * Creates the menu items
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.menu_home, menu);
+        return true;
+    }
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch (id) {
-		case DIALOG_GET_PASSWORDS:
-			mExecuteDialog = new ProgressDialog(this);
-			mExecuteDialog.setMessage(getString(R.string.dialogue_text_please_wait));
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mEditFilter.removeTextChangedListener(filterTextWatcher);
+    }
 
-			mExecuteThread = new ExecuteThread(handler, this, mThreadBundle);
-			mExecuteThread.start();
-			return mExecuteDialog;
-		default:
-			return null;
-		}
-	}
+    @Override
+    public void onItemClick(AdapterView<?> l, View v, int position, long id) {
+        mPopup = new IconFriendlyPopupMenu(this, v, true);
+        mPopup.setOnMenuItemClickListener(this);
 
-	/** Creates the menu items */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		new MenuInflater(this).inflate(R.menu.menu_home, menu);
-		return true;
-	}
+        mCurrentNetinfo = null;
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		mEditFilter.removeTextChangedListener(filterTextWatcher);
-	}
+        if (v.getTag() != null) {
+            if (v.getTag() instanceof WifiNetworkInfo) {
+                mCurrentNetinfo = (WifiNetworkInfo) v.getTag();
+            }
+        }
 
-	@Override
-	public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-		mPopup = new IconFriendlyPopupMenu(this, v, true);
-		mPopup.setOnMenuItemClickListener(this);
+        PopupMenuActionHelper.addCopyAll(this, mPopup);
+        PopupMenuActionHelper.addCopyPassword(this, mPopup);
+        PopupMenuActionHelper.addShowQrCode(this, mPopup);
 
-		mCurrentNetinfo = null;
+        mPopup.show();
+    }
 
-		if(v.getTag() != null){
-			if(v.getTag() instanceof WifiNetworkInfo){
-				mCurrentNetinfo = (WifiNetworkInfo) v.getTag();
-			}
-		}
+    @Override
+    public boolean onMenuItemClick(MenuItem paramMenuItem) {
+        final int actionId = paramMenuItem.getItemId();
+        String text;
 
-		PopupMenuActionHelper.addCopyAll(this, mPopup);
-		PopupMenuActionHelper.addCopyPassword(this, mPopup);
-		PopupMenuActionHelper.addShowQrCode(this, mPopup);
+        final boolean res;
+        switch (actionId) {
+            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_ALL_AS_TEXT:
+                copyStringToClipboard(mCurrentNetinfo.toString());
+                res = true;
+                break;
+            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_PASSWORD:
+                copyStringToClipboard(mCurrentNetinfo.getPassword());
+                res = true;
+                break;
+            case PopupMenuActionHelper.ACTION_ID_NETWORK_SHOW_QRCODE:
+                text = mCurrentNetinfo.getQrcodeString();
 
-		mPopup.show();
-	}
+                if (text.length() > 0) {
+                    final Intent intent = new Intent(this, QrCodeDisplayActivity.class);
+                    intent.putExtra(
+                            QrCodeDisplayActivity.EXTRAS_NETWORK_INFO,
+                            mCurrentNetinfo);
 
-	@Override
-	public boolean onMenuItemClick(MenuItem paramMenuItem) {
-		final int actionId = paramMenuItem.getItemId();
-		String text;
+                    startActivity(intent);
+                }
+                res = true;
+                break;
+            default:
+                res = false;
+        }
 
-		final boolean res;
-		switch (actionId) {
-		case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_ALL_AS_TEXT:
-			copyStringToClipboard(mCurrentNetinfo.toString());
-			res = true;
-			break;
-		case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_PASSWORD:
-			copyStringToClipboard(mCurrentNetinfo.getPassword());
-			res = true;
-			break;
-		case PopupMenuActionHelper.ACTION_ID_NETWORK_SHOW_QRCODE:
-			text = mCurrentNetinfo.getQrcodeString();
+        return res;
+    }
 
-			if (text.length() > 0) {
-				final Intent intent = new Intent(this, QrCodeDisplayActivity.class);
-				intent.putExtra(
-						QrCodeDisplayActivity.EXTRAS_NETWORK_INFO,
-						mCurrentNetinfo);
+    /**
+     * Handles item selections
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_about:
+                mUsefulBits.showAboutDialogue();
+                return true;
+            case R.id.menu_export:
+                Intent myIntent = new Intent();
+                String export_text = "";
+                export_text += getString(R.string.label_wifi_passwords) + "\n";
+                export_text += mUsefulBits.listToString((List<WifiNetworkInfo>) mList.getTag()) + "\n\n";
+                export_text += mTextViewResultCount.getText();
+                myIntent.putExtra("info", export_text);
+                myIntent.putExtra("time", mTimeDate);
+                myIntent.setClass(this, ExportActivity.class);
+                startActivity(myIntent);
+                return true;
+            case R.id.menu_refresh:
+                refreshInfo();
+                return true;
+        }
+        return false;
+    }
 
-				startActivity(intent);
-			}
-			res = true;
-			break;
-		default:
-			res = false;
-		}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mEditFilter.removeTextChangedListener(filterTextWatcher);
+    }
 
-		return res;
-	}
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mEditFilter != null) {
+            mEditFilter.addTextChangedListener(filterTextWatcher);
+        }
+    }
 
-	/** Handles item selections */
-	@SuppressWarnings("unchecked")
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.menu_about:
-			mUsefulBits.showAboutDialogue();
-			return true;
-		case R.id.menu_export:
-			Intent myIntent = new Intent();
-			String export_text = "";
-			export_text += getString(R.string.label_wifi_passwords) + "\n";
-			export_text += mUsefulBits.listToString((List<WifiNetworkInfo>) mList.getTag()) + "\n\n";
-			export_text += mTextViewResultCount.getText();
-			myIntent.putExtra("info", export_text);
-			myIntent.putExtra("time", mTimeDate);
-			myIntent.setClass(this, ExportActivity.class);
-			startActivity(myIntent);
-			return true;
-		case R.id.menu_refresh:
-			refreshInfo();
-			return true;
-		}
-		return false;
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        Log.d(TAG, "^ onRetainNonConfigurationInstance()");
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		mEditFilter.removeTextChangedListener(filterTextWatcher);
-	}
+        final SavedData saved = new SavedData();
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if (mEditFilter != null) {
-			mEditFilter.addTextChangedListener(filterTextWatcher);
-		}
-	}
+        if (mList.getTag() != null) {
+            saved.setWiFiPasswordList((List<WifiNetworkInfo>) mList.getTag());
+        }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public Object onRetainCustomNonConfigurationInstance() {
-		Log.d(TAG, "^ onRetainNonConfigurationInstance()");
+        saved.setDateTime(mTimeDate);
+        return saved;
+    }
 
-		final SavedData saved = new SavedData();
+    /**
+     * Retrieves and displays info
+     */
+    private void populateInfo() {
+        final Object data = getLastCustomNonConfigurationInstance();
 
-		if (mList.getTag() != null) {
-			saved.setWiFiPasswordList((List<WifiNetworkInfo>) mList.getTag());
-		}
+        if (data == null) { // We need to do everything from scratch!
+            mTimeDate = mUsefulBits.formatDateTime("yyyy-MM-dd-HHmmssZ", new Date());
+            getPasswords();
+        } else {
+            final SavedData saved = (SavedData) data;
+            mTimeDate = saved.getDateTime();
 
-		saved.setDateTime(mTimeDate);
-		return saved;
-	}
+            populateList(saved.getWifiPasswordList());
+            mList.setTag(saved.getWifiPasswordList());
+        }
+    }
 
-	/** Retrieves and displays info */
-	private void populateInfo() {
-		final Object data = getLastCustomNonConfigurationInstance();
+    private void populateList(List<WifiNetworkInfo> l) {
+        if (l.size() > 0) {
+            findViewById(R.id.filter_segment).setVisibility(View.VISIBLE);
+            mNiAdapter = new NetInfoAdapter(this, l);
+            mTextViewResultCount.setText(String.valueOf(l.size()));
+            mList.setAdapter(mNiAdapter);
+            mEditFilter.addTextChangedListener(filterTextWatcher);
+        } else {
+            mTextViewResultCount.setText("0");
+            findViewById(R.id.filter_segment).setVisibility(View.GONE);
+        }
+    }
 
-		if (data == null) { // We need to do everything from scratch!
-			mTimeDate = mUsefulBits.formatDateTime("yyyy-MM-dd-HHmmssZ", new Date());
-			getPasswords();
-		} else {
-			final SavedData saved = (SavedData) data;
-			mTimeDate = saved.getDateTime();
+    /**
+     * Convenience function combining clearInfo and getInfo
+     */
+    public void refreshInfo() {
+        clearInfo();
+        populateInfo();
+    }
 
-			populateList(saved.getWifiPasswordList());
-			mList.setTag(saved.getWifiPasswordList());
-		}
-	}
-
-	private void populateList(List<WifiNetworkInfo> l) {
-		if (l.size() > 0) {
-			findViewById(R.id.filter_segment).setVisibility(View.VISIBLE);
-			mNiAdapter = new NetInfoAdapter(this, l);
-			mTextViewResultCount.setText(String.valueOf(l.size()));
-			mList.setAdapter(mNiAdapter);
-			mEditFilter.addTextChangedListener(filterTextWatcher);
-		} else {
-			mTextViewResultCount.setText("0");
-			findViewById(R.id.filter_segment).setVisibility(View.GONE);
-		}
-	}
-
-	/** Convenience function combining clearInfo and getInfo */
-	public void refreshInfo() {
-		clearInfo();
-		populateInfo();
-	}
-
-	public class NetInfoComperator implements Comparator<WifiNetworkInfo> {
-		@Override
-		public int compare(WifiNetworkInfo o1, WifiNetworkInfo o2) {
-			return o1.toString().compareToIgnoreCase(o2.toString());
-		}
-	}
+    public class NetInfoComperator implements Comparator<WifiNetworkInfo> {
+        @Override
+        public int compare(WifiNetworkInfo o1, WifiNetworkInfo o2) {
+            return o1.toString().compareToIgnoreCase(o2.toString());
+        }
+    }
 }

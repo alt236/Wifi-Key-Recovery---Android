@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2011 Alexandros Schillings
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,47 +19,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SavedData {
-	final String TAG =  this.getClass().getName();
-	
-	private List<WifiNetworkInfo> tWifiPasswords = new ArrayList<WifiNetworkInfo>();
-	
-	private String dateTime = "";
-	private boolean areWeRooted = false;
-	private int textSize;
-	
-	public void setTextSize(int size) {
-		textSize = size;
-	}
-	
-	public int getTextSize() {
-		return textSize;
-	}
-	
-	public String getDateTime() {
-		return dateTime;
-	}
+    final String TAG = this.getClass().getName();
+
+    private List<WifiNetworkInfo> tWifiPasswords = new ArrayList<WifiNetworkInfo>();
+
+    private String dateTime = "";
+    private boolean areWeRooted = false;
+    private int textSize;
+
+    public boolean getAreWeRooted() {
+        return areWeRooted;
+    }
+
+    public void setAreWeRooted(boolean areWeRooted) {
+        this.areWeRooted = areWeRooted;
+    }
+
+    public String getDateTime() {
+        return dateTime;
+    }
 
 
-	public void setDateTime(String dateTime) {
-		this.dateTime = dateTime;
-	}
+    public void setDateTime(String dateTime) {
+        this.dateTime = dateTime;
+    }
 
+    public int getTextSize() {
+        return textSize;
+    }
 
-	public List<WifiNetworkInfo> getWifiPasswordList() {
-		return tWifiPasswords;
-	}
+    public void setTextSize(int size) {
+        textSize = size;
+    }
 
-	public boolean getAreWeRooted() {
-		return areWeRooted;
-	}
+    public List<WifiNetworkInfo> getWifiPasswordList() {
+        return tWifiPasswords;
+    }
 
-
-	public void setAreWeRooted(boolean areWeRooted) {
-		this.areWeRooted = areWeRooted;
-	}
-	
-	
-	public void setWiFiPasswordList(List<WifiNetworkInfo> l){
-		tWifiPasswords = l;
-	}	
+    public void setWiFiPasswordList(List<WifiNetworkInfo> l) {
+        tWifiPasswords = l;
+    }
 }

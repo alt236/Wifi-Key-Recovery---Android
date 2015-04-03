@@ -15,15 +15,6 @@
  ******************************************************************************/
 package aws.apps.wifiKeyRecovery.util;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -38,225 +29,238 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.Toast;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 
 public class UsefulBits {
-	final String TAG =  this.getClass().getName();
-	private Context mContext;
+    final String TAG = this.getClass().getName();
+    private Context mContext;
 
-	public UsefulBits(Context cntx) {
-		Log.d(TAG, "^ Object created");
-		mContext = cntx;
-	}
+    public UsefulBits(Context cntx) {
+        Log.d(TAG, "^ Object created");
+        mContext = cntx;
+    }
 
-	public static boolean validateIPv4Address(String address) {
-		try {
-			java.net.Inet4Address.getByName(address);
-			return true;
-		} catch(Exception e) {
-			return false;
-		}
-	}
+    public void ShowAlert(String title, String text, String button) {
+        if (button.equals("")) {
+            button = mContext.getString(android.R.string.ok);
+        }
 
-	public static boolean validateIPv6Address(String address) {
-		try {
-			java.net.Inet6Address.getByName(address);
-			return true;
-		} catch(Exception e) {
-			return false;
-		}
-	}
+        try {
+            AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
+            ad.setTitle(title);
+            ad.setMessage(text);
 
+            ad.setPositiveButton(button, null);
+            ad.show();
+        } catch (Exception e) {
+            Log.e(TAG, "^ ShowAlert()", e);
+        }
+    }
 
-	public Calendar convertMillisToDate(long millis){
-		final Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(millis);
-		return calendar;
-	}
+    public Calendar convertMillisToDate(long millis) {
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(millis);
+        return calendar;
+    }
 
-	public String formatDateTime(String formatString, Date d){
-		final Format formatter = new SimpleDateFormat(formatString);
-		return formatter.format(d);
-	}
+    public int dipToPixels(int dip) {
+        int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                (float) dip, mContext.getResources().getDisplayMetrics());
+        return value;
+    }
 
-	public String getAppVersion(){
-		PackageInfo pi;
-		try {
-			pi = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
-			return pi.versionName;
-		} catch (NameNotFoundException e) {
-			return "";
-		}
+    public float dipToPixels(float dip) {
+        float value = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                dip, mContext.getResources().getDisplayMetrics());
+        return value;
+    }
 
-	}
+    public String formatDateTime(String formatString, Date d) {
+        final Format formatter = new SimpleDateFormat(formatString);
+        return formatter.format(d);
+    }
 
-	public boolean isActivityAvailable(String packageName, String className) {
-		final PackageManager packageManager = mContext.getPackageManager();
-		final Intent intent = new Intent();
-		intent.setClassName(packageName, className);
+    public String getAppVersion() {
+        PackageInfo pi;
+        try {
+            pi = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
+            return pi.versionName;
+        } catch (NameNotFoundException e) {
+            return "";
+        }
 
-		List<ResolveInfo> list =
-				packageManager.queryIntentActivities(intent,
-						PackageManager.MATCH_DEFAULT_ONLY);
+    }
 
-		if (list.size() > 0) {
-			Log.d(TAG, "^ Activity exists:" + className);
-		}
+    public boolean isActivityAvailable(String packageName, String className) {
+        final PackageManager packageManager = mContext.getPackageManager();
+        final Intent intent = new Intent();
+        intent.setClassName(packageName, className);
 
-		return list.size() > 0;
-	}
+        List<ResolveInfo> list =
+                packageManager.queryIntentActivities(intent,
+                        PackageManager.MATCH_DEFAULT_ONLY);
 
-	public boolean isIntentAvailable(Context context, String action) {
-		final PackageManager packageManager = context.getPackageManager();
-		final Intent intent = new Intent(action);
-		List<ResolveInfo> resolveInfo =
-				packageManager.queryIntentActivities(intent,
-						PackageManager.MATCH_DEFAULT_ONLY);
-		if (resolveInfo.size() > 0) {
-			return true;
-		}
-		return false;
-	}
+        if (list.size() > 0) {
+            Log.d(TAG, "^ Activity exists:" + className);
+        }
 
-	public boolean isOnline() {
-		try{
-			ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return list.size() > 0;
+    }
 
-			if (cm != null) {
-				return cm.getActiveNetworkInfo().isConnected();
-			} else {
-				return false;
-			}
+    public boolean isIntentAvailable(Context context, String action) {
+        final PackageManager packageManager = context.getPackageManager();
+        final Intent intent = new Intent(action);
+        List<ResolveInfo> resolveInfo =
+                packageManager.queryIntentActivities(intent,
+                        PackageManager.MATCH_DEFAULT_ONLY);
+        if (resolveInfo.size() > 0) {
+            return true;
+        }
+        return false;
+    }
 
-		}catch(Exception e){
-			return false;
-		}
-	}
+    public boolean isOnline() {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-	public void saveToFile(String fileName, File directory, String contents){
-		Log.d(TAG, "^ Saving file.");
+            if (cm != null) {
+                return cm.getActiveNetworkInfo().isConnected();
+            } else {
+                return false;
+            }
 
-		if (android.os.Environment.getExternalStorageState().equals(
-				android.os.Environment.MEDIA_MOUNTED)){
-			try {
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
-				if (directory.canWrite()){
-					File gpxfile = new File(directory, fileName);
-					FileWriter gpxwriter = new FileWriter(gpxfile);
-					BufferedWriter out = new BufferedWriter(gpxwriter);
-					out.write(contents);
-					out.close();
-					Log.d(TAG, "^ Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'");
-					showToast("Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'",
-							Toast.LENGTH_SHORT, Gravity.TOP,0,0);
-				}
+    public String listToString(List<WifiNetworkInfo> list) {
+        StringBuffer sb = new StringBuffer();
+        int cnt = 0;
 
-			} catch (Exception e) {
-				showToast("Could not write file:\n+ e.getMessage()",
-						Toast.LENGTH_SHORT, Gravity.TOP,0,0);
-				Log.e(TAG, "^ Could not write file " + e.getMessage());
-			}
+        for (WifiNetworkInfo obj : list) {
+            cnt += 1;
+            sb.append("#" + cnt + ":\n");
+            sb.append(obj.getDisplayedString() + "\n");
+        }
 
-		}else{
-			showToast("No SD card is mounted...", Toast.LENGTH_SHORT, Gravity.TOP,0,0);
-			Log.e(TAG, "^ No SD card is mounted.");
-		}
-	}
+        return sb.toString();
+    }
 
-	public void showAboutDialogue(){
-		String title = mContext.getString(R.string.app_name) + " v"+ getAppVersion();
+    public void saveToFile(String fileName, File directory, String contents) {
+        Log.d(TAG, "^ Saving file.");
 
-		StringBuffer sb = new StringBuffer();
+        if (android.os.Environment.getExternalStorageState().equals(
+                android.os.Environment.MEDIA_MOUNTED)) {
+            try {
 
-		sb.append(mContext.getString(R.string.app_changelog));
-		sb.append("\n\n");
-		sb.append(mContext.getString(R.string.app_notes));
-		sb.append("\n\n");
-		sb.append(mContext.getString(R.string.app_acknowledgements));
-		sb.append("\n\n");
-		sb.append(mContext.getString(R.string.app_copyright));
+                if (directory.canWrite()) {
+                    File gpxfile = new File(directory, fileName);
+                    FileWriter gpxwriter = new FileWriter(gpxfile);
+                    BufferedWriter out = new BufferedWriter(gpxwriter);
+                    out.write(contents);
+                    out.close();
+                    Log.d(TAG, "^ Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'");
+                    showToast("Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'",
+                            Toast.LENGTH_SHORT, Gravity.TOP, 0, 0);
+                }
 
-		MyAlertBox.create(mContext, sb.toString(), title, mContext.getString(android.R.string.ok)).show();
-	}
+            } catch (Exception e) {
+                showToast("Could not write file:\n+ e.getMessage()",
+                        Toast.LENGTH_SHORT, Gravity.TOP, 0, 0);
+                Log.e(TAG, "^ Could not write file " + e.getMessage());
+            }
 
-	public void ShowAlert(String title, String text, String button){
-		if (button.equals("")){button = mContext.getString(android.R.string.ok);}
+        } else {
+            showToast("No SD card is mounted...", Toast.LENGTH_SHORT, Gravity.TOP, 0, 0);
+            Log.e(TAG, "^ No SD card is mounted.");
+        }
+    }
 
-		try{
-			AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
-			ad.setTitle( title );
-			ad.setMessage(text);
+    public void showAboutDialogue() {
+        String title = mContext.getString(R.string.app_name) + " v" + getAppVersion();
 
-			ad.setPositiveButton( button, null );
-			ad.show();
-		}catch (Exception e){
-			Log.e(TAG, "^ ShowAlert()", e);
-		}
-	}
+        StringBuffer sb = new StringBuffer();
 
-	public void showApplicationMissingAlert(String title, String message, String button1Text, final String marketUri){
-		if (button1Text.equals("")){button1Text = mContext.getString(android.R.string.ok);}
+        sb.append(mContext.getString(R.string.app_changelog));
+        sb.append("\n\n");
+        sb.append(mContext.getString(R.string.app_notes));
+        sb.append("\n\n");
+        sb.append(mContext.getString(R.string.app_acknowledgements));
+        sb.append("\n\n");
+        sb.append(mContext.getString(R.string.app_copyright));
 
-		try{
-			// Create the dialog box
-			AlertDialog.Builder alertbox = new AlertDialog.Builder(mContext);
+        MyAlertBox.create(mContext, sb.toString(), title, mContext.getString(android.R.string.ok)).show();
+    }
 
-			alertbox.setTitle(title);
-			alertbox.setMessage(message);
+    public void showApplicationMissingAlert(String title, String message, String button1Text, final String marketUri) {
+        if (button1Text.equals("")) {
+            button1Text = mContext.getString(android.R.string.ok);
+        }
 
-			alertbox.setPositiveButton(button1Text, null);
-			alertbox.setNegativeButton("Market", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface arg0, int arg1) {
-					try {
-						Intent intent = new Intent(Intent.ACTION_VIEW);
-						intent.setData(Uri.parse(marketUri));
-						mContext.startActivity(intent);
-					} catch (Exception e){
-						Log.e(TAG, "^ Error opening Market Page : " + e.getMessage());
-						ShowAlert(mContext.getString(R.string.text_error), mContext.getString(R.string.text_could_not_go_to_market), mContext.getString(android.R.string.ok));
-					}
-				}
-			});
+        try {
+            // Create the dialog box
+            AlertDialog.Builder alertbox = new AlertDialog.Builder(mContext);
 
-			alertbox.show();
+            alertbox.setTitle(title);
+            alertbox.setMessage(message);
 
-		}catch (Exception e){
-			Log.e(TAG, "^ ShowAlertWithWirelessSettings()", e);
+            alertbox.setPositiveButton(button1Text, null);
+            alertbox.setNegativeButton("Market", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface arg0, int arg1) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setData(Uri.parse(marketUri));
+                        mContext.startActivity(intent);
+                    } catch (Exception e) {
+                        Log.e(TAG, "^ Error opening Market Page : " + e.getMessage());
+                        ShowAlert(mContext.getString(R.string.text_error), mContext.getString(R.string.text_could_not_go_to_market), mContext.getString(android.R.string.ok));
+                    }
+                }
+            });
 
-		}
-	}
+            alertbox.show();
 
-	public void showToast(String message, int duration, int location, int x_offset, int y_offset){
-		Toast toast = Toast.makeText(mContext.getApplicationContext(), message, duration);
-		toast.setGravity(location,x_offset,y_offset);
-		toast.show();
-	}
+        } catch (Exception e) {
+            Log.e(TAG, "^ ShowAlertWithWirelessSettings()", e);
 
-	public String listToString(List<WifiNetworkInfo> list) {
-		StringBuffer sb = new StringBuffer();
-		int cnt = 0;
+        }
+    }
 
-		for(WifiNetworkInfo obj : list){
-			cnt +=1;
-			sb.append("#" + cnt +":\n");
-			sb.append(obj.getDisplayedString() + "\n");
-		}
+    public void showToast(String message, int duration, int location, int x_offset, int y_offset) {
+        Toast toast = Toast.makeText(mContext.getApplicationContext(), message, duration);
+        toast.setGravity(location, x_offset, y_offset);
+        toast.show();
+    }
 
-		return sb.toString();
-	}
+    public static boolean validateIPv4Address(String address) {
+        try {
+            java.net.Inet4Address.getByName(address);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
-	public int dipToPixels(int dip) {
-		int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-				(float) dip, mContext.getResources().getDisplayMetrics());
-		return value;
-	}
-
-	public float dipToPixels(float dip) {
-		float value = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-				dip, mContext.getResources().getDisplayMetrics());
-		return value;
-	}
+    public static boolean validateIPv6Address(String address) {
+        try {
+            java.net.Inet6Address.getByName(address);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

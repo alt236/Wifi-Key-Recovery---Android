@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="vertical">
 
     <!-- == Header == -->
 
@@ -11,13 +11,13 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_edit_before_export"
-            android:textColor="@color/default_text_color_light" />
+            android:textColor="@color/default_text_color_light"/>
     </LinearLayout>
 
     <!-- == Bottom == -->
@@ -27,7 +27,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal" >
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/buttonshare"
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="50"
             android:drawableLeft="@android:drawable/ic_menu_share"
-            android:text="@string/label_export_share" />
+            android:text="@string/label_export_share"/>
 
         <Button
             android:id="@+id/buttontosd"
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="50"
             android:drawableLeft="@android:drawable/ic_menu_upload"
-            android:text="@string/label_export_to_sd" />
+            android:text="@string/label_export_to_sd"/>
 
         <Button
             android:id="@+id/buttoncloseexport"
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="50"
             android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
-            android:text="@string/label_export_close" />
+            android:text="@string/label_export_close"/>
     </LinearLayout>
 
     <!-- == Main == -->
@@ -62,18 +62,18 @@
         android:layout_height="fill_parent"
         android:layout_above="@+id/export_buttonsbit"
         android:layout_below="@+id/export_headerbit"
-        android:fillViewport="true" >
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_margin="0px"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <EditText
                 android:id="@+id/fld_export_text"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </ScrollView>
 

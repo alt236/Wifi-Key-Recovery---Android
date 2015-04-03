@@ -37,7 +37,7 @@
     <string name="label_device">Device:</string>
     <string name="label_time">Time:</string>
     <string name="label_wifi_passwords">___WiFi_Passwords________</string>
-    <string formatted="false" name="root_needed">This application needs root.\n\n•If you do not know what root is, see here: http://en.wikipedia.org/wiki/Rooting_%28Android_OS%29 \n\n•To find out how to root your device, have a look around here: http://forum.xda-developers.com.\n\n•Apologies, but I cannot help you root your device.</string>
+    <string name="root_needed" formatted="false">This application needs root.\n\n•If you do not know what root is, see here: http://en.wikipedia.org/wiki/Rooting_%28Android_OS%29 \n\n•To find out how to root your device, have a look around here: http://forum.xda-developers.com.\n\n•Apologies, but I cannot help you root your device.</string>
     <string name="label_share_dialogue_title">Share with others</string>
     <string name="label_edit_before_export">Edit text before exporting:</string>
     <string name="label_export_to_sd">To SD</string>

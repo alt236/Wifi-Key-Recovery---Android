@@ -15,237 +15,235 @@
  ******************************************************************************/
 package aws.apps.wifiKeyRecovery.util;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import android.content.Context;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal.ExecResult;
 
 public class ExecuteThread extends Thread {
-	private final static String WIFI_BLOCK_START = "network={";
-	private final static String WIFI_BLOCK_END = "}";
-	private final static int RESULT_TITLE_LENGTH = 14;
+    public final static int STATE_DONE = 0;
+    public final static int STATE_RUNNING = 1;
+    public final static int WORK_COMPLETED = 50;
+    public final static int WORK_INTERUPTED = 51;
+    private final static String WIFI_BLOCK_START = "network={";
+    private final static String WIFI_BLOCK_END = "}";
+    private final static int RESULT_TITLE_LENGTH = 14;
+    private final String TAG = this.getClass().getName();
 
-	public final static int STATE_DONE = 0;
-	public final static int STATE_RUNNING = 1;
+    private Handler mHandler;
+    private Context mContext;
+    private int mState;
+    private boolean mIsRooted;
 
-	public final static int WORK_COMPLETED = 50;
-	public final static int WORK_INTERUPTED = 51;
+    public ExecuteThread(Handler h,
+                         Context ctx,
+                         Bundle b) {
 
-	private final String TAG = this.getClass().getName();
+        mHandler = h;
+        mContext = ctx;
+        mIsRooted = new ExecTerminal().checkSu();
+    }
 
-	private Handler mHandler;
-	private Context mContext;
-	private int mState;
-	private boolean mIsRooted;
+    private String appendBlanks(String text, int size) {
+        String res = text.trim();
 
-	public ExecuteThread(Handler h,
-			Context ctx,
-			Bundle b) {
+        if (res.length() < size) {
+            final int change = size - res.length();
 
-		mHandler = h;
-		mContext = ctx;
-		mIsRooted = new ExecTerminal().checkSu();
-	}
+            for (int i = 0; i < change; i++) {
+                res += " ";
+            }
 
-	private String appendBlanks(String text, int size) {
-		String res = text.trim();
+            return res;
+        } else {
+            return res;
+        }
 
-		if (res.length() < size) {
-			final int change = size - res.length();
+    }
 
-			for (int i = 0; i < change; i++) {
-				res += " ";
-			}
+    private String execute(String cmd) {
+        final ExecTerminal et = new ExecTerminal();
+        final ExecResult res;
 
-			return res;
-		} else {
-			return res;
-		}
+        if (mIsRooted) {
+            res = et.execSu(cmd);
+        } else {
+            res = et.exec(cmd);
+        }
 
-	}
+        return res.getStdOut();
+    }
 
-	private String execute(String cmd) {
-		final ExecTerminal et = new ExecTerminal();
-		final ExecResult res;
+    private ArrayList<WifiNetworkInfo> getWiFiPasswordList() {
+        final String[] shellCommands = mContext.getResources().getStringArray(R.array.shellCommands);
+        ArrayList<WifiNetworkInfo> l = new ArrayList<WifiNetworkInfo>();
 
-		if (mIsRooted) {
-			res = et.execSu(cmd);
-		} else {
-			res = et.exec(cmd);
-		}
+        for (int i = 0; i < shellCommands.length; i++) {
+            String result = execute(shellCommands[i]);
+            if (result.trim().length() > 0) {
+                l = parseWifiPasswords(l, result);
+                return l;
+            }
+        }
 
-		return res.getStdOut();
-	}
+        l.add(new WifiNetworkInfo(mContext.getString(R.string.could_not_find_password_files)));
+        return l;
+    }
 
-	private ArrayList<WifiNetworkInfo> getWiFiPasswordList() {
-		final String[] shellCommands = mContext.getResources().getStringArray(R.array.shellCommands);
-		ArrayList<WifiNetworkInfo> l = new ArrayList<WifiNetworkInfo>();
+    private ArrayList<WifiNetworkInfo> parseWifiPasswords(ArrayList<WifiNetworkInfo> l, String wifiPasswordString) {
+        final String passwordBlocks[] = wifiPasswordString.split("\n\n");
+        final Map<String, String> passKeys = new HashMap<String, String>();
+        final Map<String, String> settings = new HashMap<String, String>();
 
-		for (int i = 0; i < shellCommands.length; i++) {
-			String result = execute(shellCommands[i]);
-			if (result.trim().length() > 0) {
-				l = parseWifiPasswords(l, result);
-				return l;
-			}
-		}
+        String ssid = "";
+        String password = ""; // only one, for the qr code;
+        int type = -1;
 
-		l.add(new WifiNetworkInfo(mContext.getString(R.string.could_not_find_password_files)));
-		return l;
-	}
+        if (wifiPasswordString.length() <= 0) {
+            return l;
+        }
 
-	private ArrayList<WifiNetworkInfo> parseWifiPasswords(ArrayList<WifiNetworkInfo> l, String wifiPasswordString) {
-		final String passwordBlocks[] = wifiPasswordString.split("\n\n");
-		final Map<String, String> passKeys = new HashMap<String, String>();
-		final Map<String, String> settings = new HashMap<String, String>();
+        for (int i = 0; i < passwordBlocks.length; i++) {
+            String block = passwordBlocks[i].trim();
 
-		String ssid = "";
-		String password = ""; // only one, for the qr code;
-		int type = -1;
+            if (block.startsWith(WIFI_BLOCK_START) && block.endsWith(WIFI_BLOCK_END)) {
+                passKeys.clear();
+                settings.clear();
+                ssid = "";
 
-		if (wifiPasswordString.length() <= 0) {
-			return l;
-		}
+                String blockLines[] = block.split("\n");
 
-		for (int i = 0; i < passwordBlocks.length; i++) {
-			String block = passwordBlocks[i].trim();
+                for (int j = 0; j < blockLines.length; j++) {
+                    String line = blockLines[j].trim();
 
-			if (block.startsWith(WIFI_BLOCK_START) && block.endsWith(WIFI_BLOCK_END)) {
-				passKeys.clear();
-				settings.clear();
-				ssid = "";
+                    if (line.startsWith("ssid=")) {
+                        ssid = line.replace("ssid=", "");
 
-				String blockLines[] = block.split("\n");
+                        // Network Keys:
+                    } else if (line.startsWith("psk=")) {
+                        passKeys.put("psk", line.replace("psk=", ""));
+                        password = line.replace("psk=", "");
+                        type = WifiNetworkInfo.TYPE_WPA;
+                    } else if (line.startsWith("wep_key0=")) {
+                        passKeys.put("WEP Key 0", line.replace("wep_key0=", ""));
+                        password = line.replace("psk=", "");
+                        type = WifiNetworkInfo.TYPE_WEP;
+                    } else if (line.startsWith("wep_key1=")) {
+                        passKeys.put("WEP Key 1", line.replace("wep_key1=", ""));
+                    } else if (line.startsWith("wep_key2=")) {
+                        passKeys.put("WEP Key 2", line.replace("wep_key2=", ""));
+                    } else if (line.startsWith("wep_key3=")) {
+                        passKeys.put("WEP Key 3", line.replace("wep_key3=", ""));
+                    } else if (line.startsWith("password=")) {
+                        passKeys.put("Password", line.replace("password=", ""));
+                        password = line.replace("psk=", "");
 
-				for (int j = 0; j < blockLines.length; j++) {
-					String line = blockLines[j].trim();
+                        // Settings:
+                    } else if (line.startsWith("key_mgmt=")) {
+                        settings.put("Key MGMT", line.replace("key_mgmt=", ""));
+                    } else if (line.startsWith("group=")) {
+                        settings.put("Group", line.replace("group=", ""));
+                    } else if (line.startsWith("auth_alg=")) {
+                        settings.put("Algorithm", line.replace("auth_alg=", ""));
+                    } else if (line.startsWith("eap=")) {
+                        settings.put("EAP", line.replace("eap=", ""));
+                    } else if (line.startsWith("identity=")) {
+                        settings.put("Identity", line.replace("identity=", ""));
+                    } else if (line.startsWith("anonymous_identity=")) {
+                        settings.put("Anonymous ID", line.replace("anonymous_identity=", ""));
+                    } else if (line.startsWith("phase2=")) {
+                        settings.put("Phase2 Auth", line.replace("phase2=", ""));
+                    }
+                }
 
-					if (line.startsWith("ssid=")) {
-						ssid = line.replace("ssid=", "");
+                String result = "";
 
-						// Network Keys:
-					} else if (line.startsWith("psk=")) {
-						passKeys.put("psk", line.replace("psk=", ""));
-						password = line.replace("psk=", "");
-						type = WifiNetworkInfo.TYPE_WPA;
-					} else if (line.startsWith("wep_key0=")) {
-						passKeys.put("WEP Key 0", line.replace("wep_key0=", ""));
-						password = line.replace("psk=", "");
-						type = WifiNetworkInfo.TYPE_WEP;
-					} else if (line.startsWith("wep_key1=")) {
-						passKeys.put("WEP Key 1", line.replace("wep_key1=", ""));
-					} else if (line.startsWith("wep_key2=")) {
-						passKeys.put("WEP Key 2", line.replace("wep_key2=", ""));
-					} else if (line.startsWith("wep_key3=")) {
-						passKeys.put("WEP Key 3", line.replace("wep_key3=", ""));
-					} else if (line.startsWith("password=")) {
-						passKeys.put("Password", line.replace("password=", ""));
-						password = line.replace("psk=", "");
+                if (!passKeys.isEmpty()) {
+                    if (ssid.length() > 0) {
+                        result += appendBlanks("SSID:", RESULT_TITLE_LENGTH) + ssid + "\n";
+                    }
 
-						// Settings:
-					} else if (line.startsWith("key_mgmt=")) {
-						settings.put("Key MGMT", line.replace("key_mgmt=", ""));
-					} else if (line.startsWith("group=")) {
-						settings.put("Group", line.replace("group=", ""));
-					} else if (line.startsWith("auth_alg=")) {
-						settings.put("Algorithm", line.replace("auth_alg=", ""));
-					} else if (line.startsWith("eap=")) {
-						settings.put("EAP", line.replace("eap=", ""));
-					} else if (line.startsWith("identity=")) {
-						settings.put("Identity", line.replace("identity=", ""));
-					} else if (line.startsWith("anonymous_identity=")) {
-						settings.put("Anonymous ID", line.replace("anonymous_identity=", ""));
-					} else if (line.startsWith("phase2=")) {
-						settings.put("Phase2 Auth", line.replace("phase2=", ""));
-					}
-				}
+                    Iterator<Entry<String, String>> it = passKeys.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
+                        result += appendBlanks(pairs.getKey() + ":", RESULT_TITLE_LENGTH) + pairs.getValue() + "\n";
+                    }
 
-				String result = "";
+                    it = settings.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
+                        result += appendBlanks(pairs.getKey() + ":", RESULT_TITLE_LENGTH) + pairs.getValue() + "\n";
+                    }
 
-				if (!passKeys.isEmpty()) {
-					if (ssid.length() > 0) {
-						result += appendBlanks("SSID:", RESULT_TITLE_LENGTH) + ssid + "\n";
-					}
+                }
+                if (result.trim().length() > 0) {
+                    l.add(new WifiNetworkInfo(result.trim(), ssid, password, type));
+                }
+            }
+        }
+        // l.add("Protected Networks: " + protectedNetworkCount);
+        return l;
+    }
 
-					Iterator<Entry<String, String>> it = passKeys.entrySet().iterator();
-					while (it.hasNext()) {
-						Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
-						result += appendBlanks(pairs.getKey() + ":", RESULT_TITLE_LENGTH) + pairs.getValue() + "\n";
-					}
+    @Override
+    public void run() {
+        mState = STATE_RUNNING;
+        Bundle b = new Bundle();
+        Message msg = new Message();
 
-					it = settings.entrySet().iterator();
-					while (it.hasNext()) {
-						Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
-						result += appendBlanks(pairs.getKey() + ":", RESULT_TITLE_LENGTH) + pairs.getValue() + "\n";
-					}
+        Log.d(TAG, "^ Thread: Thread Started");
 
-				}
-				if (result.trim().length() > 0) {
-					l.add(new WifiNetworkInfo(result.trim(), ssid, password, type));
-				}
-			}
-		}
-		// l.add("Protected Networks: " + protectedNetworkCount);
-		return l;
-	}
+        while (mState == STATE_RUNNING) {
+            try {
+                Thread.sleep(100);
+                b.clear();
 
-	@Override
-	public void run() {
-		mState = STATE_RUNNING;
-		Bundle b = new Bundle();
-		Message msg = new Message();
+                b.putParcelableArrayList("passwords", getWiFiPasswordList());
 
-		Log.d(TAG, "^ Thread: Thread Started");
+                msg = new Message();
+                msg.what = WORK_COMPLETED;
+                msg.setData(b);
+                mHandler.sendMessage(msg);
 
-		while (mState == STATE_RUNNING) {
-			try {
-				Thread.sleep(100);
-				b.clear();
+                this.setState(STATE_DONE);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "^ Thread: Thread Interrupted");
+                b.clear();
+                int what = WORK_INTERUPTED;
+                msg.what = what;
+                msg.setData(b);
+                mHandler.sendMessage(msg);
+                this.setState(STATE_DONE);
+            } catch (Exception e) {
+                Log.e(TAG, "^ Thread: exception " + e.getMessage());
+                msg = new Message();
+                b.clear();
+                int what = WORK_INTERUPTED;
+                msg.what = what;
+                msg.setData(b);
+                mHandler.sendMessage(msg);
+                this.setState(STATE_DONE);
+            }
+        }
+        Log.d(TAG, "^ Thread: Thread Exited");
+    }
 
-				b.putParcelableArrayList("passwords", getWiFiPasswordList());
-
-				msg = new Message();
-				msg.what = WORK_COMPLETED;
-				msg.setData(b);
-				mHandler.sendMessage(msg);
-
-				this.setState(STATE_DONE);
-			} catch (InterruptedException e) {
-				Log.e(TAG, "^ Thread: Thread Interrupted");
-				b.clear();
-				int what = WORK_INTERUPTED;
-				msg.what = what;
-				msg.setData(b);
-				mHandler.sendMessage(msg);
-				this.setState(STATE_DONE);
-			} catch (Exception e) {
-				Log.e(TAG, "^ Thread: exception " + e.getMessage());
-				msg = new Message();
-				b.clear();
-				int what = WORK_INTERUPTED;
-				msg.what = what;
-				msg.setData(b);
-				mHandler.sendMessage(msg);
-				this.setState(STATE_DONE);
-			}
-		}
-		Log.d(TAG, "^ Thread: Thread Exited");
-	}
-
-	/*
-	 * sets the current state for the thread, used to stop the thread
-	 */
-	public void setState(int state) {
-		mState = state;
-	}
-	// //////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*
+     * sets the current state for the thread, used to stop the thread
+     */
+    public void setState(int state) {
+        mState = state;
+    }
+    // //////////////////////////////////////////////////////////////////////////////////////////////////////
 }

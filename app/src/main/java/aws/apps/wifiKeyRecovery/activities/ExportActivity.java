@@ -15,8 +15,6 @@
  ******************************************************************************/
 package aws.apps.wifiKeyRecovery.activities;
 
-import java.io.File;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,82 +23,85 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import java.io.File;
+
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
 
 public class ExportActivity extends FragmentActivity {
-	final String TAG =  this.getClass().getName();
+    final String TAG = this.getClass().getName();
 
-	private EditText mFldInfo;
-	private Button mBtnShare;
-	private Button mBtnToSd;
-	private Button mBtnClose;
-	private String mTimeDate;
-	private UsefulBits mUsefulBits;
+    private EditText mFldInfo;
+    private Button mBtnShare;
+    private Button mBtnToSd;
+    private Button mBtnClose;
+    private String mTimeDate;
+    private UsefulBits mUsefulBits;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG, "^ Intent started");
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "^ Intent started");
 
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_export);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_export);
 
-		final Bundle extras = getIntent().getExtras();
-		mUsefulBits = new UsefulBits(getApplicationContext());
+        final Bundle extras = getIntent().getExtras();
+        mUsefulBits = new UsefulBits(getApplicationContext());
 
-		mFldInfo = (EditText) findViewById(R.id.fld_export_text);
-		mBtnShare = (Button) findViewById(R.id.buttonshare);
-		mBtnToSd = (Button) findViewById(R.id.buttontosd);
-		mBtnClose = (Button) findViewById(R.id.buttoncloseexport);
+        mFldInfo = (EditText) findViewById(R.id.fld_export_text);
+        mBtnShare = (Button) findViewById(R.id.buttonshare);
+        mBtnToSd = (Button) findViewById(R.id.buttontosd);
+        mBtnClose = (Button) findViewById(R.id.buttoncloseexport);
 
-		if(extras !=null){
-			mTimeDate = extras.getString("time");
-			mFldInfo.setText(getString(R.string.text_wifi_password_recovery)  + " @ " + mTimeDate +"\n\n");
-			mFldInfo.append(extras.getString("info"));
-		}
+        if (extras != null) {
+            mTimeDate = extras.getString("time");
+            mFldInfo.setText(getString(R.string.text_wifi_password_recovery) + " @ " + mTimeDate + "\n\n");
+            mFldInfo.append(extras.getString("info"));
+        }
 
-		mBtnShare.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				shareResults();
-			}
-		});
+        mBtnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareResults();
+            }
+        });
 
-		mBtnToSd.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
+        mBtnToSd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-				try {
-					final File folder = Environment.getExternalStorageDirectory();
-					final String filename = "wifikeyrecovery_" + mTimeDate + ".txt";
-					final String contents = mFldInfo.getText().toString();
-					mUsefulBits.saveToFile(filename, folder, contents);
-				} catch (Exception e) {
-					Log.e(TAG, "^ " + e.getMessage());
-				}
-			}
-		});
+                try {
+                    final File folder = Environment.getExternalStorageDirectory();
+                    final String filename = "wifikeyrecovery_" + mTimeDate + ".txt";
+                    final String contents = mFldInfo.getText().toString();
+                    mUsefulBits.saveToFile(filename, folder, contents);
+                } catch (Exception e) {
+                    Log.e(TAG, "^ " + e.getMessage());
+                }
+            }
+        });
 
-		mBtnClose.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
-	}
+        mBtnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
 
-	private void shareResults(){
-		final Intent t = new Intent(Intent.ACTION_SEND);
-		final String text = mFldInfo.getText().toString();
-		final String subject =  getString(R.string.text_wifi_password_recovery)  + " @ " + mTimeDate;
+    private void shareResults() {
+        final Intent t = new Intent(Intent.ACTION_SEND);
+        final String text = mFldInfo.getText().toString();
+        final String subject = getString(R.string.text_wifi_password_recovery) + " @ " + mTimeDate;
 
-		t.setType("text/plain");
-		t.putExtra(Intent.EXTRA_TEXT, text);
-		t.putExtra(Intent.EXTRA_SUBJECT, subject);
-		t.addCategory(Intent.CATEGORY_DEFAULT);
-		final Intent share = Intent.createChooser(
-				t,
-				getString(R.string.label_share_dialogue_title));
-		startActivity(share);
-	}
+        t.setType("text/plain");
+        t.putExtra(Intent.EXTRA_TEXT, text);
+        t.putExtra(Intent.EXTRA_SUBJECT, subject);
+        t.addCategory(Intent.CATEGORY_DEFAULT);
+        final Intent share = Intent.createChooser(
+                t,
+                getString(R.string.label_share_dialogue_title));
+        startActivity(share);
+    }
 }

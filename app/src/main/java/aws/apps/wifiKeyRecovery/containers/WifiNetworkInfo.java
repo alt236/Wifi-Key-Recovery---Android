@@ -19,144 +19,142 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class WifiNetworkInfo implements Parcelable{
-	private static final String DOUBLE_QUOTE = "\"";
+public class WifiNetworkInfo implements Parcelable {
+    public final static int TYPE_UNKNOWN = -1;
+    public final static int TYPE_NO_ENC = 0;
+    public final static int TYPE_WEP = 1;
+    public final static int TYPE_WPA = 2;
+    public static final Parcelable.Creator<WifiNetworkInfo> CREATOR = new Parcelable.Creator<WifiNetworkInfo>() {
+        @Override
+        public WifiNetworkInfo createFromParcel(Parcel in) {
+            return new WifiNetworkInfo(in);
+        }
 
-	public final static int TYPE_UNKNOWN = -1;
-	public final static int TYPE_NO_ENC = 0;
-	public final static int TYPE_WEP = 1;
-	public final static int TYPE_WPA = 2;
+        @Override
+        public WifiNetworkInfo[] newArray(int size) {
+            return new WifiNetworkInfo[size];
+        }
+    };
+    private static final String DOUBLE_QUOTE = "\"";
+    private final String mDisplayedString;
+    private final String mSsid;
+    private final String mNetTypeAsString;
+    private final String mPassword;
+    private final int mNetType;
 
-	private final String mDisplayedString;
-	private final String mSsid;
-	private final String mNetTypeAsString;
-	private final String mPassword;
-	private final int mNetType;
+    public WifiNetworkInfo(Parcel in) {
+        final Bundle b = in.readBundle(getClass().getClassLoader());
 
-	public static final Parcelable.Creator<WifiNetworkInfo> CREATOR = new Parcelable.Creator<WifiNetworkInfo>() {
-		@Override
-		public WifiNetworkInfo createFromParcel(Parcel in) { return new WifiNetworkInfo(in); }
+        mDisplayedString = b.getString("EXTRA_DIPLAYED_STRING");
+        mSsid = b.getString("EXTRA_SSID");
+        mNetTypeAsString = b.getString("EXTRA_NET_TYPE");
+        mPassword = b.getString("EXTRA_PASSWORD");
+        mNetType = b.getInt("EXTRA_NET_TYPE");
+    }
 
-		@Override
-		public WifiNetworkInfo[] newArray(int size) { return new WifiNetworkInfo[size]; }
-	};
+    public WifiNetworkInfo(String displayedString) {
+        this(displayedString, "", "", -1);
+    }
 
-	public WifiNetworkInfo(Parcel in) {
-		final Bundle b = in.readBundle(getClass().getClassLoader());
+    public WifiNetworkInfo(String displayedString, String ssid, String password, int netType) {
+        mDisplayedString = displayedString;
+        mSsid = ssid;
+        mPassword = password;
+        mNetType = netType;
+        mNetTypeAsString = getNetworkTypeAsString(netType);
+    }
 
-		mDisplayedString = b.getString("EXTRA_DIPLAYED_STRING");
-		mSsid = b.getString("EXTRA_SSID");
-		mNetTypeAsString = b.getString("EXTRA_NET_TYPE");
-		mPassword = b.getString("EXTRA_PASSWORD");
-		mNetType = b.getInt("EXTRA_NET_TYPE");
-	}
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
-	public WifiNetworkInfo(String displayedString) {
-		this(displayedString, "", "", -1);
-	}
+    public String getDisplayedString() {
+        return mDisplayedString;
+    }
 
-	public WifiNetworkInfo(String displayedString, String ssid, String password, int netType){
-		mDisplayedString = displayedString;
-		mSsid = ssid;
-		mPassword = password;
-		mNetType = netType;
-		mNetTypeAsString = getNetworkTypeAsString(netType);
-	}
+    public int getNetType() {
+        return mNetType;
+    }
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
+    public String getPassword() {
+        return stripLeadingAndTrailingQuotes(mPassword);
+    }
 
-	public String getDisplayedString(){
-		return mDisplayedString;
-	}
+    public String getQrPassword() {
+        return mPassword;
+    }
 
-	public int getNetType() {
-		return mNetType;
-	}
+    public String getQrSsid() {
+        return mSsid;
+    }
 
-	public String getPassword(){
-		return stripLeadingAndTrailingQuotes(mPassword);
-	}
+    public String getQrcodeString() {
+        if (!(mSsid != null && mSsid.length() > 0)) {
+            return "";
+        }
 
-	public String getQrcodeString(){
-		if(!(mSsid != null && mSsid.length()>0)){
-			return "";
-		}
+        StringBuilder sb = new StringBuilder();
+        sb.append("WIFI:");
+        sb.append("S:" + mSsid + ";");
+        sb.append("T:" + mNetTypeAsString + ";");
 
-		StringBuilder sb = new StringBuilder();
-		sb.append("WIFI:");
-		sb.append("S:" + mSsid + ";");
-		sb.append("T:" + mNetTypeAsString + ";");
+        if (mPassword.length() > 0) {
+            sb.append("P:" + mPassword + ";");
+        }
 
-		if(mPassword.length() > 0){
-			sb.append("P:" + mPassword + ";");
-		}
+        sb.append(";");
+        return sb.toString();
+    }
 
-		sb.append(";");
-		return sb.toString();
-	}
+    @Override
+    public String toString() {
+        return "NetInfo [mDisplayedString=" + mDisplayedString + ", mQrSsid=" + mSsid + ", mQrNetType=" + mNetTypeAsString + ", mQrPassword=" + mPassword + ", mNetType=" + mNetType + "]";
+    }
 
-	public String getQrPassword() {
-		return mPassword;
-	}
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        final Bundle b = new Bundle(getClass().getClassLoader());
 
+        b.putString("EXTRA_DIPLAYED_STRING", mDisplayedString);
+        b.putString("EXTRA_SSID", mSsid);
+        b.putString("EXTRA_NET_TYPE", mNetTypeAsString);
+        b.putString("EXTRA_PASSWORD", mPassword);
+        b.putInt("EXTRA_NET_TYPE", mNetType);
 
+        dest.writeBundle(b);
+    }
 
-	public String getQrSsid() {
-		return mSsid;
-	}
+    private static String getNetworkTypeAsString(int netType) {
+        final String result;
 
+        switch (netType) {
+            case TYPE_WEP:
+                result = "WEP";
+                break;
+            case TYPE_WPA:
+                result = "WPA";
+                break;
+            default:
+                result = "nopass";
+        }
 
-	@Override
-	public String toString() {
-		return "NetInfo [mDisplayedString=" + mDisplayedString + ", mQrSsid=" + mSsid + ", mQrNetType=" + mNetTypeAsString + ", mQrPassword=" + mPassword + ", mNetType=" + mNetType + "]";
-	}
+        return result;
+    }
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		final Bundle b = new Bundle(getClass().getClassLoader());
+    private static String stripLeadingAndTrailingQuotes(String str) {
+        if (str == null || str.length() <= 0) {
+            return "";
+        }
 
-		b.putString("EXTRA_DIPLAYED_STRING", mDisplayedString);
-		b.putString("EXTRA_SSID",mSsid);
-		b.putString("EXTRA_NET_TYPE",mNetTypeAsString);
-		b.putString("EXTRA_PASSWORD",mPassword);
-		b.putInt("EXTRA_NET_TYPE",mNetType);
+        if (str.startsWith(DOUBLE_QUOTE)) {
+            str = str.substring(1, str.length());
+        }
 
-		dest.writeBundle(b);
-	}
+        if (str.endsWith(DOUBLE_QUOTE)) {
+            str = str.substring(0, str.length() - 1);
+        }
 
-	private static String getNetworkTypeAsString(int netType){
-		final String result;
-
-		switch (netType) {
-		case TYPE_WEP:
-			result = "WEP";
-			break;
-		case TYPE_WPA:
-			result = "WPA";
-			break;
-		default:
-			result = "nopass";
-		}
-
-		return result;
-	}
-
-	private static String stripLeadingAndTrailingQuotes(String str){
-		if(str == null || str.length() <=0){
-			return "";
-		}
-
-		if (str.startsWith(DOUBLE_QUOTE)){
-			str = str.substring(1, str.length());
-		}
-
-		if (str.endsWith(DOUBLE_QUOTE)){
-			str = str.substring(0, str.length() - 1);
-		}
-
-		return str;
-	}
+        return str;
+    }
 }
