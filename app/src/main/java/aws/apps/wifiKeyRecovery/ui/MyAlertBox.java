@@ -23,11 +23,9 @@ import android.text.util.Linkify;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import aws.apps.wifiKeyRecovery.R;
-
 public class MyAlertBox {
 
-    public static ScrollView LinkifyText(Context context, String message) {
+    private static ScrollView LinkifyText(Context context, String message) {
         final ScrollView svMessage = new ScrollView(context);
         final TextView tvMessage = new TextView(context);
 

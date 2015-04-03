@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_refresh"
         android:icon="@drawable/ic_action_refresh"
-        android:showAsAction="always"
+        app:showAsAction="always"
         android:title="@string/label_menu_refresh"/>
     <item
         android:id="@+id/menu_export"
         android:icon="@drawable/ic_action_export"
-        android:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/label_menu_export"/>
     <item
         android:id="@+id/menu_about"
         android:icon="@drawable/ic_menu_info"
-        android:showAsAction="never"
+        app:showAsAction="never"
         android:title="@string/label_menu_about"/>
 
 </menu>

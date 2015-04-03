@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class ExecTerminal {
-    final String TAG = this.getClass().getName();
+    private final String TAG = this.getClass().getName();
 
     public boolean checkSu() {
         final ExecTerminal et = new ExecTerminal();
@@ -38,8 +38,6 @@ public class ExecTerminal {
         Log.w(TAG, "^ could not get root.");
         return false;
     }
-
-    ;
 
     public ExecResult exec(String cmd) {
         Log.d(TAG, "^ exec(): '" + cmd + "'");

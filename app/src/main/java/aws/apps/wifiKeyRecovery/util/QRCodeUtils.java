@@ -68,10 +68,7 @@ public class QRCodeUtils {
     }
 
     private static boolean has(String value) {
-        if (value == null) {
-            return false;
-        }
+        return value != null;
 
-        return true;
     }
 }

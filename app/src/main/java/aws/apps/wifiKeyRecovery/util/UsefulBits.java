@@ -44,7 +44,7 @@ import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 
 public class UsefulBits {
-    final String TAG = this.getClass().getName();
+    private final String TAG = this.getClass().getName();
     private Context mContext;
 
     public UsefulBits(Context cntx) {
@@ -125,10 +125,7 @@ public class UsefulBits {
         List<ResolveInfo> resolveInfo =
                 packageManager.queryIntentActivities(intent,
                         PackageManager.MATCH_DEFAULT_ONLY);
-        if (resolveInfo.size() > 0) {
-            return true;
-        }
-        return false;
+        return resolveInfo.size() > 0;
     }
 
     public boolean isOnline() {

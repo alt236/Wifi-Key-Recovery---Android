@@ -30,12 +30,9 @@ import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
 
 public class ExportActivity extends FragmentActivity {
-    final String TAG = this.getClass().getName();
+    private final String TAG = this.getClass().getName();
 
     private EditText mFldInfo;
-    private Button mBtnShare;
-    private Button mBtnToSd;
-    private Button mBtnClose;
     private String mTimeDate;
     private UsefulBits mUsefulBits;
 
@@ -50,9 +47,9 @@ public class ExportActivity extends FragmentActivity {
         mUsefulBits = new UsefulBits(getApplicationContext());
 
         mFldInfo = (EditText) findViewById(R.id.fld_export_text);
-        mBtnShare = (Button) findViewById(R.id.buttonshare);
-        mBtnToSd = (Button) findViewById(R.id.buttontosd);
-        mBtnClose = (Button) findViewById(R.id.buttoncloseexport);
+        Button mBtnShare = (Button) findViewById(R.id.buttonshare);
+        Button mBtnToSd = (Button) findViewById(R.id.buttontosd);
+        Button mBtnClose = (Button) findViewById(R.id.buttoncloseexport);
 
         if (extras != null) {
             mTimeDate = extras.getString("time");

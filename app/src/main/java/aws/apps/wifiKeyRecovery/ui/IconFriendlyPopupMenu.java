@@ -41,7 +41,7 @@ public class IconFriendlyPopupMenu implements MenuBuilder.Callback, MenuPresente
         return this.mMenu;
     }
 
-    public MenuInflater getMenuInflater() {
+    private MenuInflater getMenuInflater() {
         return new SupportMenuInflater(this.mContext);
     }
 

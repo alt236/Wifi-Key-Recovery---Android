@@ -99,7 +99,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
 
         if (convertView == null) {
             final LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = vi.inflate(R.layout.list_item_network_info, null);
+            convertView = vi.inflate(R.layout.list_item_network_info, parent);
         }
 
         if (netInfo != null) {

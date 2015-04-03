@@ -19,17 +19,16 @@ import aws.apps.wifiKeyRecovery.util.QRCodeUtils;
 
 public class QrCodeDisplayActivity extends FragmentActivity implements OnGlobalLayoutListener {
     public final static String EXTRAS_NETWORK_INFO = "aws.apps.wifiKeyRecovery.activities.EXTRAS_NETWORK_INFO";
-    final String TAG = this.getClass().getName();
+    private final String TAG = this.getClass().getName();
     private ImageView mIvQrCode;
     private WifiNetworkInfo mNetworkInfo;
-    private TextView mTextViewSsid;
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_qrcode);
         mIvQrCode = (ImageView) findViewById(R.id.qrcode);
-        mTextViewSsid = (TextView) findViewById(R.id.ssid);
+        TextView mTextViewSsid = (TextView) findViewById(R.id.ssid);
 
         mNetworkInfo = getIntent().getExtras().getParcelable(EXTRAS_NETWORK_INFO);
 

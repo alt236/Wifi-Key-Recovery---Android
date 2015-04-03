@@ -65,8 +65,8 @@ import aws.apps.wifiKeyRecovery.util.UsefulBits;
 @SuppressWarnings("deprecation")
 public class MainActivity extends FragmentActivity implements OnItemClickListener, OnMenuItemClickListener {
     private static final int DIALOG_GET_PASSWORDS = 1;
-    final String TAG = this.getClass().getName();
-    final Handler handler = new Handler() {
+    private final String TAG = this.getClass().getName();
+    private final Handler handler = new Handler() {
         @Override
         @SuppressWarnings("unchecked")
         public void handleMessage(Message msg) {
@@ -99,7 +99,6 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
     private Bundle mThreadBundle;
     private EditText mEditFilter;
     private ExecuteThread mExecuteThread;
-    private IconFriendlyPopupMenu mPopup;
     private ListView mList;
     private WifiNetworkInfo mCurrentNetinfo;
     private NetInfoAdapter mNiAdapter;
@@ -122,7 +121,6 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
             }
         }
     };
-    private ProgressDialog mExecuteDialog;
     private String mTimeDate = "";
     private TextView mTextViewResultCount;
     private UsefulBits mUsefulBits;
@@ -138,13 +136,6 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
                 this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 break;
         }
-    }
-
-    /**
-     * Clears the table and field contents
-     */
-    public void clearInfo() {
-
     }
 
     private void copyStringToClipboard(String text) {
@@ -217,7 +208,7 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
     protected Dialog onCreateDialog(int id) {
         switch (id) {
             case DIALOG_GET_PASSWORDS:
-                mExecuteDialog = new ProgressDialog(this);
+                ProgressDialog mExecuteDialog = new ProgressDialog(this);
                 mExecuteDialog.setMessage(getString(R.string.dialogue_text_please_wait));
 
                 mExecuteThread = new ExecuteThread(handler, this, mThreadBundle);
@@ -245,7 +236,7 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
 
     @Override
     public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-        mPopup = new IconFriendlyPopupMenu(this, v, true);
+        IconFriendlyPopupMenu mPopup = new IconFriendlyPopupMenu(this, v, true);
         mPopup.setOnMenuItemClickListener(this);
 
         mCurrentNetinfo = null;
@@ -389,12 +380,11 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
     /**
      * Convenience function combining clearInfo and getInfo
      */
-    public void refreshInfo() {
-        clearInfo();
+    private void refreshInfo() {
         populateInfo();
     }
 
-    public class NetInfoComperator implements Comparator<WifiNetworkInfo> {
+    private class NetInfoComperator implements Comparator<WifiNetworkInfo> {
         @Override
         public int compare(WifiNetworkInfo o1, WifiNetworkInfo o2) {
             return o1.toString().compareToIgnoreCase(o2.toString());

@@ -42,7 +42,7 @@ public class WifiNetworkInfo implements Parcelable {
     private final String mPassword;
     private final int mNetType;
 
-    public WifiNetworkInfo(Parcel in) {
+    private WifiNetworkInfo(Parcel in) {
         final Bundle b = in.readBundle(getClass().getClassLoader());
 
         mDisplayedString = b.getString("EXTRA_DIPLAYED_STRING");
