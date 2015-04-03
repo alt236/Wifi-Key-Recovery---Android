@@ -17,10 +17,10 @@ package aws.apps.wifiKeyRecovery.activities;
 
 import java.io.File;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -28,7 +28,7 @@ import android.widget.EditText;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
 
-public class ExportActivity extends Activity {
+public class ExportActivity extends FragmentActivity {
 	final String TAG =  this.getClass().getName();
 
 	private EditText mFldInfo;
@@ -38,11 +38,12 @@ public class ExportActivity extends Activity {
 	private String mTimeDate;
 	private UsefulBits mUsefulBits;
 
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "^ Intent started");
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.export);
+		setContentView(R.layout.activity_export);
 
 		final Bundle extras = getIntent().getExtras();
 		mUsefulBits = new UsefulBits(getApplicationContext());
@@ -52,20 +53,21 @@ public class ExportActivity extends Activity {
 		mBtnToSd = (Button) findViewById(R.id.buttontosd);
 		mBtnClose = (Button) findViewById(R.id.buttoncloseexport);
 
-		if(extras !=null)
-		{
+		if(extras !=null){
 			mTimeDate = extras.getString("time");
 			mFldInfo.setText(getString(R.string.text_wifi_password_recovery)  + " @ " + mTimeDate +"\n\n");
 			mFldInfo.append(extras.getString("info"));
 		}
 
 		mBtnShare.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				shareResults();
 			}
 		});
 
 		mBtnToSd.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 
 				try {
@@ -80,6 +82,7 @@ public class ExportActivity extends Activity {
 		});
 
 		mBtnClose.setOnClickListener(new View.OnClickListener() {
+			@Override
 			public void onClick(View v) {
 				finish();
 			}

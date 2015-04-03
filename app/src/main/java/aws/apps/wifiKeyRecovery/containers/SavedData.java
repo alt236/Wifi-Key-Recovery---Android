@@ -21,7 +21,7 @@ import java.util.List;
 public class SavedData {
 	final String TAG =  this.getClass().getName();
 	
-	private List<NetInfo> tWifiPasswords = new ArrayList<NetInfo>();
+	private List<WifiNetworkInfo> tWifiPasswords = new ArrayList<WifiNetworkInfo>();
 	
 	private String dateTime = "";
 	private boolean areWeRooted = false;
@@ -45,7 +45,7 @@ public class SavedData {
 	}
 
 
-	public List<NetInfo> getWifiPasswordList() {
+	public List<WifiNetworkInfo> getWifiPasswordList() {
 		return tWifiPasswords;
 	}
 
@@ -59,7 +59,7 @@ public class SavedData {
 	}
 	
 	
-	public void setWiFiPasswordList(List<NetInfo> l){
+	public void setWiFiPasswordList(List<WifiNetworkInfo> l){
 		tWifiPasswords = l;
 	}	
 }

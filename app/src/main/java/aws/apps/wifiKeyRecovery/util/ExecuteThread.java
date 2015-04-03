@@ -27,7 +27,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.containers.NetInfo;
+import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal.ExecResult;
 
 public class ExecuteThread extends Thread {
@@ -45,7 +45,6 @@ public class ExecuteThread extends Thread {
 
 	private Handler mHandler;
 	private Context mContext;
-	private UsefulBits mUsefulBits;
 	private int mState;
 	private boolean mIsRooted;
 
@@ -53,11 +52,9 @@ public class ExecuteThread extends Thread {
 			Context ctx,
 			Bundle b) {
 
-		this.mHandler = h;
-		this.mContext = ctx;
-		this.mUsefulBits = new UsefulBits(mContext);
-
-		this.mIsRooted = new ExecTerminal().checkSu();
+		mHandler = h;
+		mContext = ctx;
+		mIsRooted = new ExecTerminal().checkSu();
 	}
 
 	private String appendBlanks(String text, int size) {
@@ -90,9 +87,9 @@ public class ExecuteThread extends Thread {
 		return res.getStdOut();
 	}
 
-	private ArrayList<NetInfo> getWiFiPasswordList() {
+	private ArrayList<WifiNetworkInfo> getWiFiPasswordList() {
 		final String[] shellCommands = mContext.getResources().getStringArray(R.array.shellCommands);
-		ArrayList<NetInfo> l = new ArrayList<NetInfo>();
+		ArrayList<WifiNetworkInfo> l = new ArrayList<WifiNetworkInfo>();
 
 		for (int i = 0; i < shellCommands.length; i++) {
 			String result = execute(shellCommands[i]);
@@ -102,11 +99,11 @@ public class ExecuteThread extends Thread {
 			}
 		}
 
-		l.add(new NetInfo(mContext.getString(R.string.could_not_find_password_files)));
+		l.add(new WifiNetworkInfo(mContext.getString(R.string.could_not_find_password_files)));
 		return l;
 	}
 
-	private ArrayList<NetInfo> parseWifiPasswords(ArrayList<NetInfo> l, String wifiPasswordString) {
+	private ArrayList<WifiNetworkInfo> parseWifiPasswords(ArrayList<WifiNetworkInfo> l, String wifiPasswordString) {
 		final String passwordBlocks[] = wifiPasswordString.split("\n\n");
 		final Map<String, String> passKeys = new HashMap<String, String>();
 		final Map<String, String> settings = new HashMap<String, String>();
@@ -139,11 +136,11 @@ public class ExecuteThread extends Thread {
 					} else if (line.startsWith("psk=")) {
 						passKeys.put("psk", line.replace("psk=", ""));
 						password = line.replace("psk=", "");
-						type = NetInfo.TYPE_WPA;
+						type = WifiNetworkInfo.TYPE_WPA;
 					} else if (line.startsWith("wep_key0=")) {
 						passKeys.put("WEP Key 0", line.replace("wep_key0=", ""));
 						password = line.replace("psk=", "");
-						type = NetInfo.TYPE_WEP;
+						type = WifiNetworkInfo.TYPE_WEP;
 					} else if (line.startsWith("wep_key1=")) {
 						passKeys.put("WEP Key 1", line.replace("wep_key1=", ""));
 					} else if (line.startsWith("wep_key2=")) {
@@ -193,9 +190,7 @@ public class ExecuteThread extends Thread {
 
 				}
 				if (result.trim().length() > 0) {
-					NetInfo ni = new NetInfo(result.trim());
-					ni.setQrCodeInfo(ssid, password, type);
-					l.add(ni);
+					l.add(new WifiNetworkInfo(result.trim(), ssid, password, type));
 				}
 			}
 		}
@@ -203,6 +198,7 @@ public class ExecuteThread extends Thread {
 		return l;
 	}
 
+	@Override
 	public void run() {
 		mState = STATE_RUNNING;
 		Bundle b = new Bundle();

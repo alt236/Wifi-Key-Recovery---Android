@@ -21,10 +21,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import net.londatiga.android.ActionItem;
-import net.londatiga.android.QuickAction;
-import net.londatiga.android.QuickAction.OnActionItemClickListener;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -34,10 +30,10 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -55,43 +51,44 @@ import android.widget.TextView;
 import android.widget.Toast;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.adapters.NetInfoAdapter;
-import aws.apps.wifiKeyRecovery.containers.NetInfo;
+import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.containers.SavedData;
+import aws.apps.wifiKeyRecovery.ui.IconFriendlyPopupMenu;
+import aws.apps.wifiKeyRecovery.ui.IconFriendlyPopupMenu.OnMenuItemClickListener;
 import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal;
 import aws.apps.wifiKeyRecovery.util.ExecuteThread;
+import aws.apps.wifiKeyRecovery.util.PopupMenuActionHelper;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
 
-public class MainActivity extends Activity implements OnItemClickListener, OnActionItemClickListener{
-	private static final int ID_COPY_PASSWORD	= 0;
-	private static final int ID_COPY_ALL   		= 1;
-	private static final int ID_SHOW_QRCODE   	= 2;
-
+@SuppressWarnings("deprecation")
+public class MainActivity extends FragmentActivity implements OnItemClickListener, OnMenuItemClickListener {
 	private static final int DIALOG_GET_PASSWORDS = 1;
-	final String TAG =  this.getClass().getName();
+	final String TAG = this.getClass().getName();
 
 	private Bundle mThreadBundle;
 	private EditText mEditFilter;
 	private ExecuteThread mExecuteThread;
+	private IconFriendlyPopupMenu mPopup;
 	private ListView mList;
+	private WifiNetworkInfo mCurrentNetinfo;
 	private NetInfoAdapter mNiAdapter;
 	private ProgressDialog mExecuteDialog;
-	private QuickAction mQuickAction;
-	private String mTimeDate="";
-	private TextView mLabelDevice;
-	private TextView mLabelTimeDate;
+	private String mTimeDate = "";
 	private TextView mTextViewResultCount;
 	private UsefulBits mUsefulBits;
 
 	private TextWatcher filterTextWatcher = new TextWatcher() {
 
+		@Override
 		public void afterTextChanged(Editable s) {}
 
-		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		}
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
+		@Override
 		public void onTextChanged(CharSequence s, int start, int before, int count) {
-			if(mNiAdapter != null){
+			if (mNiAdapter != null) {
 				mNiAdapter.getFilter().filter(s);
 			} else {
 				Log.w(TAG, "^ TextWatcher: Adapter is null!");
@@ -100,20 +97,20 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	};
 
 	final Handler handler = new Handler() {
+		@Override
 		@SuppressWarnings("unchecked")
 		public void handleMessage(Message msg) {
-			switch(msg.what){
+			switch (msg.what) {
 
 			case ExecuteThread.WORK_COMPLETED:
 				Log.d(TAG, "^ Worker Thread: WORK_COMPLETED");
-				List<NetInfo> l = new ArrayList<NetInfo>();
 
-				l = (ArrayList<NetInfo>) msg.getData().getSerializable("passwords");
+				final List<WifiNetworkInfo> list = (ArrayList<WifiNetworkInfo>) msg.getData().getSerializable("passwords");
 
-				if (l != null){
-					Collections.sort(l, new NetInfoComperator());
-					populateList(l);
-					mList.setTag(l);
+				if (list != null) {
+					Collections.sort(list, new NetInfoComperator());
+					populateList(list);
+					mList.setTag(list);
 				}
 
 				mExecuteThread.setState(ExecuteThread.STATE_DONE);
@@ -132,32 +129,33 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 
 	/** Clears the table and field contents */
 	public void clearInfo() {
-		mLabelTimeDate.setText("");
+
 	}
 
-	private void copyStringToClipboard(String text){
+	private void copyStringToClipboard(String text) {
 		if (text.length() > 0) {
 			String msgtext = "";
-			if (text.length()>150) {
+			if (text.length() > 150) {
 				msgtext = text.substring(0, 150) + "...";
 			} else {
 				msgtext = text;
 			}
-			String message = "'" + msgtext + "' " + getString(R.string.text_copied);
-			mUsefulBits.showToast(message, Toast.LENGTH_SHORT, Gravity.TOP,0,0);
 
-			ClipboardManager ClipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+			final String message = "'" + msgtext + "' " + getString(R.string.text_copied);
+			mUsefulBits.showToast(message, Toast.LENGTH_SHORT, Gravity.TOP, 0, 0);
+
+			final ClipboardManager ClipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 			ClipMan.setText(text);
 		}
 	}
 
-	private void getPasswords(){
+	private void getPasswords() {
 		LockScreenRotation();
-		ExecTerminal et = new ExecTerminal();
+		final ExecTerminal et = new ExecTerminal();
 
-		if(et.checkSu()){
+		if (et.checkSu()) {
 			showDialog(DIALOG_GET_PASSWORDS);
-		}else{
+		} else {
 
 			AlertDialog dlg = MyAlertBox.create(this, getString(R.string.root_needed), getString(R.string.app_name), getString(android.R.string.ok));
 
@@ -174,10 +172,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	}
 
 	// Sets screen rotation as fixed to current rotation setting
-	private void LockScreenRotation(){
+	private void LockScreenRotation() {
 		// Stop the screen orientation changing during an event
-		switch (this.getResources().getConfiguration().orientation)
-		{
+		switch (this.getResources().getConfiguration().orientation){
 		case Configuration.ORIENTATION_PORTRAIT:
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			break;
@@ -187,7 +184,7 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 		}
 	}
 
-	public void onClearSearchClick(View v){
+	public void onClearSearchClick(View v) {
 		mEditFilter.setText("");
 	}
 
@@ -195,48 +192,24 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.activity_main);
 
 		mUsefulBits = new UsefulBits(this);
 
-		//setup GUI
-		mList = (ListView) findViewById(R.id.list);
-		mLabelTimeDate = (TextView) findViewById(R.id.tvTime);
-		mLabelDevice = (TextView) findViewById(R.id.tvDevice);
-		mTextViewResultCount = (TextView) findViewById(R.id.tvResults);
+		// setup GUI
 		mEditFilter = (EditText) findViewById(R.id.edit_search);
+		mList = (ListView) findViewById(R.id.list);
+		mTextViewResultCount = (TextView) findViewById(R.id.tvResults);
 
 		mList.setFastScrollEnabled(true);
 		mList.setOnItemClickListener(this);
-		mList.setDivider( null );
+		mList.setDivider(null);
 		mList.setDividerHeight(mUsefulBits.dipToPixels(1));
-
-		mQuickAction = new QuickAction(this, QuickAction.ORIENTATION_VERTICAL, QuickAction.COLOUR_LIGHT);
-
-		final ActionItem actionCopyPassword = new ActionItem(
-				ID_COPY_PASSWORD,
-				getString(R.string.label_copy_password),
-				getResources().getDrawable(R.drawable.ic_list_copy));
-
-		final ActionItem actionCopyAll = new ActionItem(
-				ID_COPY_ALL,
-				getString(R.string.label_copy_all),
-				getResources().getDrawable(R.drawable.ic_list_copy2));
-
-		final ActionItem actionShowQr = new ActionItem(
-				ID_SHOW_QRCODE,
-				getString(R.string.label_show_qr_code),
-				getResources().getDrawable(R.drawable.ic_list_barcode));
-
-		mQuickAction.addActionItem(actionCopyPassword);
-		mQuickAction.addActionItem(actionCopyAll);
-		mQuickAction.addActionItem(actionShowQr);
-
-		mQuickAction.setOnActionItemClickListener(this);
-
+		mList.setFastScrollEnabled(true);
 		populateInfo();
 	}
 
+	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case DIALOG_GET_PASSWORDS:
@@ -252,8 +225,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	}
 
 	/** Creates the menu items */
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		new MenuInflater(this).inflate(R.menu.home, menu);
+		new MenuInflater(this).inflate(R.menu.menu_home, menu);
 		return true;
 	}
 
@@ -263,66 +237,81 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 		mEditFilter.removeTextChangedListener(filterTextWatcher);
 	}
 
-	public void onItemClick(AdapterView<?> l, View v, int position, long id){
-		mQuickAction.show(v);
+	@Override
+	public void onItemClick(AdapterView<?> l, View v, int position, long id) {
+		mPopup = new IconFriendlyPopupMenu(this, v, true);
+		mPopup.setOnMenuItemClickListener(this);
+
+		mCurrentNetinfo = null;
+
+		if(v.getTag() != null){
+			if(v.getTag() instanceof WifiNetworkInfo){
+				mCurrentNetinfo = (WifiNetworkInfo) v.getTag();
+			}
+		}
+
+		PopupMenuActionHelper.addCopyAll(this, mPopup);
+		PopupMenuActionHelper.addCopyPassword(this, mPopup);
+		PopupMenuActionHelper.addShowQrCode(this, mPopup);
+
+		mPopup.show();
 	}
 
-	public void onItemClick(QuickAction source, int pos, int actionId) {
-		View view = mQuickAction.getLastAnchorView();
+	@Override
+	public boolean onMenuItemClick(MenuItem paramMenuItem) {
+		final int actionId = paramMenuItem.getItemId();
 		String text;
 
-		final NetInfo ni = (NetInfo) view.getTag();
-
+		final boolean res;
 		switch (actionId) {
-		case ID_COPY_ALL:
-			copyStringToClipboard(ni.toString());
+		case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_ALL_AS_TEXT:
+			copyStringToClipboard(mCurrentNetinfo.toString());
+			res = true;
 			break;
-		case ID_COPY_PASSWORD:
-			copyStringToClipboard(ni.getPassword());
+		case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_PASSWORD:
+			copyStringToClipboard(mCurrentNetinfo.getPassword());
+			res = true;
 			break;
-		case ID_SHOW_QRCODE:
-			text = ni.getQrcodeString();
+		case PopupMenuActionHelper.ACTION_ID_NETWORK_SHOW_QRCODE:
+			text = mCurrentNetinfo.getQrcodeString();
 
 			if (text.length() > 0) {
-				if (mUsefulBits.isIntentAvailable(this, "com.google.zxing.client.android.ENCODE")){
-					Intent i = new Intent();
-					i.setAction("com.google.zxing.client.android.ENCODE");
-					i.putExtra ("ENCODE_TYPE", "TEXT_TYPE");
-					i.putExtra ("ENCODE_DATA", text);
-					startActivity(i);
-				} else {
-					mUsefulBits.showApplicationMissingAlert(
-							getString(R.string.component_missing),
-							getString(R.string.you_need_the_barcode_scanner_application),
-							getString(R.string.dismiss),
-							getString(R.string.zxing_market_url));
-				}
+				final Intent intent = new Intent(this, QrCodeDisplayActivity.class);
+				intent.putExtra(
+						QrCodeDisplayActivity.EXTRAS_NETWORK_INFO,
+						mCurrentNetinfo);
+
+				startActivity(intent);
 			}
+			res = true;
 			break;
+		default:
+			res = false;
 		}
+
+		return res;
 	}
 
 	/** Handles item selections */
+	@SuppressWarnings("unchecked")
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if(R.id.menu_about == item.getItemId()){
+		switch (item.getItemId()) {
+		case R.id.menu_about:
 			mUsefulBits.showAboutDialogue();
 			return true;
-		}
-		else if(R.id.menu_export == item.getItemId()){
+		case R.id.menu_export:
 			Intent myIntent = new Intent();
 			String export_text = "";
-
 			export_text += getString(R.string.label_wifi_passwords) + "\n";
-			export_text += mUsefulBits.listToString((List<?>) mList.getTag()) + "\n\n";
+			export_text += mUsefulBits.listToString((List<WifiNetworkInfo>) mList.getTag()) + "\n\n";
 			export_text += mTextViewResultCount.getText();
-
 			myIntent.putExtra("info", export_text);
 			myIntent.putExtra("time", mTimeDate);
 			myIntent.setClass(this, ExportActivity.class);
 			startActivity(myIntent);
 			return true;
-		}
-		else if(R.id.menu_refresh == item.getItemId()){
+		case R.id.menu_refresh:
 			refreshInfo();
 			return true;
 		}
@@ -338,21 +327,20 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if(mEditFilter != null){
+		if (mEditFilter != null) {
 			mEditFilter.addTextChangedListener(filterTextWatcher);
 		}
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public Object onRetainNonConfigurationInstance() {
+	public Object onRetainCustomNonConfigurationInstance() {
 		Log.d(TAG, "^ onRetainNonConfigurationInstance()");
 
 		final SavedData saved = new SavedData();
 
-		if(mList.getTag() != null){
-			saved.setWiFiPasswordList((List<NetInfo>) mList.getTag());
+		if (mList.getTag() != null) {
+			saved.setWiFiPasswordList((List<WifiNetworkInfo>) mList.getTag());
 		}
 
 		saved.setDateTime(mTimeDate);
@@ -360,26 +348,23 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 	}
 
 	/** Retrieves and displays info */
-	private void populateInfo(){
-		final Object data = getLastNonConfigurationInstance();
+	private void populateInfo() {
+		final Object data = getLastCustomNonConfigurationInstance();
 
 		if (data == null) { // We need to do everything from scratch!
 			mTimeDate = mUsefulBits.formatDateTime("yyyy-MM-dd-HHmmssZ", new Date());
-			mLabelTimeDate.setText(mTimeDate);
 			getPasswords();
 		} else {
 			final SavedData saved = (SavedData) data;
 			mTimeDate = saved.getDateTime();
 
-			mLabelTimeDate.setText(mTimeDate);
 			populateList(saved.getWifiPasswordList());
 			mList.setTag(saved.getWifiPasswordList());
 		}
-		mLabelDevice.setText(Build.PRODUCT + " " + Build.DEVICE);
 	}
 
-	private void populateList(List<NetInfo> l){
-		if(l.size() > 0 ){
+	private void populateList(List<WifiNetworkInfo> l) {
+		if (l.size() > 0) {
 			findViewById(R.id.filter_segment).setVisibility(View.VISIBLE);
 			mNiAdapter = new NetInfoAdapter(this, l);
 			mTextViewResultCount.setText(String.valueOf(l.size()));
@@ -397,9 +382,9 @@ public class MainActivity extends Activity implements OnItemClickListener, OnAct
 		populateInfo();
 	}
 
-	public class NetInfoComperator implements Comparator<NetInfo> {
+	public class NetInfoComperator implements Comparator<WifiNetworkInfo> {
 		@Override
-		public int compare(NetInfo o1, NetInfo o2) {
+		public int compare(WifiNetworkInfo o1, WifiNetworkInfo o2) {
 			return o1.toString().compareToIgnoreCase(o2.toString());
 		}
 	}

@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,14 +33,14 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.containers.NetInfo;
+import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 
-public class NetInfoAdapter extends BaseAdapter implements Filterable { // implements
-																		// SectionIndexer{
+public class NetInfoAdapter extends BaseAdapter implements Filterable {
+
 	private final Map<String, Integer> mAlphaIndexer;
 
-	private List<NetInfo> mAllItems;
-	private List<NetInfo> mSubItems;
+	private List<WifiNetworkInfo> mAllItems;
+	private List<WifiNetworkInfo> mSubItems;
 
 	private final Context mContext;
 	private String[] mSections;
@@ -48,7 +49,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable { // imple
 
 	final String TAG = this.getClass().getName();
 
-	public NetInfoAdapter(Context context, List<NetInfo> appsList) {
+	public NetInfoAdapter(Context context, List<WifiNetworkInfo> appsList) {
 		super();
 
 		mSubItems = appsList;
@@ -72,7 +73,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable { // imple
 				Integer.valueOf(title.substring(0, 1));
 				c = "#";
 			} catch (NumberFormatException e) {
-				c = title.toUpperCase().substring(0, 1);
+				c = title.toUpperCase(Locale.US).substring(0, 1);
 			}
 
 			mAlphaIndexer.put(c, i);
@@ -92,37 +93,41 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable { // imple
 		keyList.toArray(mSections);
 	}
 
+	@Override
 	public int getCount() {
 		return mSubItems.size();
 	}
 
-	public NetInfo getItem(int position) {
+	@Override
+	public WifiNetworkInfo getItem(int position) {
 		return mSubItems.get(position);
 	}
 
+	@Override
 	public long getItemId(int position) {
 		return position;
 	}
 
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		final NetInfo event = mSubItems.get(position);
+		final WifiNetworkInfo netInfo = mSubItems.get(position);
 
 		if (convertView == null) {
 			final LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = vi.inflate(R.layout.list_item, null);
+			convertView = vi.inflate(R.layout.list_item_network_info, null);
 		}
 
-		if (event != null) {
+		if (netInfo != null) {
 			final TextView text = (TextView) convertView.findViewById(R.id.text);
 
 			if (position % 2 == 0) {
-				convertView.setBackgroundResource(R.drawable.rowbg_alt);
+				convertView.setBackgroundResource(R.drawable.row_background_alt);
 			} else {
-				convertView.setBackgroundResource(R.drawable.rowbg);
+				convertView.setBackgroundResource(R.drawable.row_background);
 			}
 
-			text.setText(event.toString());
-			convertView.setTag(event);
+			text.setText(netInfo.getDisplayedString());
+			convertView.setTag(netInfo);
 		}
 
 		return convertView;
@@ -140,8 +145,8 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable { // imple
 		return mSections;
 	}
 
-	public Filter getFilter()
-	{
+	@Override
+	public Filter getFilter(){
 		if (mFilter == null) {
 			mFilter = new ProoferFilter();
 		}
@@ -159,24 +164,25 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable { // imple
 		protected void publishResults(CharSequence prefix, FilterResults results) {
 
 			// NOTE: this function is *always* called from the UI thread.
-			mSubItems = (ArrayList<NetInfo>) results.values;
+			mSubItems = (ArrayList<WifiNetworkInfo>) results.values;
 
 			notifyDataSetChanged();
 		}
 
+		@Override
 		protected FilterResults performFiltering(CharSequence filterString) {
 			// NOTE: this function is *always* called from a background thread,
 			// and
 			// not the UI thread.
 
 			final FilterResults results = new FilterResults();
-			final List<NetInfo> i = new ArrayList<NetInfo>();
+			final List<WifiNetworkInfo> i = new ArrayList<WifiNetworkInfo>();
 
 			if (filterString != null && filterString.toString().length() > 0) {
 
 				for (int index = 0; index < mAllItems.size(); index++) {
-					final NetInfo item = mAllItems.get(index);
-					if (item.getQrSsid().toLowerCase().contains(filterString.toString().toLowerCase())) {
+					final WifiNetworkInfo item = mAllItems.get(index);
+					if (item.getQrSsid().toLowerCase(Locale.US).contains(filterString.toString().toLowerCase())) {
 						i.add(item);
 					}
 

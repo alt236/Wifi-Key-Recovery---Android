@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ImageView
+        android:layout_weight="0.9"
+        android:id="@+id/qrcode"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:layout_margin="15dp"
+        android:maxHeight="100dp"
+        android:maxWidth="100dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_list_barcode" />
+
+    <TextView
+        android:layout_weight="0.1"
+        android:id="@+id/ssid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="10dp"
+        android:background="@color/gray"
+        android:text="@android:string/untitled" />
+
+</LinearLayout>

@@ -58,5 +58,6 @@
     <string name="label_copy_password">Copy password</string>
     <string name="label_copy_all">Copy All</string>
     <string name="label_show_qr_code">Show QR Code</string>
+    <string name="ssid_quicksearch">SSID Quicksearch</string>
 
 </resources>

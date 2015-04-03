@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Wifi-Key-Recovery---Android.iml" filepath="$PROJECT_DIR$/Wifi-Key-Recovery---Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
       <module fileurl="file://$PROJECT_DIR$/newQuickAction3D/newQuickAction3D.iml" filepath="$PROJECT_DIR$/newQuickAction3D/newQuickAction3D.iml" />
     </modules>
   </component>

@@ -39,6 +39,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.Toast;
 import aws.apps.wifiKeyRecovery.R;
+import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 
 public class UsefulBits {
@@ -70,13 +71,13 @@ public class UsefulBits {
 
 
 	public Calendar convertMillisToDate(long millis){
-		Calendar calendar = Calendar.getInstance();
+		final Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(millis);
 		return calendar;
 	}
 
 	public String formatDateTime(String formatString, Date d){
-		Format formatter = new SimpleDateFormat(formatString);
+		final Format formatter = new SimpleDateFormat(formatString);
 		return formatter.format(d);
 	}
 
@@ -207,6 +208,7 @@ public class UsefulBits {
 
 			alertbox.setPositiveButton(button1Text, null);
 			alertbox.setNegativeButton("Market", new DialogInterface.OnClickListener() {
+				@Override
 				public void onClick(DialogInterface arg0, int arg1) {
 					try {
 						Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -233,14 +235,14 @@ public class UsefulBits {
 		toast.show();
 	}
 
-	public String listToString(List<?> list) {
+	public String listToString(List<WifiNetworkInfo> list) {
 		StringBuffer sb = new StringBuffer();
 		int cnt = 0;
 
-		for(Object obj:list){
+		for(WifiNetworkInfo obj : list){
 			cnt +=1;
 			sb.append("#" + cnt +":\n");
-			sb.append(obj + "\n");
+			sb.append(obj.getDisplayedString() + "\n");
 		}
 
 		return sb.toString();
