@@ -5,17 +5,17 @@
     <item
         android:id="@+id/menu_refresh"
         android:icon="@drawable/ic_action_refresh"
-        app:showAsAction="always"
-        android:title="@string/label_menu_refresh"/>
+        android:title="@string/label_menu_refresh"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/menu_export"
         android:icon="@drawable/ic_action_export"
-        app:showAsAction="ifRoom"
-        android:title="@string/label_menu_export"/>
+        android:title="@string/label_menu_export"
+        app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_about"
         android:icon="@drawable/ic_menu_info"
-        app:showAsAction="never"
-        android:title="@string/label_menu_about"/>
+        android:title="@string/label_menu_about"
+        app:showAsAction="never"/>
 
 </menu>

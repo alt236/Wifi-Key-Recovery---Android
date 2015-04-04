@@ -25,12 +25,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.File;
-import java.util.List;
 
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.FileUtil;
-import aws.apps.wifiKeyRecovery.util.UsefulBits;
-import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
 
 public class ExportActivity extends FragmentActivity {
     private final String TAG = this.getClass().getName();

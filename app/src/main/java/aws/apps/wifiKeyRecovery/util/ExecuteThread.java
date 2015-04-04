@@ -67,7 +67,7 @@ public class ExecuteThread extends Thread {
         final WifiPasswordFileParser parser = new WifiPasswordFileParser();
         final String[] shellCommands = mContext.getResources().getStringArray(R.array.shellCommands);
 
-        if(Constants.USE_DEBUG_DATA){
+        if (Constants.USE_DEBUG_DATA) {
             final FileUtil fileUtil = new FileUtil(mContext);
             return parser.parseWifiPasswordFileContents(fileUtil.readAssetsFileAsText("wpa_supplicant_example.conf"));
         } else {

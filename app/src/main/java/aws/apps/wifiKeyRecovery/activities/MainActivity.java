@@ -160,7 +160,7 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
         LockScreenRotation();
         final boolean hasRoot;
 
-        if(Constants.USE_DEBUG_DATA){
+        if (Constants.USE_DEBUG_DATA) {
             hasRoot = true;
         } else {
             final ExecTerminal et = new ExecTerminal();
@@ -394,13 +394,6 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
         populateInfo();
     }
 
-    private class NetInfoComparator implements Comparator<WifiNetworkInfo> {
-        @Override
-        public int compare(WifiNetworkInfo o1, WifiNetworkInfo o2) {
-            return o1.toString().compareToIgnoreCase(o2.toString());
-        }
-    }
-
     public static String listToString(List<WifiNetworkInfo> list) {
         final StringBuilder sb = new StringBuilder();
 
@@ -412,5 +405,12 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
         }
 
         return sb.toString();
+    }
+
+    private class NetInfoComparator implements Comparator<WifiNetworkInfo> {
+        @Override
+        public int compare(WifiNetworkInfo o1, WifiNetworkInfo o2) {
+            return o1.toString().compareToIgnoreCase(o2.toString());
+        }
     }
 }
