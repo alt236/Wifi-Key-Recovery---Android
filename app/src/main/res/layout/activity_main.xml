@@ -10,8 +10,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         android:orientation="vertical"
         android:padding="5dp">
 
@@ -28,14 +26,12 @@
 
             <TextView
                 android:id="@+id/tvResultsTitle"
-                style="@style/TitleTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/protected_networks"/>
 
             <TextView
                 android:id="@+id/tvResults"
-                style="@style/DataTextView"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"/>
         </LinearLayout>

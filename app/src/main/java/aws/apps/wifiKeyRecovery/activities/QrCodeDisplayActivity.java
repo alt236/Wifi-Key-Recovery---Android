@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.ImageView;
@@ -17,7 +18,7 @@ import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.QRCodeUtils;
 import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
 
-public class QrCodeDisplayActivity extends FragmentActivity implements OnGlobalLayoutListener {
+public class QrCodeDisplayActivity extends ActionBarActivity implements OnGlobalLayoutListener {
     public final static String EXTRAS_NETWORK_INFO = "aws.apps.wifiKeyRecovery.activities.EXTRAS_NETWORK_INFO";
     private final String TAG = this.getClass().getName();
     private ImageView mIvQrCode;

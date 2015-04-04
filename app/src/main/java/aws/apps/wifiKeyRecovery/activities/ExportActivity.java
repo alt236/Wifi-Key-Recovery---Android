@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +30,7 @@ import java.io.File;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.FileUtil;
 
-public class ExportActivity extends FragmentActivity {
+public class ExportActivity extends ActionBarActivity {
     private final String TAG = this.getClass().getName();
 
     private EditText mFldInfo;

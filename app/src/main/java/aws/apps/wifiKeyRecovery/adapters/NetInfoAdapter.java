@@ -105,12 +105,6 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
         if (netInfo != null) {
             final TextView text = (TextView) convertView.findViewById(R.id.text);
 
-            if (position % 2 == 0) {
-                convertView.setBackgroundResource(R.drawable.row_background_alt);
-            } else {
-                convertView.setBackgroundResource(R.drawable.row_background);
-            }
-
             text.setText(netInfo.getDisplayedString());
             convertView.setTag(netInfo);
         }

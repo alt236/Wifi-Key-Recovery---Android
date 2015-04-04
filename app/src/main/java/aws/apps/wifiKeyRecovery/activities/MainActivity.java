@@ -28,6 +28,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.text.ClipboardManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -64,7 +65,7 @@ import aws.apps.wifiKeyRecovery.util.UsefulBits;
 import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
 
 @SuppressWarnings("deprecation")
-public class MainActivity extends FragmentActivity implements OnItemClickListener, OnMenuItemClickListener {
+public class MainActivity extends ActionBarActivity implements OnItemClickListener, OnMenuItemClickListener {
     private static final int DIALOG_GET_PASSWORDS = 1;
     private final String TAG = this.getClass().getName();
     private final Handler handler = new Handler() {
@@ -208,8 +209,6 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
 
         mList.setFastScrollEnabled(true);
         mList.setOnItemClickListener(this);
-        mList.setDivider(null);
-        mList.setDividerHeight(mUsefulBits.dipToPixels(1));
         mList.setFastScrollEnabled(true);
         populateInfo();
     }
