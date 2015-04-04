@@ -53,14 +53,15 @@ import java.util.List;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.adapters.NetInfoAdapter;
 import aws.apps.wifiKeyRecovery.containers.SavedData;
-import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.ui.IconFriendlyPopupMenu;
 import aws.apps.wifiKeyRecovery.ui.IconFriendlyPopupMenu.OnMenuItemClickListener;
 import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
+import aws.apps.wifiKeyRecovery.util.Constants;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal;
 import aws.apps.wifiKeyRecovery.util.ExecuteThread;
 import aws.apps.wifiKeyRecovery.util.PopupMenuActionHelper;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
+import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends FragmentActivity implements OnItemClickListener, OnMenuItemClickListener {
@@ -78,7 +79,7 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
                     final List<WifiNetworkInfo> list = (ArrayList<WifiNetworkInfo>) msg.getData().getSerializable("passwords");
 
                     if (list != null) {
-                        Collections.sort(list, new NetInfoComperator());
+                        Collections.sort(list, new NetInfoComparator());
                         populateList(list);
                         mList.setTag(list);
                     }
@@ -157,13 +158,22 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
 
     private void getPasswords() {
         LockScreenRotation();
-        final ExecTerminal et = new ExecTerminal();
+        final boolean hasRoot;
 
-        if (et.checkSu()) {
+        if(Constants.USE_DEBUG_DATA){
+            hasRoot = true;
+        } else {
+            final ExecTerminal et = new ExecTerminal();
+            hasRoot = et.checkSu();
+        }
+
+        if (hasRoot) {
             showDialog(DIALOG_GET_PASSWORDS);
         } else {
-
-            AlertDialog dlg = MyAlertBox.create(this, getString(R.string.root_needed), getString(R.string.app_name), getString(android.R.string.ok));
+            final AlertDialog dlg = MyAlertBox.create(
+                    this, getString(R.string.root_needed),
+                    getString(R.string.app_name),
+                    getString(android.R.string.ok));
 
             dlg.setOnDismissListener(new OnDismissListener() {
 
@@ -303,7 +313,7 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
                 Intent myIntent = new Intent();
                 String export_text = "";
                 export_text += getString(R.string.label_wifi_passwords) + "\n";
-                export_text += mUsefulBits.listToString((List<WifiNetworkInfo>) mList.getTag()) + "\n\n";
+                export_text += listToString((List<WifiNetworkInfo>) mList.getTag()) + "\n\n";
                 export_text += mTextViewResultCount.getText();
                 myIntent.putExtra("info", export_text);
                 myIntent.putExtra("time", mTimeDate);
@@ -384,10 +394,23 @@ public class MainActivity extends FragmentActivity implements OnItemClickListene
         populateInfo();
     }
 
-    private class NetInfoComperator implements Comparator<WifiNetworkInfo> {
+    private class NetInfoComparator implements Comparator<WifiNetworkInfo> {
         @Override
         public int compare(WifiNetworkInfo o1, WifiNetworkInfo o2) {
             return o1.toString().compareToIgnoreCase(o2.toString());
         }
+    }
+
+    public static String listToString(List<WifiNetworkInfo> list) {
+        final StringBuilder sb = new StringBuilder();
+
+        int cnt = 0;
+        for (final WifiNetworkInfo obj : list) {
+            cnt += 1;
+            sb.append("#" + cnt + ":\n");
+            sb.append(obj.getDisplayedString() + "\n");
+        }
+
+        return sb.toString();
     }
 }

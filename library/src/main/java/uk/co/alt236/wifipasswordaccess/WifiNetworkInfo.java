@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package aws.apps.wifiKeyRecovery.containers;
+package uk.co.alt236.wifipasswordaccess;
 
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 public class WifiNetworkInfo implements Parcelable {
     public final static int TYPE_UNKNOWN = -1;
@@ -35,7 +36,7 @@ public class WifiNetworkInfo implements Parcelable {
             return new WifiNetworkInfo[size];
         }
     };
-    private static final String DOUBLE_QUOTE = "\"";
+
     private final String mDisplayedString;
     private final String mSsid;
     private final String mNetTypeAsString;
@@ -78,7 +79,7 @@ public class WifiNetworkInfo implements Parcelable {
     }
 
     public String getPassword() {
-        return stripLeadingAndTrailingQuotes(mPassword);
+        return Util.stripLeadingAndTrailingQuotes(mPassword);
     }
 
     public String getQrPassword() {
@@ -140,21 +141,5 @@ public class WifiNetworkInfo implements Parcelable {
         }
 
         return result;
-    }
-
-    private static String stripLeadingAndTrailingQuotes(String str) {
-        if (str == null || str.length() <= 0) {
-            return "";
-        }
-
-        if (str.startsWith(DOUBLE_QUOTE)) {
-            str = str.substring(1, str.length());
-        }
-
-        if (str.endsWith(DOUBLE_QUOTE)) {
-            str = str.substring(0, str.length() - 1);
-        }
-
-        return str;
     }
 }

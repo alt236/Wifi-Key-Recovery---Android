@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "aws.apps.wifiKeyRecovery"
-        minSdkVersion 7
+        minSdkVersion 10
         targetSdkVersion 21
     }
 
@@ -19,6 +19,7 @@ android {
 }
 
 dependencies {
+    compile project(':library')
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.google.zxing:core:3.2.0'
 }

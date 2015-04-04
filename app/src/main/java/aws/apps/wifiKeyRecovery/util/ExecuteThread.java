@@ -22,23 +22,18 @@ import android.os.Message;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal.ExecResult;
+import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.WifiPasswordFileParser;
 
 public class ExecuteThread extends Thread {
     public final static int STATE_DONE = 0;
     public final static int STATE_RUNNING = 1;
     public final static int WORK_COMPLETED = 50;
     public final static int WORK_INTERUPTED = 51;
-    private final static String WIFI_BLOCK_START = "network={";
-    private final static String WIFI_BLOCK_END = "}";
-    private final static int RESULT_TITLE_LENGTH = 14;
     private final String TAG = this.getClass().getName();
 
     private Handler mHandler;
@@ -55,23 +50,6 @@ public class ExecuteThread extends Thread {
         mIsRooted = new ExecTerminal().checkSu();
     }
 
-    private String appendBlanks(String text, int size) {
-        String res = text.trim();
-
-        if (res.length() < size) {
-            final int change = size - res.length();
-
-            for (int i = 0; i < change; i++) {
-                res += " ";
-            }
-
-            return res;
-        } else {
-            return res;
-        }
-
-    }
-
     private String execute(String cmd) {
         final ExecTerminal et = new ExecTerminal();
         final ExecResult res;
@@ -85,114 +63,24 @@ public class ExecuteThread extends Thread {
         return res.getStdOut();
     }
 
-    private ArrayList<WifiNetworkInfo> getWiFiPasswordList() {
+    private List<WifiNetworkInfo> getWiFiPasswordList() {
+        final WifiPasswordFileParser parser = new WifiPasswordFileParser();
         final String[] shellCommands = mContext.getResources().getStringArray(R.array.shellCommands);
-        ArrayList<WifiNetworkInfo> l = new ArrayList<WifiNetworkInfo>();
 
-        for (int i = 0; i < shellCommands.length; i++) {
-            String result = execute(shellCommands[i]);
-            if (result.trim().length() > 0) {
-                l = parseWifiPasswords(l, result);
-                return l;
-            }
-        }
-
-        l.add(new WifiNetworkInfo(mContext.getString(R.string.could_not_find_password_files)));
-        return l;
-    }
-
-    private ArrayList<WifiNetworkInfo> parseWifiPasswords(ArrayList<WifiNetworkInfo> l, String wifiPasswordString) {
-        final String passwordBlocks[] = wifiPasswordString.split("\n\n");
-        final Map<String, String> passKeys = new HashMap<String, String>();
-        final Map<String, String> settings = new HashMap<String, String>();
-
-        String ssid = "";
-        String password = ""; // only one, for the qr code;
-        int type = -1;
-
-        if (wifiPasswordString.length() <= 0) {
-            return l;
-        }
-
-        for (int i = 0; i < passwordBlocks.length; i++) {
-            String block = passwordBlocks[i].trim();
-
-            if (block.startsWith(WIFI_BLOCK_START) && block.endsWith(WIFI_BLOCK_END)) {
-                passKeys.clear();
-                settings.clear();
-                ssid = "";
-
-                String blockLines[] = block.split("\n");
-
-                for (int j = 0; j < blockLines.length; j++) {
-                    String line = blockLines[j].trim();
-
-                    if (line.startsWith("ssid=")) {
-                        ssid = line.replace("ssid=", "");
-
-                        // Network Keys:
-                    } else if (line.startsWith("psk=")) {
-                        passKeys.put("psk", line.replace("psk=", ""));
-                        password = line.replace("psk=", "");
-                        type = WifiNetworkInfo.TYPE_WPA;
-                    } else if (line.startsWith("wep_key0=")) {
-                        passKeys.put("WEP Key 0", line.replace("wep_key0=", ""));
-                        password = line.replace("psk=", "");
-                        type = WifiNetworkInfo.TYPE_WEP;
-                    } else if (line.startsWith("wep_key1=")) {
-                        passKeys.put("WEP Key 1", line.replace("wep_key1=", ""));
-                    } else if (line.startsWith("wep_key2=")) {
-                        passKeys.put("WEP Key 2", line.replace("wep_key2=", ""));
-                    } else if (line.startsWith("wep_key3=")) {
-                        passKeys.put("WEP Key 3", line.replace("wep_key3=", ""));
-                    } else if (line.startsWith("password=")) {
-                        passKeys.put("Password", line.replace("password=", ""));
-                        password = line.replace("psk=", "");
-
-                        // Settings:
-                    } else if (line.startsWith("key_mgmt=")) {
-                        settings.put("Key MGMT", line.replace("key_mgmt=", ""));
-                    } else if (line.startsWith("group=")) {
-                        settings.put("Group", line.replace("group=", ""));
-                    } else if (line.startsWith("auth_alg=")) {
-                        settings.put("Algorithm", line.replace("auth_alg=", ""));
-                    } else if (line.startsWith("eap=")) {
-                        settings.put("EAP", line.replace("eap=", ""));
-                    } else if (line.startsWith("identity=")) {
-                        settings.put("Identity", line.replace("identity=", ""));
-                    } else if (line.startsWith("anonymous_identity=")) {
-                        settings.put("Anonymous ID", line.replace("anonymous_identity=", ""));
-                    } else if (line.startsWith("phase2=")) {
-                        settings.put("Phase2 Auth", line.replace("phase2=", ""));
-                    }
-                }
-
-                String result = "";
-
-                if (!passKeys.isEmpty()) {
-                    if (ssid.length() > 0) {
-                        result += appendBlanks("SSID:", RESULT_TITLE_LENGTH) + ssid + "\n";
-                    }
-
-                    Iterator<Entry<String, String>> it = passKeys.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
-                        result += appendBlanks(pairs.getKey() + ":", RESULT_TITLE_LENGTH) + pairs.getValue() + "\n";
-                    }
-
-                    it = settings.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
-                        result += appendBlanks(pairs.getKey() + ":", RESULT_TITLE_LENGTH) + pairs.getValue() + "\n";
-                    }
-
-                }
+        if(Constants.USE_DEBUG_DATA){
+            final FileUtil fileUtil = new FileUtil(mContext);
+            return parser.parseWifiPasswordFileContents(fileUtil.readAssetsFileAsText("wpa_supplicant_example.conf"));
+        } else {
+            for (final String command : shellCommands) {
+                String result = execute(command);
                 if (result.trim().length() > 0) {
-                    l.add(new WifiNetworkInfo(result.trim(), ssid, password, type));
+                    return parser.parseWifiPasswordFileContents(result);
                 }
             }
         }
-        // l.add("Protected Networks: " + protectedNetworkCount);
+
+        final List<WifiNetworkInfo> l = new ArrayList<>();
+        l.add(new WifiNetworkInfo(mContext.getString(R.string.could_not_find_password_files)));
         return l;
     }
 
@@ -209,7 +97,9 @@ public class ExecuteThread extends Thread {
                 Thread.sleep(100);
                 b.clear();
 
-                b.putParcelableArrayList("passwords", getWiFiPasswordList());
+                b.putParcelableArrayList(
+                        "passwords",
+                        new ArrayList<>(getWiFiPasswordList()));
 
                 msg = new Message();
                 msg.what = WORK_COMPLETED;
@@ -245,5 +135,4 @@ public class ExecuteThread extends Thread {
     public void setState(int state) {
         mState = state;
     }
-    // //////////////////////////////////////////////////////////////////////////////////////////////////////
 }

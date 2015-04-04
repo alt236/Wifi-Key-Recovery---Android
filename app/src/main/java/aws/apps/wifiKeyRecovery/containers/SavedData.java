@@ -18,6 +18,8 @@ package aws.apps.wifiKeyRecovery.containers;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
+
 public class SavedData {
     final String TAG = this.getClass().getName();
 

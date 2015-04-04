@@ -14,8 +14,8 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.util.QRCodeUtils;
+import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
 
 public class QrCodeDisplayActivity extends FragmentActivity implements OnGlobalLayoutListener {
     public final static String EXTRAS_NETWORK_INFO = "aws.apps.wifiKeyRecovery.activities.EXTRAS_NETWORK_INFO";

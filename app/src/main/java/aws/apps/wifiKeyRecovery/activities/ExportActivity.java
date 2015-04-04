@@ -25,16 +25,18 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.File;
+import java.util.List;
 
 import aws.apps.wifiKeyRecovery.R;
+import aws.apps.wifiKeyRecovery.util.FileUtil;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
+import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
 
 public class ExportActivity extends FragmentActivity {
     private final String TAG = this.getClass().getName();
 
     private EditText mFldInfo;
     private String mTimeDate;
-    private UsefulBits mUsefulBits;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,12 +46,11 @@ public class ExportActivity extends FragmentActivity {
         setContentView(R.layout.activity_export);
 
         final Bundle extras = getIntent().getExtras();
-        mUsefulBits = new UsefulBits(getApplicationContext());
 
         mFldInfo = (EditText) findViewById(R.id.fld_export_text);
-        Button mBtnShare = (Button) findViewById(R.id.buttonshare);
-        Button mBtnToSd = (Button) findViewById(R.id.buttontosd);
-        Button mBtnClose = (Button) findViewById(R.id.buttoncloseexport);
+        final Button mBtnShare = (Button) findViewById(R.id.buttonshare);
+        final Button mBtnToSd = (Button) findViewById(R.id.buttontosd);
+        final Button mBtnClose = (Button) findViewById(R.id.buttoncloseexport);
 
         if (extras != null) {
             mTimeDate = extras.getString("time");
@@ -57,13 +58,14 @@ public class ExportActivity extends FragmentActivity {
             mFldInfo.append(extras.getString("info"));
         }
 
+        final FileUtil fileUtil = new FileUtil(this);
+
         mBtnShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 shareResults();
             }
         });
-
         mBtnToSd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,7 +74,7 @@ public class ExportActivity extends FragmentActivity {
                     final File folder = Environment.getExternalStorageDirectory();
                     final String filename = "wifikeyrecovery_" + mTimeDate + ".txt";
                     final String contents = mFldInfo.getText().toString();
-                    mUsefulBits.saveToFile(filename, folder, contents);
+                    fileUtil.saveToFile(filename, folder, contents);
                 } catch (Exception e) {
                     Log.e(TAG, "^ " + e.getMessage());
                 }

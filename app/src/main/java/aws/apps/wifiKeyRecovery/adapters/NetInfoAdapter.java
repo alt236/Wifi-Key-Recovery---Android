@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
 
 public class NetInfoAdapter extends BaseAdapter implements Filterable {
 
@@ -99,7 +99,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
 
         if (convertView == null) {
             final LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = vi.inflate(R.layout.list_item_network_info, parent);
+            convertView = vi.inflate(R.layout.list_item_network_info, null);
         }
 
         if (netInfo != null) {

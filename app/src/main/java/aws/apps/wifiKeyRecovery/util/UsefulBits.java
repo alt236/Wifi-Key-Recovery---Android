@@ -40,7 +40,6 @@ import java.util.Date;
 import java.util.List;
 
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.containers.WifiNetworkInfo;
 import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 
 public class UsefulBits {
@@ -48,7 +47,6 @@ public class UsefulBits {
     private Context mContext;
 
     public UsefulBits(Context cntx) {
-        Log.d(TAG, "^ Object created");
         mContext = cntx;
     }
 
@@ -101,89 +99,6 @@ public class UsefulBits {
             return "";
         }
 
-    }
-
-    public boolean isActivityAvailable(String packageName, String className) {
-        final PackageManager packageManager = mContext.getPackageManager();
-        final Intent intent = new Intent();
-        intent.setClassName(packageName, className);
-
-        List<ResolveInfo> list =
-                packageManager.queryIntentActivities(intent,
-                        PackageManager.MATCH_DEFAULT_ONLY);
-
-        if (list.size() > 0) {
-            Log.d(TAG, "^ Activity exists:" + className);
-        }
-
-        return list.size() > 0;
-    }
-
-    public boolean isIntentAvailable(Context context, String action) {
-        final PackageManager packageManager = context.getPackageManager();
-        final Intent intent = new Intent(action);
-        List<ResolveInfo> resolveInfo =
-                packageManager.queryIntentActivities(intent,
-                        PackageManager.MATCH_DEFAULT_ONLY);
-        return resolveInfo.size() > 0;
-    }
-
-    public boolean isOnline() {
-        try {
-            ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            if (cm != null) {
-                return cm.getActiveNetworkInfo().isConnected();
-            } else {
-                return false;
-            }
-
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public String listToString(List<WifiNetworkInfo> list) {
-        StringBuffer sb = new StringBuffer();
-        int cnt = 0;
-
-        for (WifiNetworkInfo obj : list) {
-            cnt += 1;
-            sb.append("#" + cnt + ":\n");
-            sb.append(obj.getDisplayedString() + "\n");
-        }
-
-        return sb.toString();
-    }
-
-    public void saveToFile(String fileName, File directory, String contents) {
-        Log.d(TAG, "^ Saving file.");
-
-        if (android.os.Environment.getExternalStorageState().equals(
-                android.os.Environment.MEDIA_MOUNTED)) {
-            try {
-
-                if (directory.canWrite()) {
-                    File gpxfile = new File(directory, fileName);
-                    FileWriter gpxwriter = new FileWriter(gpxfile);
-                    BufferedWriter out = new BufferedWriter(gpxwriter);
-                    out.write(contents);
-                    out.close();
-                    Log.d(TAG, "^ Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'");
-                    showToast("Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'",
-                            Toast.LENGTH_SHORT, Gravity.TOP, 0, 0);
-                }
-
-            } catch (Exception e) {
-                showToast("Could not write file:\n+ e.getMessage()",
-                        Toast.LENGTH_SHORT, Gravity.TOP, 0, 0);
-                Log.e(TAG, "^ Could not write file " + e.getMessage());
-            }
-
-        } else {
-            showToast("No SD card is mounted...", Toast.LENGTH_SHORT, Gravity.TOP, 0, 0);
-            Log.e(TAG, "^ No SD card is mounted.");
-        }
     }
 
     public void showAboutDialogue() {
@@ -241,23 +156,5 @@ public class UsefulBits {
         Toast toast = Toast.makeText(mContext.getApplicationContext(), message, duration);
         toast.setGravity(location, x_offset, y_offset);
         toast.show();
-    }
-
-    public static boolean validateIPv4Address(String address) {
-        try {
-            java.net.Inet4Address.getByName(address);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public static boolean validateIPv6Address(String address) {
-        try {
-            java.net.Inet6Address.getByName(address);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 }
