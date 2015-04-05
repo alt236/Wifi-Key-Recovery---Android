@@ -45,6 +45,8 @@
         android:padding="5dp">
 
         <ImageButton
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_centerVertical="true"
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -63,7 +65,7 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:layout_below="@id/btn_search"
+            android:layout_below="@id/edit_search"
             android:background="@color/green"/>
     </RelativeLayout>
 

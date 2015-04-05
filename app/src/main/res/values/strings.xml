@@ -59,5 +59,8 @@
     <string name="label_copy_all">Copy All</string>
     <string name="label_show_qr_code">Show QR Code</string>
     <string name="ssid_quicksearch">SSID Quicksearch</string>
+    <string name="title_activity_wifi_details">Wifi Network Details</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

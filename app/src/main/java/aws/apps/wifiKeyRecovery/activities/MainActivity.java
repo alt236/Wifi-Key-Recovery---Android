@@ -245,22 +245,17 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 
     @Override
     public void onItemClick(AdapterView<?> l, View v, int position, long id) {
-        IconFriendlyPopupMenu mPopup = new IconFriendlyPopupMenu(this, v, true);
-        mPopup.setOnMenuItemClickListener(this);
-
-        mCurrentNetinfo = null;
 
         if (v.getTag() != null) {
             if (v.getTag() instanceof WifiNetworkInfo) {
-                mCurrentNetinfo = (WifiNetworkInfo) v.getTag();
+                final Intent intent = new Intent(this, WifiDetailsActivity.class);
+                intent.putExtra(
+                        WifiDetailsActivity.EXTRAS_NETWORK_INFO,
+                        (WifiNetworkInfo) v.getTag());
+
+                startActivity(intent);
             }
         }
-
-        PopupMenuActionHelper.addCopyAll(this, mPopup);
-        PopupMenuActionHelper.addCopyPassword(this, mPopup);
-        PopupMenuActionHelper.addShowQrCode(this, mPopup);
-
-        mPopup.show();
     }
 
     @Override
@@ -279,16 +274,6 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
                 res = true;
                 break;
             case PopupMenuActionHelper.ACTION_ID_NETWORK_SHOW_QRCODE:
-                text = mCurrentNetinfo.getQrcodeString();
-
-                if (text.length() > 0) {
-                    final Intent intent = new Intent(this, QrCodeDisplayActivity.class);
-                    intent.putExtra(
-                            QrCodeDisplayActivity.EXTRAS_NETWORK_INFO,
-                            mCurrentNetinfo);
-
-                    startActivity(intent);
-                }
                 res = true;
                 break;
             default:
