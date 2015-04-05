@@ -80,7 +80,6 @@ public class ExecuteThread extends Thread {
         }
 
         final List<WifiNetworkInfo> l = new ArrayList<>();
-        l.add(new WifiNetworkInfo(mContext.getString(R.string.could_not_find_password_files)));
         return l;
     }
 

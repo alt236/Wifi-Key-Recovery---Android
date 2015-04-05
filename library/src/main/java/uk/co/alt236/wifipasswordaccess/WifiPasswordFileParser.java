@@ -26,7 +26,7 @@ public class WifiPasswordFileParser {
             final Map<String, String> passKeys = new HashMap<>();
             final Map<String, String> settings = new HashMap<>();
 
-            int type = -1;
+            WifiNetworkType type = WifiNetworkType.UNKNOWN;
 
             String ssid = "";
             String password = ""; // only one, for the qr code;
@@ -41,11 +41,11 @@ public class WifiPasswordFileParser {
                 } else if (trimmedBlockLine.startsWith("psk=")) {
                     passKeys.put("psk", trimmedBlockLine.replace("psk=", ""));
                     password = trimmedBlockLine.replace("psk=", "");
-                    type = WifiNetworkInfo.TYPE_WPA;
+                    type = WifiNetworkType.WPA;
                 } else if (trimmedBlockLine.startsWith("wep_key0=")) {
                     passKeys.put("WEP Key 0", trimmedBlockLine.replace("wep_key0=", ""));
                     password = trimmedBlockLine.replace("psk=", "");
-                    type = WifiNetworkInfo.TYPE_WEP;
+                    type = WifiNetworkType.WEP;
                 } else if (trimmedBlockLine.startsWith("wep_key1=")) {
                     passKeys.put("WEP Key 1", trimmedBlockLine.replace("wep_key1=", ""));
                 } else if (trimmedBlockLine.startsWith("wep_key2=")) {

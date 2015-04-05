@@ -17,6 +17,7 @@ import com.google.zxing.WriterException;
 
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.QRCodeUtils;
+import uk.co.alt236.wifipasswordaccess.QrCodeUtils;
 import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
 
 public class WifiDetailsFragment extends Fragment {
@@ -41,7 +42,7 @@ public class WifiDetailsFragment extends Fragment {
 
             try {
                 mIvQrCode.setImageBitmap(QRCodeUtils.encodeAsBitmap(
-                        mNetworkInfo.getQrcodeString(),
+                        QrCodeUtils.getQrCodeString(mNetworkInfo),
                         BarcodeFormat.QR_CODE,
                         size,
                         size));

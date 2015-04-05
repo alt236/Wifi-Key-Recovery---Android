@@ -39,5 +39,4 @@ final class Util {
 
         return str;
     }
-
 }
