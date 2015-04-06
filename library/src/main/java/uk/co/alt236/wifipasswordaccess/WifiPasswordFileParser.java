@@ -5,14 +5,23 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import uk.co.alt236.wifipasswordaccess.container.WifiNetworkBuilder;
+import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 /**
  * Created by alex on 04/04/15.
  */
 public class WifiPasswordFileParser {
+    public static final String PREFIX_SSID = "ssid=";
+    public static final String PREFIX_PSK = "psk=";
+    public static final String PREFIX_PASSWORD = "password=";
+    public static final String PREFIX_WEP_KEY0 = "wep_key0=";
+    public static final String PREFIX_WEP_KEY1 = "wep_key1=";
+    public static final String PREFIX_WEP_KEY2 = "wep_key2=";
+    public static final String PREFIX_WEP_KEY3 = "wep_key3=";
     private final static int RESULT_TITLE_LENGTH = 14;
     private final static String COMMENT_LINE_PREFIX = "#";
     private final static String WIFI_BLOCK_START = "network={";
@@ -23,7 +32,8 @@ public class WifiPasswordFileParser {
         final String blockLines[] = getSanitizedBlockLines(block);
 
         if (validateBlock(blockLines)) {
-            final Map<String, String> passKeys = new HashMap<>();
+            final WifiNetworkBuilder builder = new WifiNetworkBuilder();
+            // final Map<String, String> passKeys = new HashMap<>();
             final Map<String, String> settings = new HashMap<>();
 
             WifiNetworkType type = WifiNetworkType.UNKNOWN;
@@ -32,72 +42,44 @@ public class WifiPasswordFileParser {
             String password = ""; // only one, for the qr code;
 
             for (final String blockLine : blockLines) {
-               final String trimmedBlockLine = blockLine.trim();
+                final String trimmedLine = blockLine.trim();
 
-                if (trimmedBlockLine.startsWith("ssid=")) {
-                    ssid = trimmedBlockLine.replace("ssid=", "");
-
+                if (trimmedLine.startsWith(PREFIX_SSID)) {
+                    builder.setSsid(removePrefix(trimmedLine, PREFIX_SSID));
                     // Network Keys:
-                } else if (trimmedBlockLine.startsWith("psk=")) {
-                    passKeys.put("psk", trimmedBlockLine.replace("psk=", ""));
-                    password = trimmedBlockLine.replace("psk=", "");
-                    type = WifiNetworkType.WPA;
-                } else if (trimmedBlockLine.startsWith("wep_key0=")) {
-                    passKeys.put("WEP Key 0", trimmedBlockLine.replace("wep_key0=", ""));
-                    password = trimmedBlockLine.replace("psk=", "");
-                    type = WifiNetworkType.WEP;
-                } else if (trimmedBlockLine.startsWith("wep_key1=")) {
-                    passKeys.put("WEP Key 1", trimmedBlockLine.replace("wep_key1=", ""));
-                } else if (trimmedBlockLine.startsWith("wep_key2=")) {
-                    passKeys.put("WEP Key 2", trimmedBlockLine.replace("wep_key2=", ""));
-                } else if (trimmedBlockLine.startsWith("wep_key3=")) {
-                    passKeys.put("WEP Key 3", trimmedBlockLine.replace("wep_key3=", ""));
-                } else if (trimmedBlockLine.startsWith("password=")) {
-                    passKeys.put("Password", trimmedBlockLine.replace("password=", ""));
-                    password = trimmedBlockLine.replace("psk=", "");
+                } else if (trimmedLine.startsWith(PREFIX_PSK)) {
+                    builder.setPsk(removePrefix(trimmedLine, PREFIX_PSK));
+                } else if (trimmedLine.startsWith(PREFIX_WEP_KEY0)) {
+                    builder.setWepPassword(0, removePrefix(trimmedLine, PREFIX_WEP_KEY0));
+                } else if (trimmedLine.startsWith(PREFIX_WEP_KEY1)) {
+                    builder.setWepPassword(1, removePrefix(trimmedLine, PREFIX_WEP_KEY1));
+                } else if (trimmedLine.startsWith(PREFIX_WEP_KEY2)) {
+                    builder.setWepPassword(2, removePrefix(trimmedLine, PREFIX_WEP_KEY2));
+                } else if (trimmedLine.startsWith(PREFIX_WEP_KEY3)) {
+                    builder.setWepPassword(3, removePrefix(trimmedLine, PREFIX_WEP_KEY3));
+                } else if (trimmedLine.startsWith(PREFIX_PASSWORD)) {
+                    builder.setPassword(removePrefix(trimmedLine, PREFIX_PASSWORD));
 
                     // Settings:
-                } else if (trimmedBlockLine.startsWith("key_mgmt=")) {
-                    settings.put("Key MGMT", trimmedBlockLine.replace("key_mgmt=", ""));
-                } else if (trimmedBlockLine.startsWith("group=")) {
-                    settings.put("Group", trimmedBlockLine.replace("group=", ""));
-                } else if (trimmedBlockLine.startsWith("auth_alg=")) {
-                    settings.put("Algorithm", trimmedBlockLine.replace("auth_alg=", ""));
-                } else if (trimmedBlockLine.startsWith("eap=")) {
-                    settings.put("EAP", trimmedBlockLine.replace("eap=", ""));
-                } else if (trimmedBlockLine.startsWith("identity=")) {
-                    settings.put("Identity", trimmedBlockLine.replace("identity=", ""));
-                } else if (trimmedBlockLine.startsWith("anonymous_identity=")) {
-                    settings.put("Anonymous ID", trimmedBlockLine.replace("anonymous_identity=", ""));
-                } else if (trimmedBlockLine.startsWith("phase2=")) {
-                    settings.put("Phase2 Auth", trimmedBlockLine.replace("phase2=", ""));
+                } else if (trimmedLine.startsWith("key_mgmt=")) {
+                    settings.put("Key MGMT", trimmedLine.replace("key_mgmt=", ""));
+                } else if (trimmedLine.startsWith("group=")) {
+                    settings.put("Group", trimmedLine.replace("group=", ""));
+                } else if (trimmedLine.startsWith("auth_alg=")) {
+                    settings.put("Algorithm", trimmedLine.replace("auth_alg=", ""));
+                } else if (trimmedLine.startsWith("eap=")) {
+                    settings.put("EAP", trimmedLine.replace("eap=", ""));
+                } else if (trimmedLine.startsWith("identity=")) {
+                    settings.put("Identity", trimmedLine.replace("identity=", ""));
+                } else if (trimmedLine.startsWith("anonymous_identity=")) {
+                    settings.put("Anonymous ID", trimmedLine.replace("anonymous_identity=", ""));
+                } else if (trimmedLine.startsWith("phase2=")) {
+                    settings.put("Phase2 Auth", trimmedLine.replace("phase2=", ""));
                 }
             }
 
-            String result = "";
 
-            if (!passKeys.isEmpty()) {
-                if (ssid.length() > 0) {
-                    result += Util.appendBlanks("SSID:", RESULT_TITLE_LENGTH) + ssid + "\n";
-                }
-
-                Iterator<Map.Entry<String, String>> it = passKeys.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry<String, String> pairs = it.next();
-                    result += Util.appendBlanks(pairs.getKey() + ":", RESULT_TITLE_LENGTH) + pairs.getValue() + "\n";
-                }
-
-                it = settings.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry<String, String> pairs = it.next();
-                    result += Util.appendBlanks(pairs.getKey() + ":", RESULT_TITLE_LENGTH) + pairs.getValue() + "\n";
-                }
-
-            }
-
-            if (result.trim().length() > 0) {
-               return new WifiNetworkInfo(result.trim(), ssid, password, type);
-            }
+            return builder.build();
         } else {
             Log.d(TAG, "BLOCKPARSER: Invalid Block! " + block);
         }
@@ -129,21 +111,27 @@ public class WifiPasswordFileParser {
         return methodResult;
     }
 
-    private boolean validateBlock(final String blockLines[]){
-        if(blockLines.length < 1){return false;}
+    private String removePrefix(final String text, final String prefix){
+        return text.substring(prefix.length());
+    }
+
+    private boolean validateBlock(final String blockLines[]) {
+        if (blockLines.length < 1) {
+            return false;
+        }
 
         final boolean firstLineOk = WIFI_BLOCK_START.equals(blockLines[0]);
-        final boolean lastLineOk = WIFI_BLOCK_END.equals(blockLines[blockLines.length -1]);
+        final boolean lastLineOk = WIFI_BLOCK_END.equals(blockLines[blockLines.length - 1]);
 
         return firstLineOk && lastLineOk;
     }
 
-    private static String[] getSanitizedBlockLines(final String block){
+    private static String[] getSanitizedBlockLines(final String block) {
         final List<String> lines = new ArrayList<>();
         final String blockLines[] = block.trim().split("\n");
-        for(final String line : blockLines){
+        for (final String line : blockLines) {
             final String trimmedLine = line.trim();
-            if(!trimmedLine.startsWith(COMMENT_LINE_PREFIX)){
+            if (!trimmedLine.startsWith(COMMENT_LINE_PREFIX)) {
                 lines.add(trimmedLine);
             }
         }

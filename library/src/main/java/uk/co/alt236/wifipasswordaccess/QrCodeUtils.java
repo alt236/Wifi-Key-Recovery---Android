@@ -2,7 +2,8 @@ package uk.co.alt236.wifipasswordaccess;
 
 import android.text.TextUtils;
 
-import org.w3c.dom.Text;
+import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+
 
 /**
  * Created by alex on 05/04/15.
@@ -27,13 +28,13 @@ public class QrCodeUtils {
     }
 
     public static String getQrCodeString(final WifiNetworkInfo networkInfo){
-        if(TextUtils.isEmpty(networkInfo.getQrSsid())){
+        if (TextUtils.isEmpty(networkInfo.getSsid())) {
             return "";
         }
 
         final StringBuilder sb = new StringBuilder();
         sb.append("WIFI:");
-        sb.append("S:" + networkInfo.getQrSsid() + ";");
+        sb.append("S:" + networkInfo.getSsid() + ";");
         sb.append("T:" + getNetworkTypeAsString(networkInfo.getNetType()) + ";");
 
         if (!TextUtils.isEmpty(networkInfo.getPassword())) {
