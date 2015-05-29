@@ -1,10 +1,8 @@
 package aws.apps.wifiKeyRecovery.fragments;
 
-import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +16,12 @@ import com.google.zxing.WriterException;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.QRCodeUtils;
 import uk.co.alt236.wifipasswordaccess.QrCodeUtils;
-import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 public class WifiDetailsFragment extends Fragment {
     private static final String WIFI_NETWORK = "wifi_network";
+    private ImageView mIvQrCode;
+    private WifiNetworkInfo mNetworkInfo;
     private final ViewTreeObserver.OnGlobalLayoutListener mGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         @SuppressWarnings("deprecation")
@@ -51,8 +51,6 @@ public class WifiDetailsFragment extends Fragment {
             }
         }
     };
-    private ImageView mIvQrCode;
-    private WifiNetworkInfo mNetworkInfo;
 
     public WifiDetailsFragment() {}
 
@@ -67,7 +65,7 @@ public class WifiDetailsFragment extends Fragment {
 
         mNetworkInfo = getArguments().getParcelable(WIFI_NETWORK);
 
-        mTextViewSsid.setText(mNetworkInfo.getQrSsid());
+        mTextViewSsid.setText(mNetworkInfo.getSsid());
         mIvQrCode.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
 
         return view;

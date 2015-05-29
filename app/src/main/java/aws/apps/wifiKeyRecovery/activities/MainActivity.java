@@ -27,7 +27,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.text.ClipboardManager;
 import android.text.Editable;
@@ -54,7 +53,6 @@ import java.util.List;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.adapters.NetInfoAdapter;
 import aws.apps.wifiKeyRecovery.containers.SavedData;
-import aws.apps.wifiKeyRecovery.ui.IconFriendlyPopupMenu;
 import aws.apps.wifiKeyRecovery.ui.IconFriendlyPopupMenu.OnMenuItemClickListener;
 import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 import aws.apps.wifiKeyRecovery.util.Constants;
@@ -62,12 +60,39 @@ import aws.apps.wifiKeyRecovery.util.ExecTerminal;
 import aws.apps.wifiKeyRecovery.util.ExecuteThread;
 import aws.apps.wifiKeyRecovery.util.PopupMenuActionHelper;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
-import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends ActionBarActivity implements OnItemClickListener, OnMenuItemClickListener {
     private static final int DIALOG_GET_PASSWORDS = 1;
     private final String TAG = this.getClass().getName();
+    private Bundle mThreadBundle;
+    private EditText mEditFilter;
+    private ExecuteThread mExecuteThread;
+    private ListView mList;
+    private WifiNetworkInfo mCurrentNetinfo;
+    private NetInfoAdapter mNiAdapter;
+    private TextWatcher filterTextWatcher = new TextWatcher() {
+
+        @Override
+        public void afterTextChanged(Editable s) {
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (mNiAdapter != null) {
+                mNiAdapter.getFilter().filter(s);
+            } else {
+                Log.w(TAG, "^ TextWatcher: Adapter is null!");
+            }
+        }
+    };
+    private String mTimeDate = "";
+    private TextView mTextViewResultCount;
     private final Handler handler = new Handler() {
         @Override
         @SuppressWarnings("unchecked")
@@ -98,33 +123,6 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 
         }
     };
-    private Bundle mThreadBundle;
-    private EditText mEditFilter;
-    private ExecuteThread mExecuteThread;
-    private ListView mList;
-    private WifiNetworkInfo mCurrentNetinfo;
-    private NetInfoAdapter mNiAdapter;
-    private TextWatcher filterTextWatcher = new TextWatcher() {
-
-        @Override
-        public void afterTextChanged(Editable s) {
-        }
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (mNiAdapter != null) {
-                mNiAdapter.getFilter().filter(s);
-            } else {
-                Log.w(TAG, "^ TextWatcher: Adapter is null!");
-            }
-        }
-    };
-    private String mTimeDate = "";
-    private TextView mTextViewResultCount;
     private UsefulBits mUsefulBits;
 
     // Sets screen rotation as fixed to current rotation setting
@@ -385,7 +383,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
         for (final WifiNetworkInfo obj : list) {
             cnt += 1;
             sb.append("#" + cnt + ":\n");
-            sb.append(obj.getDisplayedString() + "\n");
+            sb.append(obj.getSsid() + "\n");
         }
 
         return sb.toString();

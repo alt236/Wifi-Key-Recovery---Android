@@ -1,14 +1,13 @@
 package uk.co.alt236.wifipasswordaccess.container;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
 
 /**
  * Created by alex on 06/04/15.
  */
-public class WepNetworkInfo implements WifiNetworkInfo, Parcelable {
+public class WepNetworkInfo implements WifiNetworkInfo {
     public static final Creator<WepNetworkInfo> CREATOR = new Creator<WepNetworkInfo>() {
         @Override
         public WepNetworkInfo createFromParcel(Parcel in) {

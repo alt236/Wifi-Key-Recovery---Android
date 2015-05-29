@@ -26,8 +26,8 @@ import java.util.List;
 
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal.ExecResult;
-import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
 import uk.co.alt236.wifipasswordaccess.WifiPasswordFileParser;
+import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 public class ExecuteThread extends Thread {
     public final static int STATE_DONE = 0;

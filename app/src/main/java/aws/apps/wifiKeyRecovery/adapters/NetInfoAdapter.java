@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import aws.apps.wifiKeyRecovery.R;
-import uk.co.alt236.wifipasswordaccess.WifiNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 public class NetInfoAdapter extends BaseAdapter implements Filterable {
 
@@ -105,7 +105,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
         if (netInfo != null) {
             final TextView text = (TextView) convertView.findViewById(R.id.text);
 
-            text.setText(netInfo.getDisplayedString());
+            text.setText(netInfo.getSsid());
             convertView.setTag(netInfo);
         }
 
@@ -118,7 +118,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
         String c;
 
         for (int i = size - 1; i >= 0; i--) {
-            title = mSubItems.get(i).getQrSsid();
+            title = mSubItems.get(i).getSsid();
 
             try {
                 Integer.valueOf(title.substring(0, 1));
@@ -162,7 +162,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
 
                 for (int index = 0; index < mAllItems.size(); index++) {
                     final WifiNetworkInfo item = mAllItems.get(index);
-                    if (item.getQrSsid().toLowerCase(Locale.US).contains(filterString.toString().toLowerCase())) {
+                    if (item.getSsid().toLowerCase(Locale.US).contains(filterString.toString().toLowerCase())) {
                         i.add(item);
                     }
 
