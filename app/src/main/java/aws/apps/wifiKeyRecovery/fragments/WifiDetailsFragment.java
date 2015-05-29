@@ -52,7 +52,8 @@ public class WifiDetailsFragment extends Fragment {
         }
     };
 
-    public WifiDetailsFragment() {}
+    public WifiDetailsFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,11 +74,11 @@ public class WifiDetailsFragment extends Fragment {
 
     @Override
     @SuppressWarnings("deprecation")
-    public void onDestroyView(){
+    public void onDestroyView() {
         super.onDestroyView();
-        if(Build.VERSION.SDK_INT < 16){
+        if (Build.VERSION.SDK_INT < 16) {
             mIvQrCode.getViewTreeObserver().removeGlobalOnLayoutListener(mGlobalLayoutListener);
-        }else{
+        } else {
             mIvQrCode.getViewTreeObserver().removeOnGlobalLayoutListener(mGlobalLayoutListener);
         }
     }

@@ -9,10 +9,10 @@
                 tools:context="aws.apps.wifiKeyRecovery.activities.WifiDetailsActivity$PlaceholderFragment">
 
     <ImageView
-        android:layout_above="@+id/ssid"
         android:id="@+id/qrcode"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/ssid"
         android:layout_gravity="center_horizontal|center_vertical"
         android:layout_margin="15dp"
         android:layout_weight="0.9"
@@ -23,9 +23,9 @@
 
     <TextView
         android:id="@+id/ssid"
-        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_weight="0.1"
         android:gravity="center_horizontal"
         android:padding="10dp"

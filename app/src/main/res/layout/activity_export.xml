@@ -35,8 +35,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
-            android:drawableStart="@android:drawable/ic_menu_share"
             android:drawableLeft="@android:drawable/ic_menu_share"
+            android:drawableStart="@android:drawable/ic_menu_share"
             android:text="@string/label_export_share"/>
 
         <Button
@@ -45,8 +45,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
-            android:drawableStart="@android:drawable/ic_menu_upload"
             android:drawableLeft="@android:drawable/ic_menu_upload"
+            android:drawableStart="@android:drawable/ic_menu_upload"
             android:text="@string/label_export_to_sd"/>
 
         <Button
@@ -55,8 +55,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="50"
-            android:drawableStart="@android:drawable/ic_menu_close_clear_cancel"
             android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
+            android:drawableStart="@android:drawable/ic_menu_close_clear_cancel"
             android:text="@string/label_export_close"/>
     </LinearLayout>
 

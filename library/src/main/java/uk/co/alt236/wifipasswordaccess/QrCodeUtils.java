@@ -27,7 +27,7 @@ public class QrCodeUtils {
         return result;
     }
 
-    public static String getQrCodeString(final WifiNetworkInfo networkInfo){
+    public static String getQrCodeString(final WifiNetworkInfo networkInfo) {
         if (TextUtils.isEmpty(networkInfo.getSsid())) {
             return "";
         }

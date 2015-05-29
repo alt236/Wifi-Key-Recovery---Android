@@ -28,7 +28,7 @@ public class WifiPasswordFileParser {
     private final static String WIFI_BLOCK_END = "}";
     private final String TAG = getClass().getName();
 
-    private final WifiNetworkInfo parseBlock(final String block){
+    private final WifiNetworkInfo parseBlock(final String block) {
         final String blockLines[] = getSanitizedBlockLines(block);
 
         if (validateBlock(blockLines)) {
@@ -108,7 +108,7 @@ public class WifiPasswordFileParser {
         return methodResult;
     }
 
-    private String removePrefix(final String text, final String prefix){
+    private String removePrefix(final String text, final String prefix) {
         return text.substring(prefix.length());
     }
 
