@@ -16,12 +16,14 @@
 package aws.apps.wifiKeyRecovery.adapters;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -37,8 +39,6 @@ import aws.apps.wifiKeyRecovery.R;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 public class NetInfoAdapter extends BaseAdapter implements Filterable {
-
-    final String TAG = this.getClass().getName();
     private final Map<String, Integer> mAlphaIndexer;
     private final Context mContext;
     private List<WifiNetworkInfo> mAllItems;
@@ -104,8 +104,15 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
 
         if (netInfo != null) {
             final TextView text = (TextView) convertView.findViewById(R.id.text);
-
+            final ImageView icon = (ImageView) convertView.findViewById(R.id.icon);
             text.setText(netInfo.getSsid());
+
+            if (TextUtils.isEmpty(netInfo.getPassword())) {
+                icon.setImageResource(R.drawable.ic_list_wifi_open);
+            } else {
+                icon.setImageResource(R.drawable.ic_list_wifi_protected);
+            }
+
             convertView.setTag(netInfo);
         }
 

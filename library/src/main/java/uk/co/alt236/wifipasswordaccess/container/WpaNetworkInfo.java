@@ -25,6 +25,12 @@ public class WpaNetworkInfo implements WifiNetworkInfo, Parcelable {
     private final String mPassword;
     private final WifiNetworkType mNetType;
 
+    /*package*/ WpaNetworkInfo(final WifiNetworkBuilder builder) {
+        this.mSsid = builder.getSsid();
+        this.mPassword = builder.getPassword();
+        this.mNetType = WifiNetworkType.WPA;
+    }
+
     private WpaNetworkInfo(final Parcel in) {
         mSsid = in.readString();
         mPassword = in.readString();

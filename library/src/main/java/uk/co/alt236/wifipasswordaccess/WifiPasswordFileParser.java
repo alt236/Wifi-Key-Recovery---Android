@@ -80,8 +80,6 @@ public class WifiPasswordFileParser {
 
 
             return builder.build();
-        } else {
-            Log.d(TAG, "BLOCKPARSER: Invalid Block! " + block);
         }
 
         return null;
@@ -95,7 +93,6 @@ public class WifiPasswordFileParser {
         }
 
         final String passwordBlocks[] = wifiPasswordString.split("\n\n");
-
 
         Log.d(TAG, "FILEPARSER: Blocks: " + passwordBlocks.length);
 

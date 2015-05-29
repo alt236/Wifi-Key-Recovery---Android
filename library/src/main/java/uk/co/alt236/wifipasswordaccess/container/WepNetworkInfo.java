@@ -24,6 +24,12 @@ public class WepNetworkInfo implements WifiNetworkInfo {
     private final String mPassword;
     private final WifiNetworkType mNetType;
 
+    /*package*/ WepNetworkInfo(final WifiNetworkBuilder builder) {
+        this.mSsid = builder.getSsid();
+        this.mPassword = getFirstPassword(builder);
+        this.mNetType = WifiNetworkType.WEP;
+    }
+
     private WepNetworkInfo(final Parcel in) {
         mSsid = in.readString();
         mPassword = in.readString();
@@ -33,6 +39,14 @@ public class WepNetworkInfo implements WifiNetworkInfo {
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    private String getFirstPassword(final WifiNetworkBuilder builder) {
+        if (builder.getWepPasswords()[0] == null) {
+            return builder.getPassword();
+        } else {
+            return builder.getWepPasswords()[0];
+        }
     }
 
     @Override

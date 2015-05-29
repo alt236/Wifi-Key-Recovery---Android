@@ -8,9 +8,18 @@ public class WifiNetworkBuilder {
     private String[] wepPasswords = new String[4];
     private String psk;
     private String password;
+    private boolean hasWepPassword;
 
     public WifiNetworkInfo build() {
-        return null;
+        if (hasWepPassword) {
+            return new WepNetworkInfo(this);
+        } else {
+            return new WpaNetworkInfo(this);
+        }
+    }
+
+    /*pacage*/ String getPassword() {
+        return password;
     }
 
     public WifiNetworkBuilder setPassword(final String password) {
@@ -18,9 +27,17 @@ public class WifiNetworkBuilder {
         return this;
     }
 
+    /*pacage*/ String getPsk() {
+        return psk;
+    }
+
     public WifiNetworkBuilder setPsk(final String psk) {
         this.psk = psk;
         return this;
+    }
+
+    /*pacage*/ String getSsid() {
+        return ssid;
     }
 
     public WifiNetworkBuilder setSsid(final String ssid) {
@@ -28,8 +45,13 @@ public class WifiNetworkBuilder {
         return this;
     }
 
+    /*pacage*/ String[] getWepPasswords() {
+        return wepPasswords;
+    }
+
     public WifiNetworkBuilder setWepPassword(final int position, final String password) {
         wepPasswords[position] = password;
+        hasWepPassword = true;
         return this;
     }
 }
