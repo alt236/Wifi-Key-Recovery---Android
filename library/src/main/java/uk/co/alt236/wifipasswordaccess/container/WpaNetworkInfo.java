@@ -8,7 +8,7 @@ import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
 /**
  * Created by alex on 06/04/15.
  */
-public class WpaNetworkInfo implements WifiNetworkInfo, Parcelable {
+public class WpaNetworkInfo implements WifiProtectedNetworkInfo, Parcelable {
     public static final Parcelable.Creator<WpaNetworkInfo> CREATOR = new Parcelable.Creator<WpaNetworkInfo>() {
         @Override
         public WpaNetworkInfo createFromParcel(Parcel in) {

@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +41,7 @@ import java.util.Set;
 
 import aws.apps.wifiKeyRecovery.R;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
 
 public class NetInfoAdapter extends BaseAdapter implements Filterable {
     private final int COLOR_RED = Color.parseColor("#F44336");
@@ -217,10 +217,10 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
         }
 
         private void setIcon(final WifiNetworkInfo netInfo) {
-            if (TextUtils.isEmpty(netInfo.getPassword())) {
-                icon.setImageResource(R.drawable.ic_list_wifi_open);
-            } else {
+            if (netInfo instanceof WifiProtectedNetworkInfo) {
                 icon.setImageResource(R.drawable.ic_list_wifi_protected);
+            } else {
+                icon.setImageResource(R.drawable.ic_list_wifi_open);
             }
 
             final int color;

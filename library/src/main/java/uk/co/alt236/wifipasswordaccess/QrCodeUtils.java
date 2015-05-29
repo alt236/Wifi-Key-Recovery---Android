@@ -3,6 +3,7 @@ package uk.co.alt236.wifipasswordaccess;
 import android.text.TextUtils;
 
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
 
 
 /**
@@ -37,8 +38,10 @@ public class QrCodeUtils {
         sb.append("S:" + networkInfo.getSsid() + ";");
         sb.append("T:" + getNetworkTypeAsString(networkInfo.getNetType()) + ";");
 
-        if (!TextUtils.isEmpty(networkInfo.getPassword())) {
-            sb.append("P:" + networkInfo.getPassword() + ";");
+        if (networkInfo instanceof WifiProtectedNetworkInfo) {
+            if (!TextUtils.isEmpty(((WifiProtectedNetworkInfo) networkInfo).getPassword())) {
+                sb.append("P:" + ((WifiProtectedNetworkInfo) networkInfo).getPassword() + ";");
+            }
         }
 
         sb.append(";");

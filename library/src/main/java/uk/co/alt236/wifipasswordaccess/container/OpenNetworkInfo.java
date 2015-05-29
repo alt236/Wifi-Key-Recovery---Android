@@ -45,11 +45,6 @@ public class OpenNetworkInfo implements WifiNetworkInfo {
     }
 
     @Override
-    public String getPassword() {
-        return mPassword;
-    }
-
-    @Override
     public String getSsid() {
         return mSsid;
     }

@@ -61,7 +61,6 @@ import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 import aws.apps.wifiKeyRecovery.util.Constants;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal;
 import aws.apps.wifiKeyRecovery.util.ExecuteThread;
-import aws.apps.wifiKeyRecovery.util.PopupMenuActionHelper;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
@@ -262,22 +261,22 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
         final int actionId = paramMenuItem.getItemId();
         String text;
 
-        final boolean res;
-        switch (actionId) {
-            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_ALL_AS_TEXT:
-                copyStringToClipboard(mCurrentNetinfo.toString());
-                res = true;
-                break;
-            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_PASSWORD:
-                copyStringToClipboard(mCurrentNetinfo.getPassword());
-                res = true;
-                break;
-            case PopupMenuActionHelper.ACTION_ID_NETWORK_SHOW_QRCODE:
-                res = true;
-                break;
-            default:
-                res = false;
-        }
+        final boolean res = false;
+//        switch (actionId) {
+//            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_ALL_AS_TEXT:
+//                copyStringToClipboard(mCurrentNetinfo.toString());
+//                res = true;
+//                break;
+//            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_PASSWORD:
+//                copyStringToClipboard(mCurrentNetinfo.getPassword());
+//                res = true;
+//                break;
+//            case PopupMenuActionHelper.ACTION_ID_NETWORK_SHOW_QRCODE:
+//                res = true;
+//                break;
+//            default:
+//                res = false;
+//        }
 
         return res;
     }

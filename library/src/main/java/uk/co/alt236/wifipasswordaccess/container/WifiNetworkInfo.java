@@ -10,7 +10,5 @@ import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
 public interface WifiNetworkInfo extends Parcelable {
     public WifiNetworkType getNetType();
 
-    public String getPassword();
-
     public String getSsid();
 }

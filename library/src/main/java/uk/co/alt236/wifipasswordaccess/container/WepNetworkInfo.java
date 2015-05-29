@@ -7,7 +7,7 @@ import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
 /**
  * Created by alex on 06/04/15.
  */
-public class WepNetworkInfo implements WifiNetworkInfo {
+public class WepNetworkInfo implements WifiProtectedNetworkInfo {
     public static final Creator<WepNetworkInfo> CREATOR = new Creator<WepNetworkInfo>() {
         @Override
         public WepNetworkInfo createFromParcel(Parcel in) {
