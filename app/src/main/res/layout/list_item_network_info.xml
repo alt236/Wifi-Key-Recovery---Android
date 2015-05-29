@@ -9,14 +9,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_list_wifi_open"/>
 
     <TextView
-        android:id="@+id/text"
+        android:id="@+id/ssid"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/icon"
         android:padding="5dp"
         android:typeface="monospace"/>
 
+
+    <TextView
+        android:id="@+id/additional"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ssid"
+        android:layout_toRightOf="@+id/icon"
+        android:padding="5dp"
+        android:typeface="monospace"/>
 </RelativeLayout>

@@ -29,6 +29,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v7.app.ActionBarActivity;
 import android.text.ClipboardManager;
 import android.text.Editable;
@@ -246,15 +247,13 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
     @Override
     public void onItemClick(AdapterView<?> l, View v, int position, long id) {
 
-        if (v.getTag() != null) {
-            if (v.getTag() instanceof WifiNetworkInfo) {
-                final Intent intent = new Intent(this, WifiDetailsActivity.class);
-                intent.putExtra(
-                        WifiDetailsActivity.EXTRAS_NETWORK_INFO,
-                        (WifiNetworkInfo) v.getTag());
-
-                startActivity(intent);
-            }
+        final WifiNetworkInfo networkInfo = (WifiNetworkInfo) l.getAdapter().getItem(position);
+        if (networkInfo != null) {
+            final Intent intent = new Intent(this, WifiDetailsActivity.class);
+            intent.putExtra(
+                    WifiDetailsActivity.EXTRAS_NETWORK_INFO,
+                    (Parcelable) networkInfo);
+            startActivity(intent);
         }
     }
 

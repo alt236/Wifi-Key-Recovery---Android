@@ -18,6 +18,9 @@
 package aws.apps.wifiKeyRecovery.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,8 +44,13 @@ import aws.apps.wifiKeyRecovery.R;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 public class NetInfoAdapter extends BaseAdapter implements Filterable {
+    private final int COLOR_RED = Color.parseColor("#F44336");
+    private final int COLOR_ORANGE = Color.parseColor("#FF5722");
+    private final int COLOR_GREEN = Color.parseColor("#4CAF50");
+
     private final Map<String, Integer> mAlphaIndexer;
     private final Context mContext;
+    private final LayoutInflater mInflater;
     private List<WifiNetworkInfo> mAllItems;
     private List<WifiNetworkInfo> mSubItems;
     private String[] mSections;
@@ -50,12 +58,12 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
 
     public NetInfoAdapter(Context context, List<WifiNetworkInfo> appsList) {
         super();
-
         mSubItems = appsList;
         mAllItems = this.mSubItems;
 
         mContext = context;
         mAlphaIndexer = new HashMap<String, Integer>();
+        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         prepareIndexer();
     }
@@ -100,23 +108,11 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
         final WifiNetworkInfo netInfo = mSubItems.get(position);
 
         if (convertView == null) {
-            final LayoutInflater vi = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = vi.inflate(R.layout.list_item_network_info, null);
+            convertView = mInflater.inflate(R.layout.list_item_network_info, null);
+            convertView.setTag(new ViewHolder(convertView));
         }
 
-        if (netInfo != null) {
-            final TextView text = (TextView) convertView.findViewById(R.id.text);
-            final ImageView icon = (ImageView) convertView.findViewById(R.id.icon);
-            text.setText(netInfo.getSsid());
-
-            if (TextUtils.isEmpty(netInfo.getPassword())) {
-                icon.setImageResource(R.drawable.ic_list_wifi_open);
-            } else {
-                icon.setImageResource(R.drawable.ic_list_wifi_protected);
-            }
-
-            convertView.setTag(netInfo);
-        }
+        ((ViewHolder) convertView.getTag()).populate(netInfo);
 
         return convertView;
     }
@@ -199,4 +195,55 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
         }
     }
 
+    protected class ViewHolder {
+        final TextView ssid;
+        final TextView additional;
+        final ImageView icon;
+
+        public ViewHolder(final View root) {
+            ssid = (TextView) root.findViewById(R.id.ssid);
+            additional = (TextView) root.findViewById(R.id.additional);
+            icon = (ImageView) root.findViewById(R.id.icon);
+        }
+
+        private String formatAdditionalInfo(final WifiNetworkInfo netInfo) {
+            return "unimplemented!";
+        }
+
+        public void populate(final WifiNetworkInfo netInfo) {
+            ssid.setText(netInfo.getSsid());
+            additional.setText(formatAdditionalInfo(netInfo));
+            setIcon(netInfo);
+        }
+
+        private void setIcon(final WifiNetworkInfo netInfo) {
+            if (TextUtils.isEmpty(netInfo.getPassword())) {
+                icon.setImageResource(R.drawable.ic_list_wifi_open);
+            } else {
+                icon.setImageResource(R.drawable.ic_list_wifi_protected);
+            }
+
+            final int color;
+            switch (netInfo.getNetType()) {
+
+                case UNKNOWN:
+                    color = COLOR_RED;
+                    break;
+                case NO_ENCRYPTION:
+                    color = COLOR_RED;
+                    break;
+                case WEP:
+                    color = COLOR_ORANGE;
+                    break;
+                case WPA:
+                    color = COLOR_GREEN;
+                    break;
+                default:
+                    color = COLOR_RED;
+                    break;
+            }
+
+            icon.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));
+        }
+    }
 }
