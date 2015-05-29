@@ -22,18 +22,16 @@ public class WepNetworkInfo implements WifiNetworkInfo {
 
     private final String mSsid;
     private final String mPassword;
-    private final WifiNetworkType mNetType;
+    private final WifiNetworkType mNetType = WifiNetworkType.WEP;
 
     /*package*/ WepNetworkInfo(final WifiNetworkBuilder builder) {
         this.mSsid = builder.getSsid();
         this.mPassword = getFirstPassword(builder);
-        this.mNetType = WifiNetworkType.WEP;
     }
 
     private WepNetworkInfo(final Parcel in) {
         mSsid = in.readString();
         mPassword = in.readString();
-        mNetType = (WifiNetworkType) in.readSerializable();
     }
 
     @Override
@@ -68,6 +66,5 @@ public class WepNetworkInfo implements WifiNetworkInfo {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mSsid);
         dest.writeString(mPassword);
-        dest.writeSerializable(mNetType);
     }
 }

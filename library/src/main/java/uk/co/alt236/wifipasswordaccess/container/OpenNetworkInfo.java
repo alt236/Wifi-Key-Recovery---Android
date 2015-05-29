@@ -1,36 +1,35 @@
 package uk.co.alt236.wifipasswordaccess.container;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
 
 /**
  * Created by alex on 06/04/15.
  */
-public class WpaNetworkInfo implements WifiNetworkInfo, Parcelable {
-    public static final Parcelable.Creator<WpaNetworkInfo> CREATOR = new Parcelable.Creator<WpaNetworkInfo>() {
+public class OpenNetworkInfo implements WifiNetworkInfo {
+    public static final Creator<OpenNetworkInfo> CREATOR = new Creator<OpenNetworkInfo>() {
         @Override
-        public WpaNetworkInfo createFromParcel(Parcel in) {
-            return new WpaNetworkInfo(in);
+        public OpenNetworkInfo createFromParcel(Parcel in) {
+            return new OpenNetworkInfo(in);
         }
 
         @Override
-        public WpaNetworkInfo[] newArray(int size) {
-            return new WpaNetworkInfo[size];
+        public OpenNetworkInfo[] newArray(int size) {
+            return new OpenNetworkInfo[size];
         }
     };
 
     private final String mSsid;
     private final String mPassword;
-    private final WifiNetworkType mNetType = WifiNetworkType.WPA;
+    private final WifiNetworkType mNetType = WifiNetworkType.NO_ENCRYPTION;
 
-    /*package*/ WpaNetworkInfo(final WifiNetworkBuilder builder) {
+    /*package*/ OpenNetworkInfo(final WifiNetworkBuilder builder) {
         this.mSsid = builder.getSsid();
-        this.mPassword = builder.getPassword();
+        this.mPassword = null;
     }
 
-    private WpaNetworkInfo(final Parcel in) {
+    private OpenNetworkInfo(final Parcel in) {
         mSsid = in.readString();
         mPassword = in.readString();
     }

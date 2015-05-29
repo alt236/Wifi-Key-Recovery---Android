@@ -1,5 +1,7 @@
 package uk.co.alt236.wifipasswordaccess.container;
 
+import android.text.TextUtils;
+
 /**
  * Created by alex on 06/04/15.
  */
@@ -11,7 +13,9 @@ public class WifiNetworkBuilder {
     private boolean hasWepPassword;
 
     public WifiNetworkInfo build() {
-        if (hasWepPassword) {
+        if (TextUtils.isEmpty(password) && !hasWepPassword) {
+            return new OpenNetworkInfo(this);
+        } else if (hasWepPassword) {
             return new WepNetworkInfo(this);
         } else {
             return new WpaNetworkInfo(this);

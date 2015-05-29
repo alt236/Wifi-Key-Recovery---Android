@@ -45,7 +45,7 @@ import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 public class NetInfoAdapter extends BaseAdapter implements Filterable {
     private final int COLOR_RED = Color.parseColor("#F44336");
-    private final int COLOR_ORANGE = Color.parseColor("#FF5722");
+    private final int COLOR_ORANGE = Color.parseColor("#FFC107");
     private final int COLOR_GREEN = Color.parseColor("#4CAF50");
 
     private final Map<String, Integer> mAlphaIndexer;

@@ -393,7 +393,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
     private class NetInfoComparator implements Comparator<WifiNetworkInfo> {
         @Override
         public int compare(WifiNetworkInfo o1, WifiNetworkInfo o2) {
-            return o1.toString().compareToIgnoreCase(o2.toString());
+            return o1.getSsid().compareToIgnoreCase(o2.getSsid());
         }
     }
 }
