@@ -1,7 +1,8 @@
-package uk.co.alt236.wifipasswordaccess;
+package uk.co.alt236.wifipasswordaccess.util;
 
 import android.text.TextUtils;
 
+import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
 

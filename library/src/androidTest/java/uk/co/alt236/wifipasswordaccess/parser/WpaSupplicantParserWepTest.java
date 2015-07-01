@@ -1,7 +1,9 @@
-package uk.co.alt236.wifipasswordaccess;
+package uk.co.alt236.wifipasswordaccess.parser;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
 import uk.co.alt236.wifipasswordaccess.container.WepNetworkInfo;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
@@ -20,9 +22,9 @@ public class WpaSupplicantParserWepTest extends TestCase {
 
         final WifiNetworkInfo networkInfo = parser.parseNetworkBlock(input);
         assertNotNull(networkInfo);
-        assertEquals(TestUtil.quote("leap-example"), networkInfo.getSsid());
+        Assert.assertEquals(TestUtil.quote("leap-example"), networkInfo.getSsid());
 
-        assertEquals(WifiNetworkType.WEP, networkInfo.getNetType());
+        Assert.assertEquals(WifiNetworkType.WEP, networkInfo.getNetType());
         final WepNetworkInfo wepNetworkInfo = (WepNetworkInfo) networkInfo;
         assertEquals(TestUtil.quote("foobar"), wepNetworkInfo.getPassword());
     }

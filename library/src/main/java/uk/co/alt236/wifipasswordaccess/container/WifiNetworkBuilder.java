@@ -58,6 +58,8 @@ public class WifiNetworkBuilder {
     private boolean isOpen() {
         return TextUtils.isEmpty(password)
                 && TextUtils.isEmpty(psk)
+                && (TextUtils.isEmpty(keyManagement) || "NONE".equalsIgnoreCase(keyManagement))
+                && TextUtils.isEmpty(eap)
                 && !hasWepPassword;
     }
 
@@ -77,7 +79,9 @@ public class WifiNetworkBuilder {
 
     public WifiNetworkBuilder setWepPassword(final int position, final String password) {
         wepPasswords[position] = password;
-        hasWepPassword = true;
+        if(password != null && password.length() > 0) {
+            hasWepPassword = true;
+        }
         return this;
     }
 }

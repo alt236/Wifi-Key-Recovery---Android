@@ -1,4 +1,4 @@
-package uk.co.alt236.wifipasswordaccess;
+package uk.co.alt236.wifipasswordaccess.util;
 
 import android.text.TextUtils;
 
