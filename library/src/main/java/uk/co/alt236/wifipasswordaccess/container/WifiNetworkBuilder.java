@@ -6,16 +6,18 @@ import android.text.TextUtils;
  * Created by alex on 06/04/15.
  */
 public class WifiNetworkBuilder {
-    private String ssid;
     private String[] wepPasswords = new String[4];
+    private boolean hasWepPassword;
+    private String ssid;
     private String psk;
     private String password;
-    private boolean hasWepPassword;
+    private String keyManagement;
+    private String eap;
 
     public WifiNetworkInfo build() {
-        if (TextUtils.isEmpty(password) && !hasWepPassword) {
+        if (isOpen()) {
             return new OpenNetworkInfo(this);
-        } else if (hasWepPassword) {
+        } else if (isWep()) {
             return new WepNetworkInfo(this);
         } else {
             return new WpaNetworkInfo(this);
@@ -51,6 +53,26 @@ public class WifiNetworkBuilder {
 
     /*pacage*/ String[] getWepPasswords() {
         return wepPasswords;
+    }
+
+    private boolean isOpen() {
+        return TextUtils.isEmpty(password)
+                && TextUtils.isEmpty(psk)
+                && !hasWepPassword;
+    }
+
+    private boolean isWep() {
+        return hasWepPassword || "LEAP".equals(eap);
+    }
+
+    public WifiNetworkBuilder setEap(final String eap) {
+        this.eap = eap;
+        return this;
+    }
+
+    public WifiNetworkBuilder setKeyManagement(final String keyManagement) {
+        this.keyManagement = keyManagement;
+        return this;
     }
 
     public WifiNetworkBuilder setWepPassword(final int position, final String password) {

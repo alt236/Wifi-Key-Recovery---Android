@@ -14,7 +14,7 @@ import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 /**
  * Created by alex on 04/04/15.
  */
-public class WifiPasswordFileParser {
+public class WpaSupplicantParser {
     public static final String PREFIX_SSID = "ssid=";
     public static final String PREFIX_PSK = "psk=";
     public static final String PREFIX_PASSWORD = "password=";
@@ -22,10 +22,11 @@ public class WifiPasswordFileParser {
     public static final String PREFIX_WEP_KEY1 = "wep_key1=";
     public static final String PREFIX_WEP_KEY2 = "wep_key2=";
     public static final String PREFIX_WEP_KEY3 = "wep_key3=";
-    private final static int RESULT_TITLE_LENGTH = 14;
     private final static String COMMENT_LINE_PREFIX = "#";
     private final static String WIFI_BLOCK_START = "network={";
     private final static String WIFI_BLOCK_END = "}";
+    public static final String PREFIX_KEY_MGMT = "key_mgmt=";
+    public static final String PREFIX_EAP = "eap=";
     private final String TAG = getClass().getName();
 
     public final WifiNetworkInfo parseNetworkBlock(final String block) {
@@ -59,16 +60,15 @@ public class WifiPasswordFileParser {
                     builder.setWepPassword(3, removePrefix(trimmedLine, PREFIX_WEP_KEY3));
                 } else if (trimmedLine.startsWith(PREFIX_PASSWORD)) {
                     builder.setPassword(removePrefix(trimmedLine, PREFIX_PASSWORD));
-
+                } else if (trimmedLine.startsWith(PREFIX_KEY_MGMT)) {
+                    builder.setKeyManagement(removePrefix(trimmedLine, PREFIX_KEY_MGMT));
+                } else if (trimmedLine.startsWith(PREFIX_EAP)) {
+                    builder.setEap(removePrefix(trimmedLine, PREFIX_EAP));
                     // Settings:
-                } else if (trimmedLine.startsWith("key_mgmt=")) {
-                    settings.put("Key MGMT", trimmedLine.replace("key_mgmt=", ""));
                 } else if (trimmedLine.startsWith("group=")) {
                     settings.put("Group", trimmedLine.replace("group=", ""));
                 } else if (trimmedLine.startsWith("auth_alg=")) {
                     settings.put("Algorithm", trimmedLine.replace("auth_alg=", ""));
-                } else if (trimmedLine.startsWith("eap=")) {
-                    settings.put("EAP", trimmedLine.replace("eap=", ""));
                 } else if (trimmedLine.startsWith("identity=")) {
                     settings.put("Identity", trimmedLine.replace("identity=", ""));
                 } else if (trimmedLine.startsWith("anonymous_identity=")) {

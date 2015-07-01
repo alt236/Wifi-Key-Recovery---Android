@@ -28,7 +28,7 @@ import java.util.List;
 
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal.ExecResult;
-import uk.co.alt236.wifipasswordaccess.WifiPasswordFileParser;
+import uk.co.alt236.wifipasswordaccess.WpaSupplicantParser;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 public class ExecuteThread extends Thread {
@@ -66,7 +66,7 @@ public class ExecuteThread extends Thread {
     }
 
     private List<WifiNetworkInfo> getWiFiPasswordList() {
-        final WifiPasswordFileParser parser = new WifiPasswordFileParser();
+        final WpaSupplicantParser parser = new WpaSupplicantParser();
         final String[] shellCommands = mContext.getResources().getStringArray(R.array.shellCommands);
 
         if (Constants.USE_DEBUG_DATA) {

@@ -5,8 +5,8 @@ import junit.framework.TestCase;
 import uk.co.alt236.wifipasswordaccess.container.WepNetworkInfo;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
-public class WifiPasswordFileParserWepTest extends TestCase {
-    private final WifiPasswordFileParser parser = new WifiPasswordFileParser();
+public class WpaSupplicantParserWepTest extends TestCase {
+    private final WpaSupplicantParser parser = new WpaSupplicantParser();
 
     public void testWep01() {
         final String input = "# LEAP with dynamic WEP keys\n" +
@@ -46,6 +46,10 @@ public class WifiPasswordFileParserWepTest extends TestCase {
         assertEquals(WifiNetworkType.WEP, networkInfo.getNetType());
         final WepNetworkInfo wepNetworkInfo = (WepNetworkInfo) networkInfo;
         assertEquals(TestUtil.quote("abcde"), wepNetworkInfo.getPassword());
+        assertEquals(TestUtil.quote("abcde"), wepNetworkInfo.getPassword(0));
+        assertEquals("0102030405", wepNetworkInfo.getPassword(1));
+        assertEquals(TestUtil.quote("1234567890123"), wepNetworkInfo.getPassword(2));
+
     }
 
     public void testWep03() {
@@ -69,5 +73,8 @@ public class WifiPasswordFileParserWepTest extends TestCase {
         assertEquals(WifiNetworkType.WEP, networkInfo.getNetType());
         final WepNetworkInfo wepNetworkInfo = (WepNetworkInfo) networkInfo;
         assertEquals(TestUtil.quote("abcde"), wepNetworkInfo.getPassword());
+        assertEquals(TestUtil.quote("abcde"), wepNetworkInfo.getPassword(0));
+        assertEquals("0102030405", wepNetworkInfo.getPassword(1));
+        assertEquals(TestUtil.quote("1234567890123"), wepNetworkInfo.getPassword(2));
     }
 }

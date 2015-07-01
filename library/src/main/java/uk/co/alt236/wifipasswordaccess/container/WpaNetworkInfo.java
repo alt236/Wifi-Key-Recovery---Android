@@ -27,7 +27,7 @@ public class WpaNetworkInfo implements WifiProtectedNetworkInfo, Parcelable {
 
     /*package*/ WpaNetworkInfo(final WifiNetworkBuilder builder) {
         this.mSsid = builder.getSsid();
-        this.mPassword = builder.getPassword();
+        this.mPassword = getCorrectPssword(builder);
     }
 
     private WpaNetworkInfo(final Parcel in) {
@@ -59,5 +59,13 @@ public class WpaNetworkInfo implements WifiProtectedNetworkInfo, Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mSsid);
         dest.writeString(mPassword);
+    }
+
+    private static String getCorrectPssword(final WifiNetworkBuilder builder) {
+        if (builder.getPassword() == null) {
+            return builder.getPsk();
+        } else {
+            return builder.getPassword();
+        }
     }
 }

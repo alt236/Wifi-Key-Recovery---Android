@@ -19,32 +19,29 @@ public class WepNetworkInfo implements WifiProtectedNetworkInfo {
             return new WepNetworkInfo[size];
         }
     };
-
+    private static final WifiNetworkType mNetType = WifiNetworkType.WEP;
     private final String mSsid;
     private final String mPassword;
-    private final WifiNetworkType mNetType = WifiNetworkType.WEP;
+    private final String[] mPasswords;
 
     /*package*/ WepNetworkInfo(final WifiNetworkBuilder builder) {
         this.mSsid = builder.getSsid();
-        this.mPassword = getFirstPassword(builder);
+        this.mPasswords = builder.getWepPasswords();
+        this.mPassword = getCorrectPassword(builder);
     }
 
     private WepNetworkInfo(final Parcel in) {
         mSsid = in.readString();
         mPassword = in.readString();
+
+        final int passwordNo = in.readInt();
+        mPasswords = new String[passwordNo];
+        in.readStringArray(mPasswords);
     }
 
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    private String getFirstPassword(final WifiNetworkBuilder builder) {
-        if (builder.getWepPasswords()[0] == null) {
-            return builder.getPassword();
-        } else {
-            return builder.getWepPasswords()[0];
-        }
     }
 
     @Override
@@ -57,6 +54,14 @@ public class WepNetworkInfo implements WifiProtectedNetworkInfo {
         return mPassword;
     }
 
+    public String getPassword(final int position) {
+        return mPasswords[position];
+    }
+
+    public int getPasswordCount(){
+        return mPasswords.length;
+    }
+
     @Override
     public String getSsid() {
         return mSsid;
@@ -66,5 +71,15 @@ public class WepNetworkInfo implements WifiProtectedNetworkInfo {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mSsid);
         dest.writeString(mPassword);
+        dest.writeInt(mPasswords.length);
+        dest.writeArray(mPasswords);
+    }
+
+    private static String getCorrectPassword(final WifiNetworkBuilder builder) {
+        if (builder.getWepPasswords()[0] == null) {
+            return builder.getPassword();
+        } else {
+            return builder.getWepPasswords()[0];
+        }
     }
 }

@@ -5,8 +5,8 @@ import junit.framework.TestCase;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 import uk.co.alt236.wifipasswordaccess.container.WpaNetworkInfo;
 
-public class WifiPasswordFileParserWpaTest extends TestCase {
-    private final WifiPasswordFileParser parser = new WifiPasswordFileParser();
+public class WpaSupplicantParserWpaTest extends TestCase {
+    private final WpaSupplicantParser parser = new WpaSupplicantParser();
 
     public void testWpa01() {
         final String input = "# Simple case: WPA-PSK, PSK as an ASCII passphrase, allow all valid ciphers\n" +
