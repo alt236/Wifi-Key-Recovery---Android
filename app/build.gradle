@@ -1,13 +1,22 @@
 apply plugin: 'com.android.application'
 
+final int versionMajor = 0
+final int versionMinor = 0
+final int versionPatch = 8
+final int androidVersionCode = 8
+final String semanticVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
+
+final int targetSdk = rootProject.targetSdkVersion;
+final int minSdkRed = rootProject.minSdkVersion;
+
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
 
     defaultConfig {
         applicationId "aws.apps.wifiKeyRecovery"
-        minSdkVersion 11
-        targetSdkVersion 21
+        minSdkVersion minSdkRed
+        targetSdkVersion targetSdk
     }
 
     buildTypes {
@@ -20,6 +29,6 @@ android {
 
 dependencies {
     compile project(':library')
-    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile "com.android.support:appcompat-v7:$appCompatLibVersion"
     compile 'com.google.zxing:core:3.2.0'
 }

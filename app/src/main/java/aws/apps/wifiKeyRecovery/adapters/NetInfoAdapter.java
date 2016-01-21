@@ -62,7 +62,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
         mAllItems = this.mSubItems;
 
         mContext = context;
-        mAlphaIndexer = new HashMap<String, Integer>();
+        mAlphaIndexer = new HashMap<>();
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         prepareIndexer();
