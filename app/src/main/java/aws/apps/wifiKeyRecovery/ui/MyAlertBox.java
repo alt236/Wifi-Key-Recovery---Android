@@ -25,9 +25,12 @@ import android.text.util.Linkify;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class MyAlertBox {
+public final class MyAlertBox {
 
-    private static ScrollView LinkifyText(Context context, String message) {
+    private MyAlertBox() {
+    }
+
+    private static ScrollView LinkifyText(final Context context, final String message) {
         final ScrollView svMessage = new ScrollView(context);
         final TextView tvMessage = new TextView(context);
 
@@ -43,7 +46,7 @@ public class MyAlertBox {
         return svMessage;
     }
 
-    public static AlertDialog create(Context context, String text, String title, String button) {
+    public static AlertDialog create(final Context context, final String text, final String title, final String button) {
         return new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setCancelable(true)

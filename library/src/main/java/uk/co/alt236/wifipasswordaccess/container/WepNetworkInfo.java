@@ -10,12 +10,12 @@ import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
 public class WepNetworkInfo implements WifiProtectedNetworkInfo {
     public static final Creator<WepNetworkInfo> CREATOR = new Creator<WepNetworkInfo>() {
         @Override
-        public WepNetworkInfo createFromParcel(Parcel in) {
+        public WepNetworkInfo createFromParcel(final Parcel in) {
             return new WepNetworkInfo(in);
         }
 
         @Override
-        public WepNetworkInfo[] newArray(int size) {
+        public WepNetworkInfo[] newArray(final int size) {
             return new WepNetworkInfo[size];
         }
     };
@@ -68,7 +68,7 @@ public class WepNetworkInfo implements WifiProtectedNetworkInfo {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(mSsid);
         dest.writeString(mPassword);
         dest.writeInt(mPasswords.length);

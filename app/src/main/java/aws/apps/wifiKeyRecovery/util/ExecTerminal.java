@@ -30,7 +30,7 @@ public class ExecTerminal {
 
     public boolean checkSu() {
         final ExecTerminal et = new ExecTerminal();
-        ExecResult res = et.execSu("su && echo 1");
+        final ExecResult res = et.execSu("su && echo 1");
 
         if (res.getStdOut().trim().equals("1")) {
             Log.i(TAG, "^ got root!");
@@ -41,7 +41,7 @@ public class ExecTerminal {
         return false;
     }
 
-    public ExecResult exec(String cmd) {
+    public ExecResult exec(final String cmd) {
         Log.d(TAG, "^ exec(): '" + cmd + "'");
         String stdOut = "";
         String stdErr = "";
@@ -69,7 +69,7 @@ public class ExecTerminal {
                     stdOut = stdOut + line + "\n";
                 }
                 readerOut.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 Log.e(TAG, "^ exec() - IOException in sdtdOut Loop: " + e.getMessage());
             }
 
@@ -80,23 +80,21 @@ public class ExecTerminal {
                     stdErr = stdErr + line + "\n";
                 }
                 readerErr.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 Log.e(TAG, "^ exec() - IOException in stdErr Loop: " + e.getMessage());
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Log.e(TAG, "^ exec() IOException: " + e.getMessage());
 
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             Log.e(TAG, "^ exec() InterruptedException: " + e.getMessage());
         }
 
-        ExecResult res = new ExecResult(cmd, stdOut, stdErr);
-
-        return res;
+        return new ExecResult(cmd, stdOut, stdErr);
     }
 
-    public ExecResult execSu(String cmd) {
+    public ExecResult execSu(final String cmd) {
         Log.d(TAG, "^ execSu(): '" + cmd + "'");
         String stdOut = "";
         String stdErr = "";
@@ -123,7 +121,7 @@ public class ExecTerminal {
                     stdOut = stdOut + line + "\n";
                 }
                 readerOut.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 Log.e(TAG, "^ execSu() - IOException in sdtdOut Loop: " + e.getMessage());
             }
 
@@ -133,18 +131,17 @@ public class ExecTerminal {
                     stdErr = stdErr + line + "\n";
                 }
                 readerErr.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 Log.e(TAG, "^ execSu() - IOException in sdtdOut Loop: " + e.getMessage());
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Log.e(TAG, "^ execSu() - IOException: " + e.getMessage());
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             Log.e(TAG, "^ execSu() - InterruptedException: " + e.getMessage());
         }
 
-        ExecResult res = new ExecResult(cmd, stdOut, stdErr);
-        return res;
+        return new ExecResult(cmd, stdOut, stdErr);
     }
 
     public class ExecResult {
@@ -154,7 +151,7 @@ public class ExecTerminal {
         String stdErr = "";
         String stdIn = "";
 
-        public ExecResult(String stdIn, String stdOut, String stdErr) {
+        public ExecResult(final String stdIn, final String stdOut, final String stdErr) {
             this.stdOut = stdOut;
             this.stdErr = stdErr;
             this.stdIn = stdIn;

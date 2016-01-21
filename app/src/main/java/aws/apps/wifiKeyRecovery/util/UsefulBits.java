@@ -38,67 +38,65 @@ import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 
 public class UsefulBits {
     private final String TAG = this.getClass().getName();
-    private Context mContext;
+    private final Context mContext;
 
-    public UsefulBits(Context cntx) {
+    public UsefulBits(final Context cntx) {
         mContext = cntx;
     }
 
-    public void ShowAlert(String title, String text, String button) {
+    public void ShowAlert(final String title, final String text, String button) {
         if (button.equals("")) {
             button = mContext.getString(android.R.string.ok);
         }
 
         try {
-            AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
+            final AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
             ad.setTitle(title);
             ad.setMessage(text);
 
             ad.setPositiveButton(button, null);
             ad.show();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Log.e(TAG, "^ ShowAlert()", e);
         }
     }
 
-    public Calendar convertMillisToDate(long millis) {
+    public Calendar convertMillisToDate(final long millis) {
         final Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(millis);
         return calendar;
     }
 
-    public int dipToPixels(int dip) {
-        int value = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+    public int dipToPixels(final int dip) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 (float) dip, mContext.getResources().getDisplayMetrics());
-        return value;
     }
 
-    public float dipToPixels(float dip) {
-        float value = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+    public float dipToPixels(final float dip) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 dip, mContext.getResources().getDisplayMetrics());
-        return value;
     }
 
-    public String formatDateTime(String formatString, Date d) {
+    public String formatDateTime(final String formatString, final Date d) {
         final Format formatter = new SimpleDateFormat(formatString);
         return formatter.format(d);
     }
 
     public String getAppVersion() {
-        PackageInfo pi;
+        final PackageInfo pi;
         try {
             pi = mContext.getPackageManager().getPackageInfo(mContext.getPackageName(), 0);
             return pi.versionName;
-        } catch (NameNotFoundException e) {
+        } catch (final NameNotFoundException e) {
             return "";
         }
 
     }
 
     public void showAboutDialogue() {
-        String title = mContext.getString(R.string.app_name) + " v" + getAppVersion();
+        final String title = mContext.getString(R.string.app_name) + " v" + getAppVersion();
 
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
 
         sb.append(mContext.getString(R.string.app_changelog));
         sb.append("\n\n");
@@ -111,14 +109,14 @@ public class UsefulBits {
         MyAlertBox.create(mContext, sb.toString(), title, mContext.getString(android.R.string.ok)).show();
     }
 
-    public void showApplicationMissingAlert(String title, String message, String button1Text, final String marketUri) {
+    public void showApplicationMissingAlert(final String title, final String message, String button1Text, final String marketUri) {
         if (button1Text.equals("")) {
             button1Text = mContext.getString(android.R.string.ok);
         }
 
         try {
             // Create the dialog box
-            AlertDialog.Builder alertbox = new AlertDialog.Builder(mContext);
+            final AlertDialog.Builder alertbox = new AlertDialog.Builder(mContext);
 
             alertbox.setTitle(title);
             alertbox.setMessage(message);
@@ -126,12 +124,12 @@ public class UsefulBits {
             alertbox.setPositiveButton(button1Text, null);
             alertbox.setNegativeButton("Market", new DialogInterface.OnClickListener() {
                 @Override
-                public void onClick(DialogInterface arg0, int arg1) {
+                public void onClick(final DialogInterface arg0, final int arg1) {
                     try {
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        final Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setData(Uri.parse(marketUri));
                         mContext.startActivity(intent);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         Log.e(TAG, "^ Error opening Market Page : " + e.getMessage());
                         ShowAlert(mContext.getString(R.string.text_error), mContext.getString(R.string.text_could_not_go_to_market), mContext.getString(android.R.string.ok));
                     }
@@ -140,14 +138,14 @@ public class UsefulBits {
 
             alertbox.show();
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Log.e(TAG, "^ ShowAlertWithWirelessSettings()", e);
 
         }
     }
 
-    public void showToast(String message, int duration, int location, int x_offset, int y_offset) {
-        Toast toast = Toast.makeText(mContext.getApplicationContext(), message, duration);
+    public void showToast(final String message, final int duration, final int location, final int x_offset, final int y_offset) {
+        final Toast toast = Toast.makeText(mContext.getApplicationContext(), message, duration);
         toast.setGravity(location, x_offset, y_offset);
         toast.show();
     }

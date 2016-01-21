@@ -12,18 +12,18 @@ import android.view.MenuItem;
 import android.view.View;
 
 public class IconFriendlyPopupMenu implements MenuBuilder.Callback, MenuPresenter.Callback {
-    private Context mContext;
-    private MenuBuilder mMenu;
-    private View mAnchor;
-    private MenuPopupHelper mPopup;
+    private final Context mContext;
+    private final MenuBuilder mMenu;
+    private final View mAnchor;
+    private final MenuPopupHelper mPopup;
     private OnMenuItemClickListener mMenuItemClickListener;
     private OnDismissListener mDismissListener;
 
-    public IconFriendlyPopupMenu(Context context, View anchor) {
+    public IconFriendlyPopupMenu(final Context context, final View anchor) {
         this(context, anchor, false);
     }
 
-    public IconFriendlyPopupMenu(Context context, View anchor, boolean showIcons) {
+    public IconFriendlyPopupMenu(final Context context, final View anchor, final boolean showIcons) {
         this.mContext = context;
         this.mMenu = new MenuBuilder(context);
         this.mMenu.setCallback(this);
@@ -45,33 +45,31 @@ public class IconFriendlyPopupMenu implements MenuBuilder.Callback, MenuPresente
         return new SupportMenuInflater(this.mContext);
     }
 
-    public void inflate(int menuRes) {
+    public void inflate(final int menuRes) {
         getMenuInflater().inflate(menuRes, this.mMenu);
     }
 
     @Override
-    public void onCloseMenu(MenuBuilder menu, boolean allMenusAreClosing) {
+    public void onCloseMenu(final MenuBuilder menu, final boolean allMenusAreClosing) {
         if (this.mDismissListener != null)
             this.mDismissListener.onDismiss(this);
     }
 
-    public void onCloseSubMenu(SubMenuBuilder menu) {
+    public void onCloseSubMenu(final SubMenuBuilder menu) {
     }
 
     @Override
-    public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
-        if (this.mMenuItemClickListener != null) {
-            return this.mMenuItemClickListener.onMenuItemClick(item);
-        }
-        return false;
+    public boolean onMenuItemSelected(final MenuBuilder menu, final MenuItem item) {
+        return this.mMenuItemClickListener != null
+                && this.mMenuItemClickListener.onMenuItemClick(item);
     }
 
     @Override
-    public void onMenuModeChange(MenuBuilder menu) {
+    public void onMenuModeChange(final MenuBuilder menu) {
     }
 
     @Override
-    public boolean onOpenSubMenu(MenuBuilder subMenu) {
+    public boolean onOpenSubMenu(final MenuBuilder subMenu) {
         if (subMenu == null) return false;
 
         if (!subMenu.hasVisibleItems()) {
@@ -82,11 +80,11 @@ public class IconFriendlyPopupMenu implements MenuBuilder.Callback, MenuPresente
         return true;
     }
 
-    public void setOnDismissListener(OnDismissListener listener) {
+    public void setOnDismissListener(final OnDismissListener listener) {
         this.mDismissListener = listener;
     }
 
-    public void setOnMenuItemClickListener(OnMenuItemClickListener listener) {
+    public void setOnMenuItemClickListener(final OnMenuItemClickListener listener) {
         this.mMenuItemClickListener = listener;
     }
 
@@ -94,11 +92,11 @@ public class IconFriendlyPopupMenu implements MenuBuilder.Callback, MenuPresente
         this.mPopup.show();
     }
 
-    public static abstract interface OnDismissListener {
-        public abstract void onDismiss(IconFriendlyPopupMenu paramPopupMenu);
+    public interface OnDismissListener {
+        void onDismiss(IconFriendlyPopupMenu paramPopupMenu);
     }
 
-    public static abstract interface OnMenuItemClickListener {
-        public abstract boolean onMenuItemClick(MenuItem paramMenuItem);
+    public interface OnMenuItemClickListener {
+        boolean onMenuItemClick(MenuItem paramMenuItem);
     }
 }

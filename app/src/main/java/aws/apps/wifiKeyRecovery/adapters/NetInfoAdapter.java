@@ -49,21 +49,19 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
     private final int COLOR_GREEN = Color.parseColor("#4CAF50");
 
     private final Map<String, Integer> mAlphaIndexer;
-    private final Context mContext;
     private final LayoutInflater mInflater;
-    private List<WifiNetworkInfo> mAllItems;
+    private final List<WifiNetworkInfo> mAllItems;
     private List<WifiNetworkInfo> mSubItems;
     private String[] mSections;
     private Filter mFilter;
 
-    public NetInfoAdapter(Context context, List<WifiNetworkInfo> appsList) {
+    public NetInfoAdapter(final Context context, final List<WifiNetworkInfo> appsList) {
         super();
         mSubItems = appsList;
         mAllItems = this.mSubItems;
 
-        mContext = context;
         mAlphaIndexer = new HashMap<>();
-        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         prepareIndexer();
     }
@@ -82,20 +80,20 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public WifiNetworkInfo getItem(int position) {
+    public WifiNetworkInfo getItem(final int position) {
         return mSubItems.get(position);
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(final int position) {
         return position;
     }
 
-    public int getPositionForSection(int section) {
+    public int getPositionForSection(final int section) {
         return mAlphaIndexer.get(mSections[section]);
     }
 
-    public int getSectionForPosition(int position) {
+    public int getSectionForPosition(final int position) {
         return 0;
     }
 
@@ -104,7 +102,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, final ViewGroup parent) {
         final WifiNetworkInfo netInfo = mSubItems.get(position);
 
         if (convertView == null) {
@@ -118,7 +116,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
     }
 
     private void prepareIndexer() {
-        int size = mSubItems.size();
+        final int size = mSubItems.size();
         String title;
         String c;
 
@@ -126,9 +124,11 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
             title = mSubItems.get(i).getSsid();
 
             try {
+                // This will throw an exception if the value is not a number.
+                //noinspection ResultOfMethodCallIgnored
                 Integer.valueOf(title.substring(0, 1));
                 c = "#";
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 c = title.toUpperCase(Locale.US).substring(0, 1);
             }
 
@@ -137,7 +137,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
 
         final Set<String> keys = mAlphaIndexer.keySet();
         final Iterator<String> it = keys.iterator();
-        final List<String> keyList = new ArrayList<String>();
+        final List<String> keyList = new ArrayList<>();
 
         while (it.hasNext()) {
             keyList.add(it.next());
@@ -155,13 +155,13 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
     private class ProoferFilter extends Filter {
 
         @Override
-        protected FilterResults performFiltering(CharSequence filterString) {
+        protected FilterResults performFiltering(final CharSequence filterString) {
             // NOTE: this function is *always* called from a background thread,
             // and
             // not the UI thread.
 
             final FilterResults results = new FilterResults();
-            final List<WifiNetworkInfo> i = new ArrayList<WifiNetworkInfo>();
+            final List<WifiNetworkInfo> i = new ArrayList<>();
 
             if (filterString != null && filterString.toString().length() > 0) {
 
@@ -186,7 +186,7 @@ public class NetInfoAdapter extends BaseAdapter implements Filterable {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected void publishResults(CharSequence prefix, FilterResults results) {
+        protected void publishResults(final CharSequence prefix, final FilterResults results) {
 
             // NOTE: this function is *always* called from the UI thread.
             mSubItems = (ArrayList<WifiNetworkInfo>) results.values;

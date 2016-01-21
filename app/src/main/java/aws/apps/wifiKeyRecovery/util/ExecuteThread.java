@@ -38,21 +38,21 @@ public class ExecuteThread extends Thread {
     public final static int WORK_INTERUPTED = 51;
     private final String TAG = this.getClass().getName();
 
-    private Handler mHandler;
-    private Context mContext;
+    private final Handler mHandler;
+    private final Context mContext;
     private int mState;
-    private boolean mIsRooted;
+    private final boolean mIsRooted;
 
-    public ExecuteThread(Handler h,
-                         Context ctx,
-                         Bundle b) {
+    public ExecuteThread(final Handler h,
+                         final Context ctx,
+                         final Bundle b) {
 
         mHandler = h;
         mContext = ctx;
         mIsRooted = new ExecTerminal().checkSu();
     }
 
-    private String execute(String cmd) {
+    private String execute(final String cmd) {
         final ExecTerminal et = new ExecTerminal();
         final ExecResult res;
 
@@ -74,21 +74,20 @@ public class ExecuteThread extends Thread {
             return parser.parseWifiPasswordFileContents(fileUtil.readAssetsFileAsText("wpa_supplicant_example.conf"));
         } else {
             for (final String command : shellCommands) {
-                String result = execute(command);
+                final String result = execute(command);
                 if (result.trim().length() > 0) {
                     return parser.parseWifiPasswordFileContents(result);
                 }
             }
         }
 
-        final List<WifiNetworkInfo> l = new ArrayList<>();
-        return l;
+        return new ArrayList<>();
     }
 
     @Override
     public void run() {
         mState = STATE_RUNNING;
-        Bundle b = new Bundle();
+        final Bundle b = new Bundle();
         Message msg = new Message();
 
         Log.d(TAG, "^ Thread: Thread Started");
@@ -108,20 +107,18 @@ public class ExecuteThread extends Thread {
                 mHandler.sendMessage(msg);
 
                 this.setState(STATE_DONE);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 Log.e(TAG, "^ Thread: Thread Interrupted");
                 b.clear();
-                int what = WORK_INTERUPTED;
-                msg.what = what;
+                msg.what = WORK_INTERUPTED;
                 msg.setData(b);
                 mHandler.sendMessage(msg);
                 this.setState(STATE_DONE);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.e(TAG, "^ Thread: exception " + e.getMessage());
                 msg = new Message();
                 b.clear();
-                int what = WORK_INTERUPTED;
-                msg.what = what;
+                msg.what = WORK_INTERUPTED;
                 msg.setData(b);
                 mHandler.sendMessage(msg);
                 this.setState(STATE_DONE);
@@ -133,7 +130,7 @@ public class ExecuteThread extends Thread {
     /*
      * sets the current state for the thread, used to stop the thread
      */
-    public void setState(int state) {
+    public void setState(final int state) {
         mState = state;
     }
 }

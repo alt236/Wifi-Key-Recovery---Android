@@ -74,18 +74,18 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
     private ListView mList;
     private WifiNetworkInfo mCurrentNetinfo;
     private NetInfoAdapter mNiAdapter;
-    private TextWatcher filterTextWatcher = new TextWatcher() {
+    private final TextWatcher filterTextWatcher = new TextWatcher() {
 
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(final Editable s) {
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
         }
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
             if (mNiAdapter != null) {
                 mNiAdapter.getFilter().filter(s);
             } else {
@@ -98,7 +98,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
     private final Handler handler = new Handler() {
         @Override
         @SuppressWarnings("unchecked")
-        public void handleMessage(Message msg) {
+        public void handleMessage(final Message msg) {
             switch (msg.what) {
 
                 case ExecuteThread.WORK_COMPLETED:
@@ -140,7 +140,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
         }
     }
 
-    private void copyStringToClipboard(String text) {
+    private void copyStringToClipboard(final String text) {
         if (text.length() > 0) {
             String msgtext = "";
             if (text.length() > 150) {
@@ -179,7 +179,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
             dlg.setOnDismissListener(new OnDismissListener() {
 
                 @Override
-                public void onDismiss(DialogInterface dialog) {
+                public void onDismiss(final DialogInterface dialog) {
                     MainActivity.this.finish();
                 }
             });
@@ -188,7 +188,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
         }
     }
 
-    public void onClearSearchClick(View v) {
+    public void onClearSearchClick(final View v) {
         mEditFilter.setText("");
     }
 
@@ -196,7 +196,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
      * Called when the activity is first created.
      */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -214,10 +214,10 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
     }
 
     @Override
-    protected Dialog onCreateDialog(int id) {
+    protected Dialog onCreateDialog(final int id) {
         switch (id) {
             case DIALOG_GET_PASSWORDS:
-                ProgressDialog mExecuteDialog = new ProgressDialog(this);
+                final ProgressDialog mExecuteDialog = new ProgressDialog(this);
                 mExecuteDialog.setMessage(getString(R.string.dialogue_text_please_wait));
 
                 mExecuteThread = new ExecuteThread(handler, this, mThreadBundle);
@@ -232,7 +232,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
      * Creates the menu items
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         new MenuInflater(this).inflate(R.menu.menu_home, menu);
         return true;
     }
@@ -244,20 +244,20 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
     }
 
     @Override
-    public void onItemClick(AdapterView<?> l, View v, int position, long id) {
+    public void onItemClick(final AdapterView<?> l, final View v, final int position, final long id) {
 
         final WifiNetworkInfo networkInfo = (WifiNetworkInfo) l.getAdapter().getItem(position);
         if (networkInfo != null) {
             final Intent intent = new Intent(this, WifiDetailsActivity.class);
+            //noinspection RedundantCast
             intent.putExtra(
-                    WifiDetailsActivity.EXTRAS_NETWORK_INFO,
-                    (Parcelable) networkInfo);
+                    WifiDetailsActivity.EXTRAS_NETWORK_INFO, (Parcelable) networkInfo);
             startActivity(intent);
         }
     }
 
     @Override
-    public boolean onMenuItemClick(MenuItem paramMenuItem) {
+    public boolean onMenuItemClick(final MenuItem paramMenuItem) {
         final int actionId = paramMenuItem.getItemId();
         String text;
 
@@ -286,13 +286,13 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_about:
                 mUsefulBits.showAboutDialogue();
                 return true;
             case R.id.menu_export:
-                Intent myIntent = new Intent();
+                final Intent myIntent = new Intent();
                 String export_text = "";
                 export_text += getString(R.string.label_wifi_passwords) + "\n";
                 export_text += listToString((List<WifiNetworkInfo>) mList.getTag()) + "\n\n";
@@ -356,7 +356,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
         }
     }
 
-    private void populateList(List<WifiNetworkInfo> l) {
+    private void populateList(final List<WifiNetworkInfo> l) {
         if (l.size() > 0) {
             findViewById(R.id.filter_segment).setVisibility(View.VISIBLE);
             mNiAdapter = new NetInfoAdapter(this, l);
@@ -376,7 +376,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
         populateInfo();
     }
 
-    public static String listToString(List<WifiNetworkInfo> list) {
+    public static String listToString(final List<WifiNetworkInfo> list) {
         final StringBuilder sb = new StringBuilder();
 
         int cnt = 0;
@@ -391,7 +391,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 
     private class NetInfoComparator implements Comparator<WifiNetworkInfo> {
         @Override
-        public int compare(WifiNetworkInfo o1, WifiNetworkInfo o2) {
+        public int compare(final WifiNetworkInfo o1, final WifiNetworkInfo o2) {
             return o1.getSsid().compareToIgnoreCase(o2.getSsid());
         }
     }

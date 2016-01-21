@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
  */
 public class FileUtil {
     private final String TAG = this.getClass().getName();
-    private Context mContext;
+    private final Context mContext;
 
     public FileUtil(final Context cntx) {
         mContext = cntx.getApplicationContext();
@@ -29,7 +29,7 @@ public class FileUtil {
     public String readAssetsFileAsText(final String fileName, final String encoding) {
 
         BufferedReader br = null;
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         String line;
         try {
@@ -39,13 +39,13 @@ public class FileUtil {
                 sb.append(line);
                 sb.append("\n");
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         } finally {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -63,9 +63,9 @@ public class FileUtil {
             try {
 
                 if (directory.canWrite()) {
-                    File gpxfile = new File(directory, fileName);
-                    FileWriter gpxwriter = new FileWriter(gpxfile);
-                    BufferedWriter out = new BufferedWriter(gpxwriter);
+                    final File gpxfile = new File(directory, fileName);
+                    final FileWriter gpxwriter = new FileWriter(gpxfile);
+                    final BufferedWriter out = new BufferedWriter(gpxwriter);
                     out.write(contents);
                     out.close();
                     Log.d(TAG, "^ Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'");
@@ -73,7 +73,7 @@ public class FileUtil {
                     return true;
                 }
 
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 //showToast("Could not write file:\n+ e.getMessage()", Toast.LENGTH_SHORT);
                 Log.e(TAG, "^ Could not write file " + e.getMessage());
             }

@@ -11,12 +11,12 @@ import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
 public class WpaNetworkInfo implements WifiProtectedNetworkInfo, Parcelable {
     public static final Parcelable.Creator<WpaNetworkInfo> CREATOR = new Parcelable.Creator<WpaNetworkInfo>() {
         @Override
-        public WpaNetworkInfo createFromParcel(Parcel in) {
+        public WpaNetworkInfo createFromParcel(final Parcel in) {
             return new WpaNetworkInfo(in);
         }
 
         @Override
-        public WpaNetworkInfo[] newArray(int size) {
+        public WpaNetworkInfo[] newArray(final int size) {
             return new WpaNetworkInfo[size];
         }
     };
@@ -56,7 +56,7 @@ public class WpaNetworkInfo implements WifiProtectedNetworkInfo, Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(mSsid);
         dest.writeString(mPassword);
     }

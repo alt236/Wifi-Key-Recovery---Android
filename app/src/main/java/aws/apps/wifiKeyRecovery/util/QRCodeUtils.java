@@ -11,15 +11,18 @@ import com.google.zxing.common.BitMatrix;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class QRCodeUtils {
+public final class QRCodeUtils {
     private static final int WHITE = 0xFFFFFFFF;
     private static final int BLACK = 0xFF000000;
 
-    public static Bitmap encodeAsBitmap(String payload, BarcodeFormat format, int width, int height) throws WriterException {
+    private QRCodeUtils() {
+    }
+
+    public static Bitmap encodeAsBitmap(final String payload, final BarcodeFormat format, final int width, final int height) throws WriterException {
         return encodeAsBitmap(payload, format, width, height, WHITE, BLACK);
     }
 
-    public static Bitmap encodeAsBitmap(String payload, BarcodeFormat format, int width, int height, int bgColor, int fgColor) throws WriterException {
+    public static Bitmap encodeAsBitmap(final String payload, final BarcodeFormat format, final int width, final int height, final int bgColor, final int fgColor) throws WriterException {
         if (!has(payload)) {
             return null;
         }
@@ -29,7 +32,7 @@ public class QRCodeUtils {
         final BitMatrix result;
 
         if (encoding != null) {
-            hints = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
+            hints = new EnumMap<>(EncodeHintType.class);
             hints.put(EncodeHintType.CHARACTER_SET, encoding);
         } else {
             hints = null;
@@ -37,7 +40,7 @@ public class QRCodeUtils {
 
         try {
             result = new MultiFormatWriter().encode(payload, format, width, height, hints);
-        } catch (IllegalArgumentException iae) { // Unsupported format
+        } catch (final IllegalArgumentException iae) { // Unsupported format
             return null;
         }
 
@@ -46,7 +49,7 @@ public class QRCodeUtils {
         final int[] pixels = new int[bmWidth * bmHeight];
 
         for (int y = 0; y < bmHeight; y++) {
-            int offset = y * bmWidth;
+            final int offset = y * bmWidth;
             for (int x = 0; x < bmWidth; x++) {
                 pixels[offset + x] = result.get(x, y) ? fgColor : bgColor;
             }
@@ -57,7 +60,7 @@ public class QRCodeUtils {
         return bitmap;
     }
 
-    private static String guessAppropriateEncoding(CharSequence contents) {
+    private static String guessAppropriateEncoding(final CharSequence contents) {
         // Very crude at the moment
         for (int i = 0; i < contents.length(); i++) {
             if (contents.charAt(i) > 0xFF) {
@@ -67,7 +70,7 @@ public class QRCodeUtils {
         return null;
     }
 
-    private static boolean has(String value) {
+    private static boolean has(final String value) {
         return value != null;
 
     }

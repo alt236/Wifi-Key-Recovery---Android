@@ -8,7 +8,10 @@ import android.text.TextUtils;
 final class Util {
     private static final String DOUBLE_QUOTE = "\"";
 
-    public static String appendBlanks(String text, int size) {
+    private Util() {
+    }
+
+    public static String appendBlanks(final String text, final int size) {
         String res = text.trim();
 
         if (res.length() < size) {

@@ -10,7 +10,10 @@ import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
 /**
  * Created by alex on 05/04/15.
  */
-public class QrCodeUtils {
+public final class QrCodeUtils {
+
+    private QrCodeUtils() {
+    }
 
     private static String getNetworkTypeAsString(final WifiNetworkType netType) {
         final String result;

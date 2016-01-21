@@ -46,7 +46,7 @@ public class WifiDetailsFragment extends Fragment {
                         BarcodeFormat.QR_CODE,
                         size,
                         size));
-            } catch (WriterException e) {
+            } catch (final WriterException e) {
                 mIvQrCode.setBackgroundColor(getResources().getColor(android.R.color.black));
             }
         }
@@ -56,15 +56,18 @@ public class WifiDetailsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_wifi_details, container, false);
 
         final TextView mTextViewSsid = (TextView) view.findViewById(R.id.ssid);
         mIvQrCode = (ImageView) view.findViewById(R.id.qrcode);
 
-
         mNetworkInfo = getArguments().getParcelable(WIFI_NETWORK);
+
+        if(mNetworkInfo == null){
+            throw new IllegalStateException("The passed WIFI network cannot be null");
+        }
 
         mTextViewSsid.setText(mNetworkInfo.getSsid());
         mIvQrCode.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);

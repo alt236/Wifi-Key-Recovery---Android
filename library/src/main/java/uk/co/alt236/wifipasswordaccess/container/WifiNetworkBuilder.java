@@ -6,7 +6,7 @@ import android.text.TextUtils;
  * Created by alex on 06/04/15.
  */
 public class WifiNetworkBuilder {
-    private String[] wepPasswords = new String[4];
+    private final String[] wepPasswords = new String[4];
     private boolean hasWepPassword;
     private String ssid;
     private String psk;

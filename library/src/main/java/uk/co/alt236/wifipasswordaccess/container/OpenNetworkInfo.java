@@ -10,12 +10,12 @@ import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
 public class OpenNetworkInfo implements WifiNetworkInfo {
     public static final Creator<OpenNetworkInfo> CREATOR = new Creator<OpenNetworkInfo>() {
         @Override
-        public OpenNetworkInfo createFromParcel(Parcel in) {
+        public OpenNetworkInfo createFromParcel(final Parcel in) {
             return new OpenNetworkInfo(in);
         }
 
         @Override
-        public OpenNetworkInfo[] newArray(int size) {
+        public OpenNetworkInfo[] newArray(final int size) {
             return new OpenNetworkInfo[size];
         }
     };
@@ -50,7 +50,7 @@ public class OpenNetworkInfo implements WifiNetworkInfo {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(mSsid);
         dest.writeString(mPassword);
     }

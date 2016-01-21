@@ -38,7 +38,7 @@ public class ExportActivity extends ActionBarActivity {
     private String mTimeDate;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         Log.d(TAG, "^ Intent started");
 
         super.onCreate(savedInstanceState);
@@ -61,20 +61,20 @@ public class ExportActivity extends ActionBarActivity {
 
         mBtnShare.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 shareResults();
             }
         });
         mBtnToSd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
 
                 try {
                     final File folder = Environment.getExternalStorageDirectory();
                     final String filename = "wifikeyrecovery_" + mTimeDate + ".txt";
                     final String contents = mFldInfo.getText().toString();
                     fileUtil.saveToFile(filename, folder, contents);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     Log.e(TAG, "^ " + e.getMessage());
                 }
             }
@@ -82,7 +82,7 @@ public class ExportActivity extends ActionBarActivity {
 
         mBtnClose.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 finish();
             }
         });

@@ -89,7 +89,7 @@ public class WpaSupplicantParser {
         return methodResult;
     }
 
-    private boolean validateBlock(final String blockLines[]) {
+    private static boolean validateBlock(final String blockLines[]) {
         if (blockLines.length < 1) {
             return false;
         }
