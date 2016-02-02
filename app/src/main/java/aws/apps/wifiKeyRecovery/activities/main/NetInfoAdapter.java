@@ -15,7 +15,7 @@
  * limitations under the License.
  * ****************************************************************************
  */
-package aws.apps.wifiKeyRecovery.adapters;
+package aws.apps.wifiKeyRecovery.activities.main;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -43,7 +43,7 @@ import aws.apps.wifiKeyRecovery.R;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
 
-public class NetInfoAdapter extends BaseAdapter implements Filterable {
+/*package*/ class NetInfoAdapter extends BaseAdapter implements Filterable {
     private final int COLOR_RED = Color.parseColor("#F44336");
     private final int COLOR_ORANGE = Color.parseColor("#FFC107");
     private final int COLOR_GREEN = Color.parseColor("#4CAF50");

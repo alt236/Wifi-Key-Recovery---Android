@@ -1,4 +1,4 @@
-package aws.apps.wifiKeyRecovery.activities;
+package aws.apps.wifiKeyRecovery.activities.details;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.fragments.WifiDetailsFragment;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 public class WifiDetailsActivity extends ActionBarActivity {

@@ -15,7 +15,7 @@
  * limitations under the License.
  * ****************************************************************************
  */
-package aws.apps.wifiKeyRecovery.activities;
+package aws.apps.wifiKeyRecovery.activities.main;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -53,16 +53,18 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import aws.apps.wifiKeyRecovery.BuildConfig;
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.adapters.NetInfoAdapter;
+import aws.apps.wifiKeyRecovery.activities.export.ExportActivity;
+import aws.apps.wifiKeyRecovery.activities.details.WifiDetailsActivity;
 import aws.apps.wifiKeyRecovery.containers.SavedData;
-import aws.apps.wifiKeyRecovery.ui.IconFriendlyPopupMenu.OnMenuItemClickListener;
+import aws.apps.wifiKeyRecovery.activities.main.IconFriendlyPopupMenu.OnMenuItemClickListener;
 import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
-import aws.apps.wifiKeyRecovery.util.Constants;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal;
 import aws.apps.wifiKeyRecovery.util.ExecuteThread;
 import aws.apps.wifiKeyRecovery.util.UsefulBits;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends ActionBarActivity implements OnItemClickListener, OnMenuItemClickListener {
@@ -161,7 +163,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
         LockScreenRotation();
         final boolean hasRoot;
 
-        if (Constants.USE_DEBUG_DATA) {
+        if (BuildConfig.USE_DEBUG_DATA) {
             hasRoot = true;
         } else {
             final ExecTerminal et = new ExecTerminal();
@@ -261,22 +263,27 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
         final int actionId = paramMenuItem.getItemId();
         String text;
 
-        final boolean res = false;
-//        switch (actionId) {
-//            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_ALL_AS_TEXT:
-//                copyStringToClipboard(mCurrentNetinfo.toString());
-//                res = true;
-//                break;
-//            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_PASSWORD:
-//                copyStringToClipboard(mCurrentNetinfo.getPassword());
-//                res = true;
-//                break;
-//            case PopupMenuActionHelper.ACTION_ID_NETWORK_SHOW_QRCODE:
-//                res = true;
-//                break;
-//            default:
-//                res = false;
-//        }
+        final boolean res;
+        switch (actionId) {
+            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_ALL_AS_TEXT:
+                copyStringToClipboard(mCurrentNetinfo.toString());
+                res = true;
+                break;
+            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_PASSWORD:
+                if(mCurrentNetinfo instanceof WifiProtectedNetworkInfo){
+                    copyStringToClipboard(((WifiProtectedNetworkInfo) mCurrentNetinfo).getPassword());
+                } else {
+                    Toast.makeText(this, "This network is not protected!", Toast.LENGTH_SHORT).show();
+                }
+
+                res = true;
+                break;
+            case PopupMenuActionHelper.ACTION_ID_NETWORK_SHOW_QRCODE:
+                res = true;
+                break;
+            default:
+                res = false;
+        }
 
         return res;
     }

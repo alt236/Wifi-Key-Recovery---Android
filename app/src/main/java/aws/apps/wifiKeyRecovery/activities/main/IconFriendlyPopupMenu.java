@@ -1,4 +1,4 @@
-package aws.apps.wifiKeyRecovery.ui;
+package aws.apps.wifiKeyRecovery.activities.main;
 
 import android.content.Context;
 import android.support.v7.view.SupportMenuInflater;
@@ -11,7 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-public class IconFriendlyPopupMenu implements MenuBuilder.Callback, MenuPresenter.Callback {
+/*package*/ class IconFriendlyPopupMenu implements MenuBuilder.Callback, MenuPresenter.Callback {
     private final Context mContext;
     private final MenuBuilder mMenu;
     private final View mAnchor;
@@ -30,7 +30,7 @@ public class IconFriendlyPopupMenu implements MenuBuilder.Callback, MenuPresente
         this.mAnchor = anchor;
         this.mPopup = new MenuPopupHelper(context, this.mMenu, anchor);
         this.mPopup.setCallback(this);
-        mPopup.setForceShowIcon(showIcons);
+        this.mPopup.setForceShowIcon(showIcons);
     }
 
     public void dismiss() {

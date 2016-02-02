@@ -12,7 +12,7 @@
         android:icon="@drawable/ic_launcher"
         android:theme="@style/Theme.AppCompat">
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.main.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
@@ -21,14 +21,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ExportActivity"/>
+        <activity android:name=".activities.export.ExportActivity"/>
         <activity
-            android:name=".activities.WifiDetailsActivity"
+            android:name=".activities.details.WifiDetailsActivity"
             android:label="@string/title_activity_wifi_details"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName=".activities.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="aws.apps.wifiKeyRecovery.activities.MainActivity"/>
+                android:value=".activities.main.MainActivity"/>
         </activity>
     </application>
 

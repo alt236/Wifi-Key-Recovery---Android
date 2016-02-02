@@ -1,6 +1,7 @@
-package aws.apps.wifiKeyRecovery.util;
+package aws.apps.wifiKeyRecovery.activities.details;
 
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -11,7 +12,11 @@ import com.google.zxing.common.BitMatrix;
 import java.util.EnumMap;
 import java.util.Map;
 
-public final class QRCodeUtils {
+import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
+import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
+
+/*package*/ final class QRCodeUtils {
     private static final int WHITE = 0xFFFFFFFF;
     private static final int BLACK = 0xFF000000;
 
@@ -73,5 +78,42 @@ public final class QRCodeUtils {
     private static boolean has(final String value) {
         return value != null;
 
+    }
+
+    private static String getNetworkTypeAsString(final WifiNetworkType netType) {
+        final String result;
+
+        switch (netType) {
+            case WEP:
+                result = "WEP";
+                break;
+            case WPA:
+                result = "WPA";
+                break;
+            default:
+                result = "nopass";
+        }
+
+        return result;
+    }
+
+    public static String getQrCodeString(final WifiNetworkInfo networkInfo) {
+        if (TextUtils.isEmpty(networkInfo.getSsid())) {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("WIFI:");
+        sb.append("S:" + networkInfo.getSsid() + ";");
+        sb.append("T:" + getNetworkTypeAsString(networkInfo.getNetType()) + ";");
+
+        if (networkInfo instanceof WifiProtectedNetworkInfo) {
+            if (!TextUtils.isEmpty(((WifiProtectedNetworkInfo) networkInfo).getPassword())) {
+                sb.append("P:" + ((WifiProtectedNetworkInfo) networkInfo).getPassword() + ";");
+            }
+        }
+
+        sb.append(";");
+        return sb.toString();
     }
 }

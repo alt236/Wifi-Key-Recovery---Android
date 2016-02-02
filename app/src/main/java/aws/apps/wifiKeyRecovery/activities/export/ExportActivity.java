@@ -15,7 +15,7 @@
  * limitations under the License.
  * ****************************************************************************
  */
-package aws.apps.wifiKeyRecovery.activities;
+package aws.apps.wifiKeyRecovery.activities.export;
 
 import android.content.Intent;
 import android.os.Bundle;

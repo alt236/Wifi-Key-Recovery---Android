@@ -26,6 +26,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import aws.apps.wifiKeyRecovery.BuildConfig;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal.ExecResult;
 import uk.co.alt236.wifipasswordaccess.parser.WpaSupplicantParser;
@@ -69,7 +70,7 @@ public class ExecuteThread extends Thread {
         final WpaSupplicantParser parser = new WpaSupplicantParser();
         final String[] shellCommands = mContext.getResources().getStringArray(R.array.shellCommands);
 
-        if (Constants.USE_DEBUG_DATA) {
+        if (BuildConfig.USE_DEBUG_DATA) {
             final FileUtil fileUtil = new FileUtil(mContext);
             return parser.parseWifiPasswordFileContents(fileUtil.readAssetsFileAsText("wpa_supplicant_example.conf"));
         } else {

@@ -1,4 +1,4 @@
-package aws.apps.wifiKeyRecovery.fragments;
+package aws.apps.wifiKeyRecovery.activities.details;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -14,8 +14,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.util.QRCodeUtils;
-import uk.co.alt236.wifipasswordaccess.util.QrCodeUtils;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 public class WifiDetailsFragment extends Fragment {
@@ -41,8 +39,9 @@ public class WifiDetailsFragment extends Fragment {
             }
 
             try {
+                final String payload = QRCodeUtils.getQrCodeString(mNetworkInfo);
                 mIvQrCode.setImageBitmap(QRCodeUtils.encodeAsBitmap(
-                        QrCodeUtils.getQrCodeString(mNetworkInfo),
+                        payload,
                         BarcodeFormat.QR_CODE,
                         size,
                         size));
