@@ -32,8 +32,11 @@ public class WpaSupplicantParser {
     private final static String WIFI_BLOCK_END = "}";
     private final String TAG = getClass().getName();
 
-    public final WifiNetworkInfo parseNetworkBlock(final String block) {
+    @SuppressWarnings("MethodMayBeStatic")
+    protected final WifiNetworkInfo parseNetworkBlock(final String block) {
         final String blockLines[] = getSanitizedBlockLines(block);
+
+        final WifiNetworkInfo methodResult;
 
         if (validateBlock(blockLines)) {
             final KeyValueSplitter splitter = new KeyValueSplitter("=");
@@ -49,7 +52,6 @@ public class WpaSupplicantParser {
             }
 
             builder.setSsid(settings.get(KEY_SSID));
-
             builder.setPsk(settings.get(KEY_PSK));
             builder.setWepPassword(0, settings.get(KEY_WEP_KEY0));
             builder.setWepPassword(1, settings.get(KEY_WEP_KEY1));
@@ -60,10 +62,12 @@ public class WpaSupplicantParser {
             builder.setKeyManagement(settings.get(KEY_KEY_MGMT));
             builder.setEap(settings.get(KEY_EAP));
 
-            return builder.build();
+            methodResult = builder.build();
+        } else {
+            methodResult = null;
         }
 
-        return null;
+        return methodResult;
     }
 
     public List<WifiNetworkInfo> parseWifiPasswordFileContents(final String wifiPasswordString) {

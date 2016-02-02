@@ -21,6 +21,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -157,21 +158,20 @@ import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
         @Override
         protected FilterResults performFiltering(final CharSequence filterString) {
             // NOTE: this function is *always* called from a background thread,
-            // and
-            // not the UI thread.
+            // and not the UI thread.
 
             final FilterResults results = new FilterResults();
             final List<WifiNetworkInfo> i = new ArrayList<>();
 
-            if (filterString != null && filterString.toString().length() > 0) {
+            if (!TextUtils.isEmpty(filterString)) {
 
                 for (int index = 0; index < mAllItems.size(); index++) {
                     final WifiNetworkInfo item = mAllItems.get(index);
                     if (item.getSsid().toLowerCase(Locale.US).contains(filterString.toString().toLowerCase())) {
                         i.add(item);
                     }
-
                 }
+
                 results.values = i;
                 results.count = i.size();
             } else {
@@ -187,7 +187,6 @@ import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
         @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(final CharSequence prefix, final FilterResults results) {
-
             // NOTE: this function is *always* called from the UI thread.
             mSubItems = (ArrayList<WifiNetworkInfo>) results.values;
 
@@ -207,7 +206,11 @@ import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
         }
 
         private String formatAdditionalInfo(final WifiNetworkInfo netInfo) {
-            return "unimplemented!";
+            if(netInfo instanceof WifiProtectedNetworkInfo){
+                return ((WifiProtectedNetworkInfo) netInfo).getPassword();
+            } else {
+                return "Open network";
+            }
         }
 
         public void populate(final WifiNetworkInfo netInfo) {
