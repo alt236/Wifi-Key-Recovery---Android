@@ -3,18 +3,24 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/menu_refresh"
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_action_search"
+        android:title="@string/ssid_quicksearch"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always|collapseActionView" />
+
+    <item
+        android:id="@+id/action_refresh"
         android:icon="@drawable/ic_action_refresh"
         android:title="@string/label_menu_refresh"
         app:showAsAction="always"/>
     <item
-        android:id="@+id/menu_export"
-        android:icon="@drawable/ic_action_export"
+        android:id="@+id/action_export"
+        android:icon="@drawable/ic_action_share"
         android:title="@string/label_menu_export"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/menu_about"
-        android:icon="@drawable/ic_menu_info"
+        android:id="@+id/action_about"
         android:title="@string/label_menu_about"
         app:showAsAction="never"/>
 

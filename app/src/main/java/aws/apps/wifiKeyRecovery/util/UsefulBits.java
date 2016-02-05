@@ -17,65 +17,25 @@
  */
 package aws.apps.wifiKeyRecovery.util;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
-import android.util.Log;
-import android.util.TypedValue;
 import android.widget.Toast;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 
 public class UsefulBits {
-    private final String TAG = this.getClass().getName();
     private final Context mContext;
 
     public UsefulBits(final Context cntx) {
         mContext = cntx;
     }
 
-    public void ShowAlert(final String title, final String text, String button) {
-        if (button.equals("")) {
-            button = mContext.getString(android.R.string.ok);
-        }
-
-        try {
-            final AlertDialog.Builder ad = new AlertDialog.Builder(mContext);
-            ad.setTitle(title);
-            ad.setMessage(text);
-
-            ad.setPositiveButton(button, null);
-            ad.show();
-        } catch (final Exception e) {
-            Log.e(TAG, "^ ShowAlert()", e);
-        }
-    }
-
-    public Calendar convertMillisToDate(final long millis) {
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(millis);
-        return calendar;
-    }
-
-    public int dipToPixels(final int dip) {
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                (float) dip, mContext.getResources().getDisplayMetrics());
-    }
-
-    public float dipToPixels(final float dip) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                dip, mContext.getResources().getDisplayMetrics());
-    }
 
     public String formatDateTime(final String formatString, final Date d) {
         final Format formatter = new SimpleDateFormat(formatString);
@@ -107,41 +67,6 @@ public class UsefulBits {
         sb.append(mContext.getString(R.string.app_copyright));
 
         MyAlertBox.create(mContext, sb.toString(), title, mContext.getString(android.R.string.ok)).show();
-    }
-
-    public void showApplicationMissingAlert(final String title, final String message, String button1Text, final String marketUri) {
-        if (button1Text.equals("")) {
-            button1Text = mContext.getString(android.R.string.ok);
-        }
-
-        try {
-            // Create the dialog box
-            final AlertDialog.Builder alertbox = new AlertDialog.Builder(mContext);
-
-            alertbox.setTitle(title);
-            alertbox.setMessage(message);
-
-            alertbox.setPositiveButton(button1Text, null);
-            alertbox.setNegativeButton("Market", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(final DialogInterface arg0, final int arg1) {
-                    try {
-                        final Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(marketUri));
-                        mContext.startActivity(intent);
-                    } catch (final Exception e) {
-                        Log.e(TAG, "^ Error opening Market Page : " + e.getMessage());
-                        ShowAlert(mContext.getString(R.string.text_error), mContext.getString(R.string.text_could_not_go_to_market), mContext.getString(android.R.string.ok));
-                    }
-                }
-            });
-
-            alertbox.show();
-
-        } catch (final Exception e) {
-            Log.e(TAG, "^ ShowAlertWithWirelessSettings()", e);
-
-        }
     }
 
     public void showToast(final String message, final int duration, final int location, final int x_offset, final int y_offset) {
