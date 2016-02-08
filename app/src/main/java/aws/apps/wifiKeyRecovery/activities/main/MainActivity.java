@@ -32,9 +32,8 @@ import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.text.ClipboardManager;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -71,25 +70,6 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
     private ExecuteThread mExecuteThread;
     private ListView mList;
     private NetInfoAdapter mNiAdapter;
-    private final TextWatcher filterTextWatcher = new TextWatcher() {
-
-        @Override
-        public void afterTextChanged(final Editable s) {
-        }
-
-        @Override
-        public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
-        }
-
-        @Override
-        public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-            if (mNiAdapter != null) {
-                mNiAdapter.getFilter().filter(s);
-            } else {
-                Log.w(TAG, "^ TextWatcher: Adapter is null!");
-            }
-        }
-    };
     private String mTimeDate = "";
     private TextView mTextViewResultCount;
     private final Handler handler = new Handler() {
@@ -179,6 +159,9 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         mUsefulBits = new UsefulBits(this);
 
         // setup GUI
@@ -246,35 +229,6 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
             startActivity(intent);
         }
     }
-
-//    @Override
-//    public boolean onMenuItemClick(final MenuItem paramMenuItem) {
-//        final int actionId = paramMenuItem.getItemId();
-//
-//        final boolean res;
-//        switch (actionId) {
-//            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_ALL_AS_TEXT:
-//                copyStringToClipboard(mCurrentNetinfo.toString());
-//                res = true;
-//                break;
-//            case PopupMenuActionHelper.ACTION_ID_NETWORK_COPY_PASSWORD:
-//                if(mCurrentNetinfo instanceof WifiProtectedNetworkInfo){
-//                    copyStringToClipboard(((WifiProtectedNetworkInfo) mCurrentNetinfo).getPassword());
-//                } else {
-//                    Toast.makeText(this, "This network is not protected!", Toast.LENGTH_SHORT).show();
-//                }
-//
-//                res = true;
-//                break;
-//            case PopupMenuActionHelper.ACTION_ID_NETWORK_SHOW_QRCODE:
-//                res = true;
-//                break;
-//            default:
-//                res = false;
-//        }
-//
-//        return res;
-//    }
 
     /**
      * Handles item selections
