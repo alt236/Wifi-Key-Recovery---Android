@@ -24,38 +24,7 @@ import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 
 public class SavedData {
-    final String TAG = this.getClass().getName();
-
     private List<WifiNetworkInfo> tWifiPasswords = new ArrayList<>();
-
-    private String dateTime = "";
-    private boolean areWeRooted = false;
-    private int textSize;
-
-    public boolean getAreWeRooted() {
-        return areWeRooted;
-    }
-
-    public void setAreWeRooted(final boolean areWeRooted) {
-        this.areWeRooted = areWeRooted;
-    }
-
-    public String getDateTime() {
-        return dateTime;
-    }
-
-
-    public void setDateTime(final String dateTime) {
-        this.dateTime = dateTime;
-    }
-
-    public int getTextSize() {
-        return textSize;
-    }
-
-    public void setTextSize(final int size) {
-        textSize = size;
-    }
 
     public List<WifiNetworkInfo> getWifiPasswordList() {
         return tWifiPasswords;

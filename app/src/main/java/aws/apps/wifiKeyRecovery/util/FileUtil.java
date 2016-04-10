@@ -69,17 +69,16 @@ public class FileUtil {
                     out.write(contents);
                     out.close();
                     Log.d(TAG, "^ Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'");
-                    //showToast("Saved to SD as '" + directory.getAbsolutePath() + "/" + fileName + "'");
                     return true;
+                } else {
+                    Log.e(TAG, "^ Could not write file - directory is not writable");
                 }
 
             } catch (final Exception e) {
-                //showToast("Could not write file:\n+ e.getMessage()", Toast.LENGTH_SHORT);
                 Log.e(TAG, "^ Could not write file " + e.getMessage());
             }
 
         } else {
-            //showToast("No SD card is mounted...", Toast.LENGTH_SHORT);
             Log.e(TAG, "^ No SD card is mounted.");
         }
         return false;

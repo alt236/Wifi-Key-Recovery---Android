@@ -1,14 +1,17 @@
-package aws.apps.wifiKeyRecovery.activities.details;
+package aws.apps.wifiKeyRecovery.components.details;
 
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.ClipboardManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -54,6 +57,14 @@ public class WifiDetailsFragment extends Fragment {
     public WifiDetailsFragment() {
     }
 
+    public static Fragment getInstance(final WifiNetworkInfo info) {
+        final Fragment fragment = new WifiDetailsFragment();
+        final Bundle bundle = new Bundle();
+        bundle.putParcelable(WIFI_NETWORK, info);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
@@ -74,6 +85,24 @@ public class WifiDetailsFragment extends Fragment {
         return view;
     }
 
+    private void copyStringToClipboard(final String text) {
+        if (text.length() > 0) {
+            final ClipboardManager ClipMan = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipMan.setText(text);
+
+
+            final String msgtext;
+            if (text.length() > 150) {
+                msgtext = text.substring(0, 150) + "...";
+            } else {
+                msgtext = text;
+            }
+
+            final String message = "'" + msgtext + "' " + getString(R.string.text_copied);
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     @SuppressWarnings("deprecation")
     public void onDestroyView() {
@@ -83,13 +112,5 @@ public class WifiDetailsFragment extends Fragment {
         } else {
             mIvQrCode.getViewTreeObserver().removeOnGlobalLayoutListener(mGlobalLayoutListener);
         }
-    }
-
-    public static Fragment getInstance(final WifiNetworkInfo info) {
-        final Fragment fragment = new WifiDetailsFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putParcelable(WIFI_NETWORK, info);
-        fragment.setArguments(bundle);
-        return fragment;
     }
 }

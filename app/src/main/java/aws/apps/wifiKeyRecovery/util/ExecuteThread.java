@@ -29,8 +29,8 @@ import java.util.List;
 import aws.apps.wifiKeyRecovery.BuildConfig;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal.ExecResult;
-import uk.co.alt236.wifipasswordaccess.parser.WpaSupplicantParser;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.parser.WpaSupplicantParser;
 
 public class ExecuteThread extends Thread {
     public final static int STATE_DONE = 0;
@@ -41,12 +41,11 @@ public class ExecuteThread extends Thread {
 
     private final Handler mHandler;
     private final Context mContext;
-    private int mState;
     private final boolean mIsRooted;
+    private int mState;
 
     public ExecuteThread(final Handler h,
-                         final Context ctx,
-                         final Bundle b) {
+                         final Context ctx) {
 
         mHandler = h;
         mContext = ctx;

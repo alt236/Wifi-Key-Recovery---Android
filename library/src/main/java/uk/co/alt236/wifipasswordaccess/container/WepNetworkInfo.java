@@ -33,10 +33,15 @@ public class WepNetworkInfo implements WifiProtectedNetworkInfo {
     private WepNetworkInfo(final Parcel in) {
         mSsid = in.readString();
         mPassword = in.readString();
+        mPasswords = in.createStringArray();
+    }
 
-        final int passwordNo = in.readInt();
-        mPasswords = new String[passwordNo];
-        in.readStringArray(mPasswords);
+    private static String getCorrectPassword(final WifiNetworkBuilder builder) {
+        if (builder.getWepPasswords()[0] == null) {
+            return builder.getPassword();
+        } else {
+            return builder.getWepPasswords()[0];
+        }
     }
 
     @Override
@@ -71,15 +76,6 @@ public class WepNetworkInfo implements WifiProtectedNetworkInfo {
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(mSsid);
         dest.writeString(mPassword);
-        dest.writeInt(mPasswords.length);
-        dest.writeArray(mPasswords);
-    }
-
-    private static String getCorrectPassword(final WifiNetworkBuilder builder) {
-        if (builder.getWepPasswords()[0] == null) {
-            return builder.getPassword();
-        } else {
-            return builder.getWepPasswords()[0];
-        }
+        dest.writeStringArray(mPasswords);
     }
 }

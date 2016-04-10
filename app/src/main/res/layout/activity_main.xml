@@ -26,13 +26,12 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
         </android.support.design.widget.AppBarLayout>
 
-        <ListView
-            android:id="@+id/list"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
     </android.support.design.widget.CoordinatorLayout>
-
 
     <LinearLayout
         android:id="@+id/bottom_bar"

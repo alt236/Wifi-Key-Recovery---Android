@@ -27,37 +27,22 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:gravity="right"
         android:orientation="horizontal">
 
         <Button
             android:id="@+id/buttonshare"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="fill_parent"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="50"
-            android:drawableLeft="@android:drawable/ic_menu_share"
-            android:drawableStart="@android:drawable/ic_menu_share"
             android:text="@string/label_export_share"/>
 
         <Button
             android:id="@+id/buttontosd"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="fill_parent"
+            style="?attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="50"
-            android:drawableLeft="@android:drawable/ic_menu_upload"
-            android:drawableStart="@android:drawable/ic_menu_upload"
             android:text="@string/label_export_to_sd"/>
-
-        <Button
-            android:id="@+id/buttoncloseexport"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="50"
-            android:drawableLeft="@android:drawable/ic_menu_close_clear_cancel"
-            android:drawableStart="@android:drawable/ic_menu_close_clear_cancel"
-            android:text="@string/label_export_close"/>
     </LinearLayout>
 
     <!-- == Main == -->
@@ -79,7 +64,8 @@
             <EditText
                 android:id="@+id/fld_export_text"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textSize="12sp" />
         </LinearLayout>
     </ScrollView>
 

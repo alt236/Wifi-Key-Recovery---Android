@@ -1,4 +1,4 @@
-package aws.apps.wifiKeyRecovery.activities.main;
+package aws.apps.wifiKeyRecovery.components.export;
 
 import android.content.Context;
 
@@ -10,7 +10,7 @@ import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 /**
  *
  */
-/*package*/ class ExportedDataFormatter {
+/*protected*/ class ExportedDataFormatter {
 
     private final Context context;
 

@@ -1,4 +1,4 @@
-package aws.apps.wifiKeyRecovery.activities.details;
+package aws.apps.wifiKeyRecovery.components.details;
 
 import android.graphics.Bitmap;
 import android.text.TextUtils;

@@ -15,62 +15,47 @@
  * limitations under the License.
  * ****************************************************************************
  */
-package aws.apps.wifiKeyRecovery.activities.main;
+package aws.apps.wifiKeyRecovery.components.main;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
-import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcelable;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.ClipboardManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 
 import aws.apps.wifiKeyRecovery.BuildConfig;
 import aws.apps.wifiKeyRecovery.R;
-import aws.apps.wifiKeyRecovery.activities.details.WifiDetailsActivity;
-import aws.apps.wifiKeyRecovery.activities.export.ExportActivity;
+import aws.apps.wifiKeyRecovery.components.common.base.BaseActivity;
+import aws.apps.wifiKeyRecovery.components.common.dialogs.DialogFactory;
 import aws.apps.wifiKeyRecovery.containers.SavedData;
-import aws.apps.wifiKeyRecovery.ui.MyAlertBox;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal;
 import aws.apps.wifiKeyRecovery.util.ExecuteThread;
-import aws.apps.wifiKeyRecovery.util.UsefulBits;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 @SuppressWarnings("deprecation")
-public class MainActivity extends ActionBarActivity implements OnItemClickListener {
+public class MainActivity extends BaseActivity {
     private static final int DIALOG_GET_PASSWORDS = 1;
     private final String TAG = this.getClass().getName();
-    private Bundle mThreadBundle;
     private ExecuteThread mExecuteThread;
-    private ListView mList;
-    private NetInfoAdapter mNiAdapter;
-    private String mTimeDate = "";
+    private RecyclerView mRecyclerView;
+    private WifiNetworkRecyclerViewAdapter mRecyclerAdapter;
     private TextView mTextViewResultCount;
     private final Handler handler = new Handler() {
         @Override
@@ -86,7 +71,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
                     if (list != null) {
                         Collections.sort(list, new NetInfoComparator());
                         populateList(list);
-                        mList.setTag(list);
+                        mRecyclerView.setTag(list);
                     }
 
                     mExecuteThread.setState(ExecuteThread.STATE_DONE);
@@ -102,54 +87,6 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 
         }
     };
-    private UsefulBits mUsefulBits;
-
-    private void copyStringToClipboard(final String text) {
-        if (text.length() > 0) {
-            String msgtext = "";
-            if (text.length() > 150) {
-                msgtext = text.substring(0, 150) + "...";
-            } else {
-                msgtext = text;
-            }
-
-            final String message = "'" + msgtext + "' " + getString(R.string.text_copied);
-            mUsefulBits.showToast(message, Toast.LENGTH_SHORT, Gravity.TOP, 0, 0);
-
-            final ClipboardManager ClipMan = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipMan.setText(text);
-        }
-    }
-
-    private void getPasswords() {
-        final boolean hasRoot;
-
-        if (BuildConfig.USE_DEBUG_DATA) {
-            hasRoot = true;
-        } else {
-            final ExecTerminal et = new ExecTerminal();
-            hasRoot = et.checkSu();
-        }
-
-        if (hasRoot) {
-            showDialog(DIALOG_GET_PASSWORDS);
-        } else {
-            final AlertDialog dlg = MyAlertBox.create(
-                    this, getString(R.string.root_needed),
-                    getString(R.string.app_name),
-                    getString(android.R.string.ok));
-
-            dlg.setOnDismissListener(new OnDismissListener() {
-
-                @Override
-                public void onDismiss(final DialogInterface dialog) {
-                    MainActivity.this.finish();
-                }
-            });
-
-            dlg.show();
-        }
-    }
 
     /**
      * Called when the activity is first created.
@@ -162,16 +99,12 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mUsefulBits = new UsefulBits(this);
-
         // setup GUI
-        mList = (ListView) findViewById(R.id.list);
         mTextViewResultCount = (TextView) findViewById(R.id.tvResults);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mList.setFastScrollEnabled(true);
-        mList.setOnItemClickListener(this);
-        mList.setFastScrollEnabled(true);
-        populateInfo();
+        loadData();
     }
 
     @Override
@@ -181,7 +114,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
                 final ProgressDialog mExecuteDialog = new ProgressDialog(this);
                 mExecuteDialog.setMessage(getString(R.string.dialogue_text_please_wait));
 
-                mExecuteThread = new ExecuteThread(handler, this, mThreadBundle);
+                mExecuteThread = new ExecuteThread(handler, this);
                 mExecuteThread.start();
                 return mExecuteDialog;
             default:
@@ -207,27 +140,14 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 
             @Override
             public boolean onQueryTextChange(final String newText) {
-                if (mNiAdapter != null) {
-                    mNiAdapter.getFilter().filter(newText);
+                if (mRecyclerAdapter != null) {
+                    //mRecyclerAdapter.getFilter().filter(newText);
                 }
                 return true;
             }
         });
 
         return true;
-    }
-
-    @Override
-    public void onItemClick(final AdapterView<?> l, final View v, final int position, final long id) {
-
-        final WifiNetworkInfo networkInfo = (WifiNetworkInfo) l.getAdapter().getItem(position);
-        if (networkInfo != null) {
-            final Intent intent = new Intent(this, WifiDetailsActivity.class);
-            //noinspection RedundantCast
-            intent.putExtra(
-                    WifiDetailsActivity.EXTRAS_NETWORK_INFO, (Parcelable) networkInfo);
-            startActivity(intent);
-        }
     }
 
     /**
@@ -238,17 +158,12 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_about:
-                mUsefulBits.showAboutDialogue();
+                DialogFactory.getAboutDialog(this).show();
                 return true;
             case R.id.action_export:
-                final Intent exportIntent = new Intent();
-                final String export_text
-                        = new ExportedDataFormatter(this)
-                        .getString((List<WifiNetworkInfo>) mList.getTag());
-                exportIntent.putExtra("info", export_text);
-                exportIntent.putExtra("time", mTimeDate);
-                exportIntent.setClass(this, ExportActivity.class);
-                startActivity(exportIntent);
+                getIntentDispatcher().openExportActivity(
+                        (List<WifiNetworkInfo>) mRecyclerView.getTag(),
+                        System.currentTimeMillis());
                 return true;
             case R.id.action_refresh:
                 refreshInfo();
@@ -264,40 +179,58 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
 
         final SavedData saved = new SavedData();
 
-        if (mList.getTag() != null) {
-            saved.setWiFiPasswordList((List<WifiNetworkInfo>) mList.getTag());
+        if (mRecyclerView.getTag() != null) {
+            saved.setWiFiPasswordList((List<WifiNetworkInfo>) mRecyclerView.getTag());
         }
 
-        saved.setDateTime(mTimeDate);
         return saved;
     }
 
     /**
      * Retrieves and displays info
      */
-    private void populateInfo() {
+    private void loadData() {
         final Object data = getLastCustomNonConfigurationInstance();
 
         if (data == null) { // We need to do everything from scratch!
-            mTimeDate = mUsefulBits.formatDateTime("yyyy-MM-dd-HHmmssZ", new Date());
-            getPasswords();
+            final boolean hasRoot;
+            if (BuildConfig.USE_DEBUG_DATA) {
+                hasRoot = true;
+            } else {
+                final ExecTerminal et = new ExecTerminal();
+                hasRoot = et.checkSu();
+            }
+
+            if (hasRoot) {
+                showDialog(DIALOG_GET_PASSWORDS);
+            } else {
+                final Dialog dlg = DialogFactory.getRootWarning(this, new OnDismissListener() {
+                    @Override
+                    public void onDismiss(final DialogInterface dialog) {
+                        MainActivity.this.finish();
+                    }
+                });
+
+                dlg.show();
+            }
         } else {
             final SavedData saved = (SavedData) data;
-            mTimeDate = saved.getDateTime();
-
             populateList(saved.getWifiPasswordList());
-            mList.setTag(saved.getWifiPasswordList());
+            mRecyclerView.setTag(saved.getWifiPasswordList());
         }
     }
 
     private void populateList(final List<WifiNetworkInfo> l) {
+        mTextViewResultCount.setText(String.valueOf(l.size()));
+
         if (l.size() > 0) {
-            mNiAdapter = new NetInfoAdapter(this, l);
-            mTextViewResultCount.setText(String.valueOf(l.size()));
-            mList.setAdapter(mNiAdapter);
-        } else {
-            mTextViewResultCount.setText("0");
+            final WifiNetworkRecyclerViewAdapter adapter
+                    = new WifiNetworkRecyclerViewAdapter(this, getIntentDispatcher());
+            adapter.setItems(l);
+            mRecyclerView.setAdapter(adapter);
+            mRecyclerAdapter = adapter;
         }
+
         supportInvalidateOptionsMenu();
     }
 
@@ -305,7 +238,7 @@ public class MainActivity extends ActionBarActivity implements OnItemClickListen
      * Convenience function combining clearInfo and getInfo
      */
     private void refreshInfo() {
-        populateInfo();
+        loadData();
     }
 
     private class NetInfoComparator implements Comparator<WifiNetworkInfo> {

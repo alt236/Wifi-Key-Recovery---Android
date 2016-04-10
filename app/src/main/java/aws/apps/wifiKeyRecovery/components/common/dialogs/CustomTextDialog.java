@@ -15,22 +15,23 @@
  * limitations under the License.
  * ****************************************************************************
  */
-package aws.apps.wifiKeyRecovery.ui;
+package aws.apps.wifiKeyRecovery.components.common.dialogs;
 
-import android.app.AlertDialog;
 import android.content.Context;
+import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public final class MyAlertBox {
+/*package*/ final class CustomTextDialog {
 
-    private MyAlertBox() {
+    private CustomTextDialog() {
     }
 
-    private static ScrollView LinkifyText(final Context context, final String message) {
+    private static ScrollView linkify(final Context context,
+                                      final String message) {
         final ScrollView svMessage = new ScrollView(context);
         final TextView tvMessage = new TextView(context);
 
@@ -46,14 +47,16 @@ public final class MyAlertBox {
         return svMessage;
     }
 
-    public static AlertDialog create(final Context context, final String text, final String title, final String button) {
+    public static AlertDialog create(final Context context,
+                                     final String text,
+                                     final String title,
+                                     final String button) {
         return new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setCancelable(true)
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .setPositiveButton(button, null)
-                .setView(LinkifyText(context, text))
+                .setView(linkify(context, text))
                 .create();
     }
-
 }
