@@ -47,6 +47,7 @@ import aws.apps.wifiKeyRecovery.components.common.dialogs.DialogFactory;
 import aws.apps.wifiKeyRecovery.containers.SavedData;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal;
 import aws.apps.wifiKeyRecovery.util.ExecuteThread;
+import aws.apps.wifiKeyRecovery.util.WiFiNetworkValitator;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 
 @SuppressWarnings("deprecation")
@@ -67,12 +68,11 @@ public class MainActivity extends BaseActivity {
                     Log.d(TAG, "^ Worker Thread: WORK_COMPLETED");
 
                     final List<WifiNetworkInfo> list = (ArrayList<WifiNetworkInfo>) msg.getData().getSerializable("passwords");
+                    final List<WifiNetworkInfo> validList = WiFiNetworkValitator.getValidNetworks(list);
 
-                    if (list != null) {
-                        Collections.sort(list, new NetInfoComparator());
-                        populateList(list);
+                    Collections.sort(validList, new NetInfoComparator());
+                    populateList(validList);
                         mRecyclerView.setTag(list);
-                    }
 
                     mExecuteThread.setState(ExecuteThread.STATE_DONE);
                     removeDialog(DIALOG_GET_PASSWORDS);
@@ -88,9 +88,6 @@ public class MainActivity extends BaseActivity {
         }
     };
 
-    /**
-     * Called when the activity is first created.
-     */
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

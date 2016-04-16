@@ -10,8 +10,10 @@ import android.widget.ImageView;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.components.common.navigation.IntentDispatcher;
 import aws.apps.wifiKeyRecovery.components.common.recyclerview.BaseViewBinder;
+import uk.co.alt236.wifipasswordaccess.container.WepNetworkInfo;
 import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
 import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
+import uk.co.alt236.wifipasswordaccess.container.WpaNetworkInfo;
 
 class WifiNetworkViewHolderBinder extends BaseViewBinder<WifiNetworkViewHolder, WifiNetworkInfo> {
     private static final int COLOR_RED = Color.parseColor("#F44336");
@@ -54,10 +56,39 @@ class WifiNetworkViewHolderBinder extends BaseViewBinder<WifiNetworkViewHolder, 
     }
 
     private static String formatAdditionalInfo(final WifiNetworkInfo netInfo) {
-        if (netInfo instanceof WifiProtectedNetworkInfo) {
-            return ((WifiProtectedNetworkInfo) netInfo).getPassword();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("TYPE: ");
+        sb.append(netInfo.getNetType());
+        sb.append("\n");
+
+        appendPassword(sb, netInfo);
+        return sb.toString();
+    }
+
+    private static void appendPassword(final StringBuilder sb, final WifiNetworkInfo networkInfo) {
+        if (networkInfo instanceof WifiProtectedNetworkInfo) {
+            final WifiProtectedNetworkInfo protectedNetworkInfo = (WifiProtectedNetworkInfo) networkInfo;
+            if (protectedNetworkInfo instanceof WpaNetworkInfo) {
+                sb.append("Password: ");
+                sb.append(protectedNetworkInfo.getPassword());
+                sb.append("\n");
+            } else if (protectedNetworkInfo instanceof WepNetworkInfo) {
+                final WepNetworkInfo wepNetworkInfo = (WepNetworkInfo) protectedNetworkInfo;
+                for (int i = 0; i < wepNetworkInfo.getPasswordCount(); i++) {
+                    //noinspection StringConcatenationInsideStringBufferAppend
+                    sb.append("WEP_KEY_" + i + ": ");
+                    sb.append(wepNetworkInfo.getPassword(i));
+                    sb.append("\n");
+                }
+            } else {
+                sb.append("Password: ");
+                sb.append(protectedNetworkInfo.getPassword());
+                sb.append("\n");
+            }
         } else {
-            return "Open network";
+            sb.append("Password: ");
+            sb.append("<No Password>");
+            sb.append("\n");
         }
     }
 

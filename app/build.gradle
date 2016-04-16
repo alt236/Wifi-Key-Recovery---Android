@@ -17,7 +17,7 @@ android {
         applicationId "aws.apps.wifiKeyRecovery"
         minSdkVersion minSdkRed
         targetSdkVersion targetSdk
-        buildConfigField "Boolean", "USE_DEBUG_DATA", "false"
+        buildConfigField "Boolean", "USE_DEBUG_DATA", "true"
     }
 
     buildTypes {
