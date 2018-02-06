@@ -23,6 +23,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
@@ -57,7 +58,7 @@ public class ExportActivity extends BaseActivity {
         final View shareButton = findViewById(R.id.buttonshare);
         final View saveToSdButton = findViewById(R.id.buttontosd);
 
-        mFldInfo = (EditText) findViewById(R.id.fld_export_text);
+        mFldInfo = findViewById(R.id.fld_export_text);
 
         final Bundle extras = getIntent().getExtras();
 
@@ -86,8 +87,8 @@ public class ExportActivity extends BaseActivity {
 
     @Override
     public void onRequestPermissionsResult(final int requestCode,
-                                           final String permissions[],
-                                           final int[] grantResults) {
+                                           @NonNull final String permissions[],
+                                           @NonNull final int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL: {
                 // If request is cancelled, the result arrays are empty.

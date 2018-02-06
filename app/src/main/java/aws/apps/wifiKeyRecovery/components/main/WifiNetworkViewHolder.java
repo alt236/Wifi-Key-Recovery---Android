@@ -15,13 +15,9 @@ class WifiNetworkViewHolder extends BaseRecyclerViewHolder {
 
     public WifiNetworkViewHolder(final View itemView) {
         super(itemView);
-        ssid = (TextView) getRoot().findViewById(R.id.ssid);
-        additional = (TextView) getRoot().findViewById(R.id.additional);
-        icon = (ImageView) getRoot().findViewById(R.id.icon);
-    }
-
-    public static int getLayoutId() {
-        return ITEM_LAYOUT;
+        ssid = getRoot().findViewById(R.id.ssid);
+        additional = getRoot().findViewById(R.id.additional);
+        icon = getRoot().findViewById(R.id.icon);
     }
 
     public TextView getSsid() {
@@ -34,5 +30,9 @@ class WifiNetworkViewHolder extends BaseRecyclerViewHolder {
 
     public ImageView getIcon() {
         return icon;
+    }
+
+    public static int getLayoutId() {
+        return ITEM_LAYOUT;
     }
 }

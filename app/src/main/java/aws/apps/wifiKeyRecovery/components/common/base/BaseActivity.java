@@ -8,7 +8,7 @@ import aws.apps.wifiKeyRecovery.components.common.navigation.IntentDispatcher;
 /**
  *
  */
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     private IntentDispatcher mIntentDispatcher;
 

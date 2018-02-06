@@ -61,12 +61,12 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // setup GUI
-        mTextViewResultCount = (TextView) findViewById(R.id.tvResults);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mTextViewResultCount = findViewById(R.id.tvResults);
+        mRecyclerView = findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         loadData();

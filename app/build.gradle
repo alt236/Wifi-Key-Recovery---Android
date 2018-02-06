@@ -6,8 +6,8 @@ final int versionPatch = 8
 final int androidVersionCode = 8
 final String semanticVersion = "${versionMajor}.${versionMinor}.${versionPatch}"
 
-final int targetSdk = rootProject.targetSdkVersion;
-final int minSdkRed = rootProject.minSdkVersion;
+final int targetSdk = rootProject.targetSdkVersion
+final int minSdkRed = rootProject.minSdkVersion
 
 android {
     compileSdkVersion rootProject.compileSdkVersion

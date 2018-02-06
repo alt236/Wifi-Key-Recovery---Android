@@ -3,6 +3,7 @@ package aws.apps.wifiKeyRecovery.components.details;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.ClipboardManager;
 import android.view.LayoutInflater;
@@ -54,13 +55,13 @@ public class WifiDetailsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater,
+    public View onCreateView(@NonNull final LayoutInflater inflater,
                              final ViewGroup container,
                              final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_wifi_details, container, false);
 
-        final TextView mTextViewSsid = (TextView) view.findViewById(R.id.ssid);
-        mIvQrCode = (ImageView) view.findViewById(R.id.qrcode);
+        final TextView mTextViewSsid = view.findViewById(R.id.ssid);
+        mIvQrCode = view.findViewById(R.id.qrcode);
 
         mNetworkInfo = (WifiNetworkInfo) getArguments().getSerializable(WIFI_NETWORK);
 
