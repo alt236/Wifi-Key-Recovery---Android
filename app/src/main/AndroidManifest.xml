@@ -9,11 +9,11 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:icon="@drawable/ic_launcher">
         <activity
             android:name=".components.main.MainActivity"
             android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
             android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -21,11 +21,16 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".components.export.ExportActivity"/>
+        <activity
+            android:name=".components.export.ExportActivity"
+            android:label="@string/title_export"
+            android:parentActivityName=".components.main.MainActivity"
+            android:theme="@style/Theme.AppCompat"/>
         <activity
             android:name=".components.details.WifiDetailsActivity"
             android:label="@string/title_activity_wifi_details"
-            android:parentActivityName=".components.main.MainActivity">
+            android:parentActivityName=".components.main.MainActivity"
+            android:theme="@style/Theme.AppCompat">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".components.main.MainActivity"/>
