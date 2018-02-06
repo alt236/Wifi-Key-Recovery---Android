@@ -5,14 +5,12 @@
                 android:layout_height="match_parent">
 
     <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/top_coordinate_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottom_bar"
         android:layout_alignParentTop="true">
 
         <android.support.design.widget.AppBarLayout
-            android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
@@ -53,7 +51,6 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tvResultsTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/protected_networks"/>

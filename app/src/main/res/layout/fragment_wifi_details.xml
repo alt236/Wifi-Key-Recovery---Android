@@ -17,7 +17,7 @@
         android:maxHeight="100dp"
         android:maxWidth="100dp"
         android:scaleType="center"
-        android:src="@drawable/ic_list_barcode"/>
+        tools:src="@drawable/ic_launcher"/>
 
     <TextView
         android:id="@+id/ssid"

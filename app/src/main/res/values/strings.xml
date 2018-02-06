@@ -34,34 +34,19 @@
     <string name="label_menu_refresh">Refresh</string>
     <string name="label_menu_about">About</string>
     <string name="label_menu_export">Export</string>
-    <string name="label_device">Device:</string>
-    <string name="label_time">Time:</string>
     <string name="label_wifi_passwords">___WiFi_Passwords________</string>
     <string name="root_needed" formatted="false">This application needs root.\n\n•If you do not know what root is, see here: http://en.wikipedia.org/wiki/Rooting_%28Android_OS%29 \n\n•To find out how to root your device, have a look around here: http://forum.xda-developers.com.\n\n•Apologies, but I cannot help you root your device.</string>
     <string name="label_share_dialogue_title">Share with others</string>
     <string name="label_edit_before_export">Edit text before exporting:</string>
     <string name="label_export_to_sd">To SD</string>
-    <string name="label_export_close">Close</string>
     <string name="label_export_share">Share</string>
     <string name="dialogue_text_please_wait">Please wait…</string>
     <string name="text_wifi_password_recovery">wifi_password_recovery</string>
     <string name="text_copied">copied.</string>
-    <string name="text_error">Error</string>
-    <string name="text_could_not_go_to_market">Could not open market page.\nPlease make sure your device has the market application installed.</string>
-    <string name="could_not_find_password_files">Could not find password files.</string>
-    <string name="component_missing">Component Missing</string>
-    <string name="you_need_the_barcode_scanner_application">You need the Barcode Scanner application to do this.</string>
-    <string name="dismiss">Dismiss</string>
-    <string name="zxing_market_url">market://details?id=com.google.zxing.client.android</string>
-    <string name="qr_code">QR Code</string>
     <string name="protected_networks">Protected Networks:</string>
-    <string name="label_copy_password">Copy password</string>
-    <string name="label_copy_all">Copy All</string>
-    <string name="label_show_qr_code">Show QR Code</string>
     <string name="ssid_quicksearch">SSID Quicksearch</string>
     <string name="title_activity_wifi_details">Wifi Network Details</string>
     <string name="title_export">Export</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
 </resources>

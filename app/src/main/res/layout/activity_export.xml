@@ -48,7 +48,6 @@
     <!-- == Main == -->
 
     <ScrollView
-        android:id="@+id/export_mainbit"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@+id/export_buttonsbit"
@@ -65,6 +64,7 @@
                 android:id="@+id/fld_export_text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:inputType="text"
                 android:textSize="12sp"/>
         </LinearLayout>
     </ScrollView>
