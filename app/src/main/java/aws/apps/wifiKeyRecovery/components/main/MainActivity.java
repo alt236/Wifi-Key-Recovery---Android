@@ -23,8 +23,6 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,48 +43,18 @@ import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.components.common.base.BaseActivity;
 import aws.apps.wifiKeyRecovery.components.common.dialogs.DialogFactory;
 import aws.apps.wifiKeyRecovery.containers.SavedData;
+import aws.apps.wifiKeyRecovery.dataload.PasswordLoader;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal;
-import aws.apps.wifiKeyRecovery.util.ExecuteThread;
+import aws.apps.wifiKeyRecovery.util.FileUtil;
 import aws.apps.wifiKeyRecovery.util.WiFiNetworkValitator;
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
 
-@SuppressWarnings("deprecation")
 public class MainActivity extends BaseActivity {
     private static final int DIALOG_GET_PASSWORDS = 1;
     private final String TAG = this.getClass().getName();
-    private ExecuteThread mExecuteThread;
     private RecyclerView mRecyclerView;
     private WifiNetworkRecyclerViewAdapter mRecyclerAdapter;
     private TextView mTextViewResultCount;
-    private final Handler handler = new Handler() {
-        @Override
-        @SuppressWarnings("unchecked")
-        public void handleMessage(final Message msg) {
-            switch (msg.what) {
-
-                case ExecuteThread.WORK_COMPLETED:
-                    Log.d(TAG, "^ Worker Thread: WORK_COMPLETED");
-
-                    final List<WifiNetworkInfo> list = (ArrayList<WifiNetworkInfo>) msg.getData().getSerializable("passwords");
-                    final List<WifiNetworkInfo> validList = WiFiNetworkValitator.getValidNetworks(list);
-
-                    Collections.sort(validList, new NetInfoComparator());
-                    populateList(validList);
-                        mRecyclerView.setTag(list);
-
-                    mExecuteThread.setState(ExecuteThread.STATE_DONE);
-                    removeDialog(DIALOG_GET_PASSWORDS);
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-
-                case ExecuteThread.WORK_INTERUPTED:
-                    mExecuteThread.setState(ExecuteThread.STATE_DONE);
-                    removeDialog(DIALOG_GET_PASSWORDS);
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-                    break;
-            }
-
-        }
-    };
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -111,8 +79,36 @@ public class MainActivity extends BaseActivity {
                 final ProgressDialog mExecuteDialog = new ProgressDialog(this);
                 mExecuteDialog.setMessage(getString(R.string.dialogue_text_please_wait));
 
-                mExecuteThread = new ExecuteThread(handler, this);
-                mExecuteThread.start();
+                final PasswordLoader passwordLoader;
+                if (BuildConfig.USE_DEBUG_DATA) {
+                    passwordLoader = new PasswordLoader(new FileUtil(this));
+                } else {
+                    final String[] commands = getResources().getStringArray(R.array.shellCommands);
+                    passwordLoader = new PasswordLoader(commands);
+                }
+
+                passwordLoader.loadPasswords(new PasswordLoader.PasswordLoadCallback() {
+                    @Override
+                    public void onPasswordsLoaded(final List<WifiNetworkInfo> list) {
+                        final List<WifiNetworkInfo> validList = WiFiNetworkValitator.getValidNetworks(list);
+
+                        Collections.sort(validList, new NetInfoComparator());
+                        populateList(validList);
+                        mRecyclerView.setTag(list);
+                        resetUi();
+                    }
+
+                    @Override
+                    public void onError() {
+                        resetUi();
+                    }
+
+                    private void resetUi() {
+                        removeDialog(DIALOG_GET_PASSWORDS);
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+                    }
+                });
+
                 return mExecuteDialog;
             default:
                 return null;
@@ -159,7 +155,7 @@ public class MainActivity extends BaseActivity {
                 return true;
             case R.id.action_export:
                 getIntentDispatcher().openExportActivity(
-                        (List<WifiNetworkInfo>) mRecyclerView.getTag(),
+                        (ArrayList<WifiNetworkInfo>) mRecyclerView.getTag(),
                         System.currentTimeMillis());
                 return true;
             case R.id.action_refresh:

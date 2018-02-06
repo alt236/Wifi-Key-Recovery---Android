@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
@@ -38,7 +37,7 @@ import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.components.common.base.BaseActivity;
 import aws.apps.wifiKeyRecovery.util.FileUtil;
 import aws.apps.wifiKeyRecovery.util.RuntimePermissionsUtil;
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
 
 public class ExportActivity extends BaseActivity {
     private static final String EXTRAS_CONTENT = ExportActivity.class.getName() + ".EXTRA_CONTENT";
@@ -50,18 +49,39 @@ public class ExportActivity extends BaseActivity {
     private EditText mFldInfo;
     private long mTimeDate;
 
-    public static Intent createIntent(final Context context,
-                                      final List<WifiNetworkInfo> content,
-                                      final long timestamp) {
-        final Intent intent = new Intent(context, ExportActivity.class);
-        intent.putParcelableArrayListExtra(EXTRAS_CONTENT, new ArrayList<Parcelable>(content));
-        intent.putExtra(EXTRAS_TIMESTAMP, timestamp);
+    @Override
+    public void onCreate(final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_export);
 
-        return intent;
-    }
+        final View shareButton = findViewById(R.id.buttonshare);
+        final View saveToSdButton = findViewById(R.id.buttontosd);
 
-    private static String createFilename(final long timestamp) {
-        return "wifikeyrecovery_" + timestamp + ".txt";
+        mFldInfo = (EditText) findViewById(R.id.fld_export_text);
+
+        final Bundle extras = getIntent().getExtras();
+
+        //noinspection unchecked
+        final List<WifiNetworkInfo> networkInfos =
+                (ArrayList<WifiNetworkInfo>) extras.getSerializable(EXTRAS_CONTENT);
+        final ExportedDataFormatter formatter = new ExportedDataFormatter(this);
+
+        mTimeDate = extras.getLong(EXTRAS_TIMESTAMP);
+        mFldInfo.setText(getString(R.string.text_wifi_password_recovery) + " @ " + mTimeDate + "\n\n");
+        mFldInfo.append(formatter.getString(networkInfos));
+
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                shareResults();
+            }
+        });
+        saveToSdButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                saveToFile();
+            }
+        });
     }
 
     @Override
@@ -82,38 +102,6 @@ public class ExportActivity extends BaseActivity {
                 }
             }
         }
-    }
-
-    @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_export);
-
-        final View shareButton = findViewById(R.id.buttonshare);
-        final View saveToSdButton = findViewById(R.id.buttontosd);
-
-        mFldInfo = (EditText) findViewById(R.id.fld_export_text);
-
-        final Bundle extras = getIntent().getExtras();
-        final List<WifiNetworkInfo> networkInfos = extras.getParcelableArrayList(EXTRAS_CONTENT);
-        final ExportedDataFormatter formatter = new ExportedDataFormatter(this);
-
-        mTimeDate = extras.getLong(EXTRAS_TIMESTAMP);
-        mFldInfo.setText(getString(R.string.text_wifi_password_recovery) + " @ " + mTimeDate + "\n\n");
-        mFldInfo.append(formatter.getString(networkInfos));
-
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                shareResults();
-            }
-        });
-        saveToSdButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                saveToFile();
-            }
-        });
     }
 
     private void saveToFile() {
@@ -145,5 +133,18 @@ public class ExportActivity extends BaseActivity {
         final String text = mFldInfo.getText().toString();
         final String subject = getString(R.string.text_wifi_password_recovery) + " @ " + mTimeDate;
         getIntentDispatcher().shareText(text, subject);
+    }
+
+    private static String createFilename(final long timestamp) {
+        return "wifikeyrecovery_" + timestamp + ".txt";
+    }
+
+    public static Intent createIntent(final Context context,
+                                      final ArrayList<WifiNetworkInfo> content,
+                                      final long timestamp) {
+        final Intent intent = new Intent(context, ExportActivity.class);
+        intent.putExtra(EXTRAS_CONTENT, content);
+        intent.putExtra(EXTRAS_TIMESTAMP, timestamp);
+        return intent;
     }
 }

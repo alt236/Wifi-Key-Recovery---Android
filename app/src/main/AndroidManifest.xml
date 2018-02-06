@@ -21,14 +21,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".components.export.ExportActivity" />
+        <activity android:name=".components.export.ExportActivity"/>
         <activity
             android:name=".components.details.WifiDetailsActivity"
             android:label="@string/title_activity_wifi_details"
             android:parentActivityName=".components.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".components.main.MainActivity" />
+                android:value=".components.main.MainActivity"/>
         </activity>
     </application>
 

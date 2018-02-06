@@ -7,8 +7,8 @@ import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
-import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiProtectedNetworkInfo;
 
 /**
  *

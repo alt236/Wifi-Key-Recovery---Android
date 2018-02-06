@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Wifi-Key-Recovery---Android.iml" filepath="$PROJECT_DIR$/Wifi-Key-Recovery---Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wifi-key-recovery.iml" filepath="$PROJECT_DIR$/wifi-key-recovery.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wpasupplicantparser/wpasupplicantparser.iml" filepath="$PROJECT_DIR$/wpasupplicantparser/wpasupplicantparser.iml" />
     </modules>
   </component>
 </project>

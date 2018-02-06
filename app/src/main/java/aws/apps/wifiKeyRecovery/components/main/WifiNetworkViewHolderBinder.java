@@ -10,10 +10,10 @@ import android.widget.ImageView;
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.components.common.navigation.IntentDispatcher;
 import aws.apps.wifiKeyRecovery.components.common.recyclerview.BaseViewBinder;
-import uk.co.alt236.wifipasswordaccess.container.WepNetworkInfo;
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
-import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
-import uk.co.alt236.wifipasswordaccess.container.WpaNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WepNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiProtectedNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WpaNetworkInfo;
 
 class WifiNetworkViewHolderBinder extends BaseViewBinder<WifiNetworkViewHolder, WifiNetworkInfo> {
     private static final int COLOR_RED = Color.parseColor("#F44336");
@@ -23,6 +23,26 @@ class WifiNetworkViewHolderBinder extends BaseViewBinder<WifiNetworkViewHolder, 
     public WifiNetworkViewHolderBinder(final Context context,
                                        final IntentDispatcher intentDispatcher) {
         super(context, intentDispatcher);
+    }
+
+    @Override
+    protected void reset(final WifiNetworkViewHolder holder) {
+
+    }
+
+    @Override
+    public void setData(final WifiNetworkViewHolder holder, final WifiNetworkInfo item) {
+
+        holder.getSsid().setText(item.getSsid());
+        holder.getAdditional().setText(formatAdditionalInfo(item));
+        setIcon(holder.getIcon(), item);
+
+        holder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                getIntentDispatcher().openDetails(item);
+            }
+        });
     }
 
     private static void setIcon(final ImageView imageView, final WifiNetworkInfo netInfo) {
@@ -90,25 +110,5 @@ class WifiNetworkViewHolderBinder extends BaseViewBinder<WifiNetworkViewHolder, 
             sb.append("<No Password>");
             sb.append("\n");
         }
-    }
-
-    @Override
-    protected void reset(final WifiNetworkViewHolder holder) {
-
-    }
-
-    @Override
-    public void setData(final WifiNetworkViewHolder holder, final WifiNetworkInfo item) {
-
-        holder.getSsid().setText(item.getSsid());
-        holder.getAdditional().setText(formatAdditionalInfo(item));
-        setIcon(holder.getIcon(), item);
-
-        holder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                getIntentDispatcher().openDetails(item);
-            }
-        });
     }
 }

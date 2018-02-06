@@ -5,7 +5,7 @@
                 android:paddingBottom="@dimen/activity_vertical_margin"
                 android:paddingLeft="@dimen/activity_horizontal_margin"
                 android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin">
+                android:paddingTop="@dimen/activity_vertical_margin">
 
     <ImageView
         android:id="@+id/qrcode"
@@ -26,6 +26,6 @@
         android:layout_alignParentBottom="true"
         android:gravity="center_horizontal"
         android:padding="10dp"
-        tools:text="@android:string/untitled" />
+        tools:text="@android:string/untitled"/>
 
 </RelativeLayout>

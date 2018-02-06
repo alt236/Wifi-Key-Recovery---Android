@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import aws.apps.wifiKeyRecovery.components.common.navigation.IntentDispatcher;
 import aws.apps.wifiKeyRecovery.components.common.recyclerview.BaseRecyclerViewAdapter;
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
 
 class WifiNetworkRecyclerViewAdapter extends BaseRecyclerViewAdapter<WifiNetworkInfo, WifiNetworkViewHolder> {
     private final WifiNetworkViewHolderBinder mBinder;

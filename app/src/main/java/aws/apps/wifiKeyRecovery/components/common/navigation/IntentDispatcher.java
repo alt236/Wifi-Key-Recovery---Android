@@ -5,12 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.components.details.WifiDetailsActivity;
 import aws.apps.wifiKeyRecovery.components.export.ExportActivity;
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
 
 /**
  *
@@ -22,7 +22,7 @@ public class IntentDispatcher {
         this.activity = activity;
     }
 
-    public void openExportActivity(final List<WifiNetworkInfo> networks,
+    public void openExportActivity(final ArrayList<WifiNetworkInfo> networks,
                                    final long timestamp) {
 
         final Intent intent = ExportActivity.createIntent(activity, networks, timestamp);

@@ -20,7 +20,7 @@ package aws.apps.wifiKeyRecovery.containers;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
 
 
 public class SavedData {

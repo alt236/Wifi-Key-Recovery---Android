@@ -9,17 +9,10 @@ import android.view.MenuItem;
 
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.components.common.base.BaseActivity;
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
 
 public class WifiDetailsActivity extends BaseActivity {
     private final static String EXTRAS_CONTENT = WifiDetailsActivity.class.getName() + ".EXTRA_CONTENT";
-
-    public static Intent createIntent(final Context context, final WifiNetworkInfo networkInfo) {
-        final Intent intent = new Intent(context, WifiDetailsActivity.class);
-        intent.putExtra(EXTRAS_CONTENT, networkInfo);
-
-        return intent;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
@@ -44,11 +37,18 @@ public class WifiDetailsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_details);
         if (savedInstanceState == null) {
-            final Fragment fragment = WifiDetailsFragment.getInstance(
-                    getIntent().getExtras().<WifiNetworkInfo>getParcelable(EXTRAS_CONTENT));
+            final WifiNetworkInfo info = (WifiNetworkInfo) getIntent().getExtras().getSerializable(EXTRAS_CONTENT);
+            final Fragment fragment = WifiDetailsFragment.getInstance(info);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, fragment)
                     .commit();
         }
+    }
+
+    public static Intent createIntent(final Context context, final WifiNetworkInfo networkInfo) {
+        final Intent intent = new Intent(context, WifiDetailsActivity.class);
+        intent.putExtra(EXTRAS_CONTENT, networkInfo);
+
+        return intent;
     }
 }

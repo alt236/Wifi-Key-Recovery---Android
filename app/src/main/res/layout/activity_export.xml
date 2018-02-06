@@ -65,7 +65,7 @@
                 android:id="@+id/fld_export_text"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp" />
+                android:textSize="12sp"/>
         </LinearLayout>
     </ScrollView>
 

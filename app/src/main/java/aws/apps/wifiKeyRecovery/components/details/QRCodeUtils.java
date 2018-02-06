@@ -12,9 +12,9 @@ import com.google.zxing.common.BitMatrix;
 import java.util.EnumMap;
 import java.util.Map;
 
-import uk.co.alt236.wifipasswordaccess.WifiNetworkType;
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
-import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkType;
+import uk.co.alt236.wpasupplicantparser.container.WifiProtectedNetworkInfo;
 
 /*package*/ final class QRCodeUtils {
     private static final int WHITE = 0xFFFFFFFF;

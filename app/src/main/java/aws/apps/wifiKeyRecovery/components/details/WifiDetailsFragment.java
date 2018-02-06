@@ -17,7 +17,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 
 import aws.apps.wifiKeyRecovery.R;
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
 
 public class WifiDetailsFragment extends Fragment {
     private static final String WIFI_NETWORK = "wifi_network";
@@ -35,11 +35,7 @@ public class WifiDetailsFragment extends Fragment {
                 size = mIvQrCode.getHeight();
             }
 
-            if (Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                mIvQrCode.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            } else {
-                mIvQrCode.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-            }
+            removeLayoutListener(mIvQrCode, mGlobalLayoutListener);
 
             try {
                 final String payload = QRCodeUtils.getQrCodeString(mNetworkInfo);
@@ -57,23 +53,16 @@ public class WifiDetailsFragment extends Fragment {
     public WifiDetailsFragment() {
     }
 
-    public static Fragment getInstance(final WifiNetworkInfo info) {
-        final Fragment fragment = new WifiDetailsFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putParcelable(WIFI_NETWORK, info);
-        fragment.setArguments(bundle);
-        return fragment;
-    }
-
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+    public View onCreateView(final LayoutInflater inflater,
+                             final ViewGroup container,
                              final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_wifi_details, container, false);
 
         final TextView mTextViewSsid = (TextView) view.findViewById(R.id.ssid);
         mIvQrCode = (ImageView) view.findViewById(R.id.qrcode);
 
-        mNetworkInfo = getArguments().getParcelable(WIFI_NETWORK);
+        mNetworkInfo = (WifiNetworkInfo) getArguments().getSerializable(WIFI_NETWORK);
 
         if(mNetworkInfo == null){
             throw new IllegalStateException("The passed WIFI network cannot be null");
@@ -104,13 +93,25 @@ public class WifiDetailsFragment extends Fragment {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public void onDestroyView() {
         super.onDestroyView();
+        removeLayoutListener(mIvQrCode, mGlobalLayoutListener);
+    }
+
+    public static Fragment getInstance(final WifiNetworkInfo info) {
+        final Fragment fragment = new WifiDetailsFragment();
+        final Bundle bundle = new Bundle();
+        bundle.putSerializable(WIFI_NETWORK, info);
+        fragment.setArguments(bundle);
+        return fragment;
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void removeLayoutListener(final View view, ViewTreeObserver.OnGlobalLayoutListener listener) {
         if (Build.VERSION.SDK_INT < 16) {
-            mIvQrCode.getViewTreeObserver().removeGlobalOnLayoutListener(mGlobalLayoutListener);
+            view.getViewTreeObserver().removeGlobalOnLayoutListener(listener);
         } else {
-            mIvQrCode.getViewTreeObserver().removeOnGlobalLayoutListener(mGlobalLayoutListener);
+            view.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
         }
     }
 }

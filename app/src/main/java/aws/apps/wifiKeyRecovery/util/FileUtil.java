@@ -11,9 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-/**
- * Created by alex on 04/04/15.
- */
 public class FileUtil {
     private final String TAG = this.getClass().getName();
     private final Context mContext;

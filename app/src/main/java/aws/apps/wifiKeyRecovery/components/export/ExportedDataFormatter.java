@@ -6,10 +6,10 @@ import java.util.List;
 
 import aws.apps.wifiKeyRecovery.R;
 import aws.apps.wifiKeyRecovery.util.WiFiNetworkValitator;
-import uk.co.alt236.wifipasswordaccess.container.WepNetworkInfo;
-import uk.co.alt236.wifipasswordaccess.container.WifiNetworkInfo;
-import uk.co.alt236.wifipasswordaccess.container.WifiProtectedNetworkInfo;
-import uk.co.alt236.wifipasswordaccess.container.WpaNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WepNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WifiProtectedNetworkInfo;
+import uk.co.alt236.wpasupplicantparser.container.WpaNetworkInfo;
 
 /**
  *
@@ -20,33 +20,6 @@ import uk.co.alt236.wifipasswordaccess.container.WpaNetworkInfo;
 
     public ExportedDataFormatter(final Context context) {
         this.context = context;
-    }
-
-    private static void appendPassword(final StringBuilder sb, final WifiNetworkInfo networkInfo) {
-        if (networkInfo instanceof WifiProtectedNetworkInfo) {
-            final WifiProtectedNetworkInfo protectedNetworkInfo = (WifiProtectedNetworkInfo) networkInfo;
-            if (protectedNetworkInfo instanceof WpaNetworkInfo) {
-                sb.append("PASSWORD: ");
-                sb.append(protectedNetworkInfo.getPassword());
-                sb.append("\n");
-            } else if (protectedNetworkInfo instanceof WepNetworkInfo) {
-                final WepNetworkInfo wepNetworkInfo = (WepNetworkInfo) protectedNetworkInfo;
-                for (int i = 0; i < wepNetworkInfo.getPasswordCount(); i++) {
-                    //noinspection StringConcatenationInsideStringBufferAppend
-                    sb.append("WEP_KEY_" + i + ": ");
-                    sb.append(wepNetworkInfo.getPassword(i));
-                    sb.append("\n");
-                }
-            } else {
-                sb.append("PASSWORD: ");
-                sb.append(protectedNetworkInfo.getPassword());
-                sb.append("\n");
-            }
-        } else {
-            sb.append("PASSWORD: ");
-            sb.append("<NO PASSWORD>");
-            sb.append("\n");
-        }
     }
 
     public String getString(final List<WifiNetworkInfo> data) {
@@ -89,5 +62,32 @@ import uk.co.alt236.wifipasswordaccess.container.WpaNetworkInfo;
         sb.append(size);
 
         return sb.toString();
+    }
+
+    private static void appendPassword(final StringBuilder sb, final WifiNetworkInfo networkInfo) {
+        if (networkInfo instanceof WifiProtectedNetworkInfo) {
+            final WifiProtectedNetworkInfo protectedNetworkInfo = (WifiProtectedNetworkInfo) networkInfo;
+            if (protectedNetworkInfo instanceof WpaNetworkInfo) {
+                sb.append("PASSWORD: ");
+                sb.append(protectedNetworkInfo.getPassword());
+                sb.append("\n");
+            } else if (protectedNetworkInfo instanceof WepNetworkInfo) {
+                final WepNetworkInfo wepNetworkInfo = (WepNetworkInfo) protectedNetworkInfo;
+                for (int i = 0; i < wepNetworkInfo.getPasswordCount(); i++) {
+                    //noinspection StringConcatenationInsideStringBufferAppend
+                    sb.append("WEP_KEY_" + i + ": ");
+                    sb.append(wepNetworkInfo.getPassword(i));
+                    sb.append("\n");
+                }
+            } else {
+                sb.append("PASSWORD: ");
+                sb.append(protectedNetworkInfo.getPassword());
+                sb.append("\n");
+            }
+        } else {
+            sb.append("PASSWORD: ");
+            sb.append("<NO PASSWORD>");
+            sb.append("\n");
+        }
     }
 }
