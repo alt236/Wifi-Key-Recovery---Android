@@ -51,15 +51,16 @@ import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
 
 public class MainActivity extends BaseActivity {
     private static final int DIALOG_GET_PASSWORDS = 1;
-    private final String TAG = this.getClass().getName();
+    private static final String TAG = MainActivity.class.getName();
+    private ItemFilter itemFilter;
     private RecyclerView mRecyclerView;
-    private WifiNetworkRecyclerViewAdapter mRecyclerAdapter;
     private TextView mTextViewResultCount;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        itemFilter = new ItemFilter();
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -133,8 +134,9 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public boolean onQueryTextChange(final String newText) {
-                if (mRecyclerAdapter != null) {
-                    //mRecyclerAdapter.getFilter().filter(newText);
+                if (mRecyclerView != null) {
+                    final List<WifiNetworkInfo> data = itemFilter.filter(newText);
+                    mRecyclerView.swapAdapter(createAdapter(data), true);
                 }
                 return true;
             }
@@ -213,15 +215,12 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private void populateList(final List<WifiNetworkInfo> l) {
-        mTextViewResultCount.setText(String.valueOf(l.size()));
+    private void populateList(final List<WifiNetworkInfo> list) {
+        mTextViewResultCount.setText(String.valueOf(list.size()));
+        itemFilter.setData(list);
 
-        if (l.size() > 0) {
-            final WifiNetworkRecyclerViewAdapter adapter
-                    = new WifiNetworkRecyclerViewAdapter(this, getIntentDispatcher());
-            adapter.setItems(l);
-            mRecyclerView.setAdapter(adapter);
-            mRecyclerAdapter = adapter;
+        if (list.size() > 0) {
+            mRecyclerView.setAdapter(createAdapter(list));
         }
 
         supportInvalidateOptionsMenu();
@@ -232,6 +231,13 @@ public class MainActivity extends BaseActivity {
      */
     private void refreshInfo() {
         loadData();
+    }
+
+    private WifiNetworkRecyclerViewAdapter createAdapter(List<WifiNetworkInfo> list) {
+        final WifiNetworkRecyclerViewAdapter adapter
+                = new WifiNetworkRecyclerViewAdapter(this, getIntentDispatcher());
+        adapter.setItems(list);
+        return adapter;
     }
 
     private class NetInfoComparator implements Comparator<WifiNetworkInfo> {

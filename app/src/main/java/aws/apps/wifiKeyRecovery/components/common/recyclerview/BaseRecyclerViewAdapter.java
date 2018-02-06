@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import aws.apps.wifiKeyRecovery.components.common.navigation.IntentDispatcher;
@@ -71,6 +72,10 @@ public abstract class BaseRecyclerViewAdapter<D, VH extends RecyclerView.ViewHol
         if (position > -1) {
             removeItem(position);
         }
+    }
+
+    public List<D> getItems() {
+        return Collections.unmodifiableList(mItems);
     }
 
     public void setItems(final List<D> items) {
