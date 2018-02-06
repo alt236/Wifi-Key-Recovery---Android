@@ -61,6 +61,9 @@ public class ExportActivity extends BaseActivity {
         mFldInfo = findViewById(R.id.fld_export_text);
 
         final Bundle extras = getIntent().getExtras();
+        if (extras == null) {
+            throw new IllegalStateException("Extras were null!");
+        }
 
         //noinspection unchecked
         final List<WifiNetworkInfo> networkInfos =

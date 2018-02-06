@@ -104,12 +104,13 @@ import uk.co.alt236.wpasupplicantparser.container.WifiProtectedNetworkInfo;
 
         final StringBuilder sb = new StringBuilder();
         sb.append("WIFI:");
-        sb.append("S:" + networkInfo.getSsid() + ";");
-        sb.append("T:" + getNetworkTypeAsString(networkInfo.getNetType()) + ";");
+        sb.append("S:").append(networkInfo.getSsid()).append(";");
+        sb.append("T:").append(getNetworkTypeAsString(networkInfo.getNetType())).append(";");
 
         if (networkInfo instanceof WifiProtectedNetworkInfo) {
-            if (!TextUtils.isEmpty(((WifiProtectedNetworkInfo) networkInfo).getPassword())) {
-                sb.append("P:" + ((WifiProtectedNetworkInfo) networkInfo).getPassword() + ";");
+            final WifiProtectedNetworkInfo protectedNet = (WifiProtectedNetworkInfo) networkInfo;
+            if (!TextUtils.isEmpty(protectedNet.getPassword())) {
+                sb.append("P:").append(protectedNet.getPassword()).append(";");
             }
         }
 
