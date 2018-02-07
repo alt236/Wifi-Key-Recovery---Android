@@ -1,32 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:scaleType="centerInside"
+                tools:src="@drawable/ic_list_wifi_open"/>
+
+            <TextView
+                android:id="@+id/ssid"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground">
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/icon"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="SSID"/>
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:src="@drawable/ic_list_wifi_open"/>
+            <TextView
+                android:id="@+id/network_type"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ssid"
+                android:layout_toRightOf="@+id/icon"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textSize="14sp"
+                tools:text="Type"/>
+        </RelativeLayout>
 
-    <TextView
-        android:id="@+id/ssid"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/icon"
-        android:padding="5dp"
-        android:typeface="monospace"/>
+        <TextView
+            android:id="@+id/additional"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/header"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:typeface="monospace"
+            tools:text="additional stuff"/>
 
+        <android.support.v7.widget.ButtonBarLayout
+            style="?attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/additional">
 
-    <TextView
-        android:id="@+id/additional"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ssid"
-        android:layout_toRightOf="@+id/icon"
-        android:padding="5dp"
-        android:typeface="monospace"/>
-</RelativeLayout>
+            <Button
+                android:id="@+id/cta_copy_password"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cta_card_copy_password"/>
+
+            <Button
+                android:id="@+id/cta_show_qr_code"
+                style="?attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cta_card_qr_code"/>
+        </android.support.v7.widget.ButtonBarLayout>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

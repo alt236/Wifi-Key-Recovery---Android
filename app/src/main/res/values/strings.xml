@@ -49,4 +49,6 @@
     <string name="title_export">Export</string>
     <string name="action_settings">Settings</string>
 
+    <string name="cta_card_copy_password">Copy Password</string>
+    <string name="cta_card_qr_code">QR Code</string>
 </resources>
