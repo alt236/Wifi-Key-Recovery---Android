@@ -18,10 +18,14 @@ android {
         minSdkVersion minSdkRed
         targetSdkVersion targetSdk
         buildConfigField "Boolean", "USE_DEBUG_DATA", "true"
+        buildConfigField "Boolean", "FORCE_SAMSUNG", "false"
     }
 
     buildTypes {
         release {
+            buildConfigField "Boolean", "USE_DEBUG_DATA", "false"
+            buildConfigField "Boolean", "FORCE_SAMSUNG", "false"
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }

@@ -48,6 +48,8 @@ import aws.apps.wifiKeyRecovery.dataload.PasswordLoader;
 import aws.apps.wifiKeyRecovery.util.ExecTerminal;
 import aws.apps.wifiKeyRecovery.util.FileUtil;
 import aws.apps.wifiKeyRecovery.util.WiFiNetworkValitator;
+import aws.apps.wifiKeyRecovery.util.phonedetection.Manufacturer;
+import aws.apps.wifiKeyRecovery.util.phonedetection.PhoneManufacturerDetector;
 import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
 
 public class MainActivity extends BaseActivity {
@@ -79,9 +81,17 @@ public class MainActivity extends BaseActivity {
     }
 
     private void showSamsungWarning() {
-        final PhoneManufacturerDetector phoneManufacturerDetector = new PhoneManufacturerDetector();
-        final boolean isSamsung = phoneManufacturerDetector.isManufacturedBy(PhoneManufacturerDetector.Manufacturer.SAMSUNG);
+        final PhoneManufacturerDetector manufacturerDetector = new PhoneManufacturerDetector();
+        final boolean isSamsung = BuildConfig.FORCE_SAMSUNG || manufacturerDetector.isManufacturedBy(Manufacturer.SAMSUNG);
         samsungWarningView.setVisibility(isSamsung ? View.VISIBLE : View.GONE);
+        final View cta = samsungWarningView.findViewById(R.id.samsung_warning_button);
+        cta.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(final View v) {
+                DialogFactory.getSamsungWarning(MainActivity.this).show();
+            }
+        });
     }
 
     @Override

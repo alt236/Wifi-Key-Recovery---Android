@@ -22,29 +22,28 @@ import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.widget.ScrollView;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
+
+import aws.apps.wifiKeyRecovery.R;
 
 /*package*/ final class CustomTextDialog {
 
     private CustomTextDialog() {
     }
 
-    private static ScrollView linkify(final Context context,
-                                      final String message) {
-        final ScrollView svMessage = new ScrollView(context);
-        final TextView tvMessage = new TextView(context);
-
+    private static View createView(final Context context,
+                                   final String message) {
         final SpannableString spanText = new SpannableString(message);
+        final View view = LayoutInflater.from(context).inflate(R.layout.dialog_textview, null);
+        final TextView textView = view.findViewById(R.id.text);
 
         Linkify.addLinks(spanText, Linkify.ALL);
-        tvMessage.setText(spanText);
-        tvMessage.setMovementMethod(LinkMovementMethod.getInstance());
+        textView.setText(spanText);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        svMessage.setPadding(14, 2, 10, 12);
-        svMessage.addView(tvMessage);
-
-        return svMessage;
+        return view;
     }
 
     public static AlertDialog create(final Context context,
@@ -54,9 +53,8 @@ import android.widget.TextView;
         return new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setCancelable(true)
-                .setIcon(android.R.drawable.ic_dialog_info)
                 .setPositiveButton(button, null)
-                .setView(linkify(context, text))
+                .setView(createView(context, text))
                 .create();
     }
 }

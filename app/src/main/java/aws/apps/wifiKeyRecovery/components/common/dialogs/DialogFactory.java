@@ -37,11 +37,21 @@ public final class DialogFactory {
                                         final Dialog.OnDismissListener listener) {
         final Dialog dlg = CustomTextDialog.create(
                 context,
-                context.getString(R.string.root_needed),
+                context.getString(R.string.dialog_content_root_needed),
                 context.getString(R.string.app_name),
                 context.getString(android.R.string.ok));
 
         dlg.setOnDismissListener(listener);
+
+        return dlg;
+    }
+
+    public static Dialog getSamsungWarning(final Context context) {
+        final Dialog dlg = CustomTextDialog.create(
+                context,
+                context.getString(R.string.dialog_content_samsung_warning),
+                context.getString(R.string.app_name),
+                context.getString(android.R.string.ok));
 
         return dlg;
     }

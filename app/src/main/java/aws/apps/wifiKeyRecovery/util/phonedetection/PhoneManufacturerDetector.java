@@ -1,4 +1,4 @@
-package aws.apps.wifiKeyRecovery.components.main;
+package aws.apps.wifiKeyRecovery.util.phonedetection;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -11,7 +11,6 @@ public class PhoneManufacturerDetector {
         return getGetPhoneManufacturer(Build.MANUFACTURER);
     }
 
-    @NonNull
     public boolean isManufacturedBy(Manufacturer manufacturer) {
         return getPhoneManufacturer() == manufacturer;
     }
@@ -21,25 +20,4 @@ public class PhoneManufacturerDetector {
         return Manufacturer.fromString(manufacturerString);
     }
 
-    public enum Manufacturer {
-        SAMSUNG("Samsung"),
-        OTHER("OTHER");
-
-        private final String manufacturer;
-
-        Manufacturer(final String manufacturer) {
-            this.manufacturer = manufacturer;
-        }
-
-        @NonNull
-        private static Manufacturer fromString(final String string) {
-            for (final Manufacturer value : Manufacturer.values()) {
-                if (value.manufacturer.equalsIgnoreCase(string)) {
-                    return value;
-                }
-            }
-
-            return OTHER;
-        }
-    }
 }
