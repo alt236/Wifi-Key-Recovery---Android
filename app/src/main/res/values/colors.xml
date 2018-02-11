@@ -2,5 +2,6 @@
 <resources>
 
     <color name="green">#FF96AE3A</color>
+    <color name="samsung_warning">#FF8A80</color>
 
 </resources>

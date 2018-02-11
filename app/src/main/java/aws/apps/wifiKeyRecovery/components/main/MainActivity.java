@@ -31,6 +31,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -52,25 +53,35 @@ import uk.co.alt236.wpasupplicantparser.container.WifiNetworkInfo;
 public class MainActivity extends BaseActivity {
     private static final int DIALOG_GET_PASSWORDS = 1;
     private static final String TAG = MainActivity.class.getName();
+    private static final int LAYOUT_ID = R.layout.activity_main;
     private ItemFilter itemFilter;
-    private RecyclerView mRecyclerView;
-    private TextView mTextViewResultCount;
+    private RecyclerView recyclerView;
+    private TextView textViewResultCount;
+    private View samsungWarningView;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(LAYOUT_ID);
         itemFilter = new ItemFilter();
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // setup GUI
-        mTextViewResultCount = findViewById(R.id.tvResults);
-        mRecyclerView = findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        samsungWarningView = findViewById(R.id.samsung_warning);
+        textViewResultCount = findViewById(R.id.tvResults);
+        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        showSamsungWarning();
         loadData();
+    }
+
+    private void showSamsungWarning() {
+        final PhoneManufacturerDetector phoneManufacturerDetector = new PhoneManufacturerDetector();
+        final boolean isSamsung = phoneManufacturerDetector.isManufacturedBy(PhoneManufacturerDetector.Manufacturer.SAMSUNG);
+        samsungWarningView.setVisibility(isSamsung ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -95,7 +106,7 @@ public class MainActivity extends BaseActivity {
 
                         Collections.sort(validList, new NetInfoComparator());
                         populateList(validList);
-                        mRecyclerView.setTag(list);
+                        recyclerView.setTag(list);
                         resetUi();
                     }
 
@@ -134,9 +145,9 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public boolean onQueryTextChange(final String newText) {
-                if (mRecyclerView != null) {
+                if (recyclerView != null) {
                     final List<WifiNetworkInfo> data = itemFilter.filter(newText);
-                    mRecyclerView.swapAdapter(createAdapter(data), true);
+                    recyclerView.swapAdapter(createAdapter(data), true);
                 }
                 return true;
             }
@@ -157,7 +168,7 @@ public class MainActivity extends BaseActivity {
                 return true;
             case R.id.action_export:
                 getIntentDispatcher().openExportActivity(
-                        (ArrayList<WifiNetworkInfo>) mRecyclerView.getTag(),
+                        (ArrayList<WifiNetworkInfo>) recyclerView.getTag(),
                         System.currentTimeMillis());
                 return true;
             case R.id.action_refresh:
@@ -174,8 +185,8 @@ public class MainActivity extends BaseActivity {
 
         final SavedData saved = new SavedData();
 
-        if (mRecyclerView.getTag() != null) {
-            saved.setWiFiPasswordList((List<WifiNetworkInfo>) mRecyclerView.getTag());
+        if (recyclerView.getTag() != null) {
+            saved.setWiFiPasswordList((List<WifiNetworkInfo>) recyclerView.getTag());
         }
 
         return saved;
@@ -211,16 +222,16 @@ public class MainActivity extends BaseActivity {
         } else {
             final SavedData saved = (SavedData) data;
             populateList(saved.getWifiPasswordList());
-            mRecyclerView.setTag(saved.getWifiPasswordList());
+            recyclerView.setTag(saved.getWifiPasswordList());
         }
     }
 
     private void populateList(final List<WifiNetworkInfo> list) {
-        mTextViewResultCount.setText(String.valueOf(list.size()));
+        textViewResultCount.setText(String.valueOf(list.size()));
         itemFilter.setData(list);
 
         if (list.size() > 0) {
-            mRecyclerView.setAdapter(createAdapter(list));
+            recyclerView.setAdapter(createAdapter(list));
         }
 
         supportInvalidateOptionsMenu();

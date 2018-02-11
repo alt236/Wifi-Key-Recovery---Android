@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/samsung_warning">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_toLeftOf="@id/samsung_warning_button"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Blah blah blah"
+        android:textStyle="bold"/>
+
+    <Button
+        android:id="@+id/samsung_warning_button"
+        style="?attr/buttonBarButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="8dp"
+        android:maxLines="1"
+        android:text="More"/>
+
+
+</RelativeLayout>
