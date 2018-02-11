@@ -74,18 +74,8 @@ public class ExportActivity extends BaseActivity {
         mFldInfo.setText(getString(R.string.text_wifi_password_recovery) + " @ " + mTimeDate + "\n\n");
         mFldInfo.append(formatter.getString(networkInfos));
 
-        shareButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                shareResults();
-            }
-        });
-        saveToSdButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                saveToFile();
-            }
-        });
+        shareButton.setOnClickListener(v -> shareResults());
+        saveToSdButton.setOnClickListener(v -> saveToFile());
     }
 
     @Override

@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -42,23 +41,13 @@ class WifiNetworkViewHolderBinder extends BaseViewBinder<WifiNetworkViewHolder, 
         holder.getNetworkType().setText(getNetworkType(item));
         setIcon(holder.getIcon(), item);
 
-        holder.setShowQrCodeClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                getIntentDispatcher().openDetails(item);
-            }
-        });
+        holder.setShowQrCodeClickListener(v -> getIntentDispatcher().openDetails(item));
 
         boolean hasPassword = hasPassword(item);
         holder.setCopyButtonVisible(hasPassword);
         if (hasPassword) {
             final WifiProtectedNetworkInfo protectedNetwork = (WifiProtectedNetworkInfo) item;
-            holder.setCopyPasswordClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    copyStringToClipboard(protectedNetwork.getPassword());
-                }
-            });
+            holder.setCopyPasswordClickListener(v -> copyStringToClipboard(protectedNetwork.getPassword()));
         }
     }
 

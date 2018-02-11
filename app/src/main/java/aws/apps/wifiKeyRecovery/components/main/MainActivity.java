@@ -19,8 +19,6 @@ package aws.apps.wifiKeyRecovery.components.main;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -85,13 +83,7 @@ public class MainActivity extends BaseActivity {
         final boolean isSamsung = BuildConfig.FORCE_SAMSUNG || manufacturerDetector.isManufacturedBy(Manufacturer.SAMSUNG);
         samsungWarningView.setVisibility(isSamsung ? View.VISIBLE : View.GONE);
         final View cta = samsungWarningView.findViewById(R.id.samsung_warning_button);
-        cta.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(final View v) {
-                DialogFactory.getSamsungWarning(MainActivity.this).show();
-            }
-        });
+        cta.setOnClickListener(v -> DialogFactory.getSamsungWarning(MainActivity.this).show());
     }
 
     @Override
@@ -220,12 +212,8 @@ public class MainActivity extends BaseActivity {
             if (hasRoot) {
                 showDialog(DIALOG_GET_PASSWORDS);
             } else {
-                final Dialog dlg = DialogFactory.getRootWarning(this, new OnDismissListener() {
-                    @Override
-                    public void onDismiss(final DialogInterface dialog) {
-                        MainActivity.this.finish();
-                    }
-                });
+                final Dialog dlg =
+                        DialogFactory.getRootWarning(this, dialog -> MainActivity.this.finish());
 
                 dlg.show();
             }

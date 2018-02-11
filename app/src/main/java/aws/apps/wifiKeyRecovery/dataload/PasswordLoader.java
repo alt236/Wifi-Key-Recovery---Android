@@ -33,17 +33,9 @@ public class PasswordLoader {
     }
 
     public void loadPasswords(final PasswordLoadCallback callback) {
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final List<WifiNetworkInfo> list = getWiFiPasswordList();
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onPasswordsLoaded(list);
-                    }
-                });
-            }
+        final Runnable runnable = () -> {
+            final List<WifiNetworkInfo> list = getWiFiPasswordList();
+            handler.post(() -> callback.onPasswordsLoaded(list));
         };
 
         new Thread(runnable).run();
